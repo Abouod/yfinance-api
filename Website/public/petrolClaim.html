@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Petrol Claim Form</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="/styles/iuc.css">
+</head>
+
+<body>
+
+    <header>
+        <img src="/images/logo-removebg-preview.png" alt="Company Logo">
+        <h1>Claim Form Automation</h1>
+    </header>
+
+
+
+    <form id="petrolForm">
+        <div class="form-container">
+            <h2>Petrol Claim Form</h2>
+            <label for="dates">Select Dates:</label>
+            <input type="text" id="dates" placeholder="Select dates" data-input required>
+            <input type="hidden" id="convertedDate"> <!-- Hidden input field to store the converted date -->
+            <label for="start">Start Destination:</label>
+            <input type="text" id="startDes" required>
+            <div id="intermediate-stops-container">
+                <!-- Intermediate stops will be added here dynamically -->
+            </div>
+            <div class="button-container">
+                <button type="button" id="addStopButton" onclick="addStopInputField()">Add Stop</button>
+                <button type="button" id="cancelStopButton" onclick="cancelStopInputField()">Cancel Stop</button>
+            </div>
+            <label for="end">End Destination:</label>
+            <input type="text" id="endDes" required>
+            <input type="hidden" id="journey"> <!-- Hidden input field to store the journey -->
+            <div class="submit-button-container"> <!-- Container for submit button -->
+                <button type="submit">Submit</button>
+            </div>
+        </div>
+    </form> <!-- Close form tag -->
+
+    <div id="error-message"></div>
+
+
+    <!-- Include the flatpickr library -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="/petrolClaim.js"></script>
+    <script src="/UiPathRobot.js"></script>
+    <script>
+        // Initialize flatpickr
+        const fp = flatpickr('#dates', {
+            mode: 'multiple', // Allow multiple selections
+            dateFormat: 'Y-m-d' // Format the selected dates
+        });
+
+        let stop1 = '';
+        let stop2 = '';
+        let stop3 = '';
+
+        // Function to add a new stop input field
+        function addStopInputField() {
+            // Limit the maximum number of stops to 3
+            const maxStops = 3;
+            const stopCount = document.querySelectorAll('.stop-input').length;
+            if (stopCount >= maxStops) {
+                alert("You have reached the maximum number of stops.");
+                return;
+            }
+
+            const stopIndex = stopCount + 1;
+            const container = document.getElementById('intermediate-stops-container');
+            const newStopInput = document.createElement('input');
+            newStopInput.type = 'text';
+            newStopInput.id = 'stop' + stopIndex;
+            newStopInput.className = 'stop-input';
+            newStopInput.placeholder = 'Intermediate Stop ' + stopIndex;
+            container.appendChild(newStopInput);
+
+            // Attach event listener to update corresponding variable when input value changes
+            newStopInput.addEventListener('input', function () {
+                if (stopIndex === 1) {
+                    stop1 = this.value.trim();
+                } else if (stopIndex === 2) {
+                    stop2 = this.value.trim();
+                } else if (stopIndex === 3) {
+                    stop3 = this.value.trim();
+                }
+            });
+        }
+
+        let stopCounter = 0; // Counter to generate unique IDs for stop fields
+
+        // Function to add a new stop input field
+        function addStopInputField() {
+            const container = document.getElementById('intermediate-stops-container');
+            const maxStops = 3;
+
+            if (stopCounter >= maxStops) {
+                alert("You have reached the maximum number of stops.");
+                return;
+            }
+
+            stopCounter++;
+            const newLabel = document.createElement('label');
+            newLabel.for = 'stop' + stopCounter;
+            newLabel.textContent = 'Intermediate Stop ' + stopCounter + ':';
+            container.appendChild(newLabel);
+
+            const newStopInput = document.createElement('input');
+            newStopInput.type = 'text';
+            newStopInput.id = 'stop' + stopCounter; // Generate unique ID for stop field
+            newStopInput.className = 'stop-input';
+            container.appendChild(newStopInput);
+        }
+
+        // Function to cancel the last added stop input field
+        function cancelStopInputField() {
+            const container = document.getElementById('intermediate-stops-container');
+            const stopInputs = container.querySelectorAll('.stop-input');
+
+            if (stopInputs.length === 0) {
+                alert("There are no stops to cancel.");
+                return;
+            }
+
+            const lastStopInput = stopInputs[stopInputs.length - 1];
+            container.removeChild(lastStopInput.previousElementSibling); // Remove the label
+            container.removeChild(lastStopInput); // Remove the input field
+            stopCounter--;
+        }
+
+
+
+
+    </script>
+</body>
+
+</html>

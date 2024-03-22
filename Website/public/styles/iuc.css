@@ -1,0 +1,118 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    background-color: #f2f2f2;
+    padding: 20px;
+    text-align: center;
+    height: auto; /* Adjust height as needed */
+}
+
+header img {
+    float: left;
+    max-height: 50px;
+}
+
+header h1 {
+    display: inline-block;
+    margin: 0 auto; /* Center horizontally */
+}
+
+.form-container {
+    margin: 20px auto;
+    max-width: 800px;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #D9D9D9;
+}
+
+.form-container h2 {
+    text-align: center;
+    margin-top: 0;
+    margin-bottom: 20px;
+}
+
+.form-header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.form-container select {
+    width: auto;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+#month {
+    width: 150px;
+}
+
+.form-container label {
+    display: block;
+    margin-bottom: 10px;
+}
+
+.form-container input[type="text"],
+.form-container select {
+    width: calc(99% - 10px);
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.submit-button-container {
+    text-align: center; /* Center align submit button */
+}
+
+.submit-button-container button {
+    width: 100px;
+    background-color: #4CAF50;
+    color: white;
+    padding: 15px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 10px;
+}
+
+.submit-button-container button:hover {
+    background-color: #45a049;
+}
+
+.button-container {
+    text-align: center; /* Center align the buttons */
+}
+
+.button-container button {
+    padding: 10px 20px; /* Add padding to the buttons */
+    margin-right: 10px; /* Add margin between the buttons */
+    border: none; /* Remove border */
+    border-radius: 5px; /* Add border radius */
+    cursor: pointer; /* Change cursor to pointer on hover */
+    transition: background-color 0.3s; /* Smooth transition for background color */
+}
+
+#addStopButton {
+    background-color: #007bff; /* Blue background color for "Add Stop" button */
+    color: #fff; /* White text color */
+}
+
+#cancelStopButton {
+    background-color: #dc3545; /* Red background color for "Cancel Stop" button */
+    color: #fff; /* White text color */
+}
+
+.button-container button:hover {
+    filter: brightness(90%); /* Reduce brightness on hover for all buttons */
+}
+
