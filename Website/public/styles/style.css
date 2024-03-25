@@ -1,11 +1,14 @@
+@import url("https://fonts.googleapis.com/css2?family=Helvetica+Neue&display=swap");
+
 :root {
   --first-color: #f9f7f7;
-
   --second-color: #dbe2ef;
-
   --third-color: #3f72af;
-
   --fourth-color: #112d4e;
+}
+
+* {
+  font-family: "Helvetica Neue", sans-serif;
 }
 
 body {
@@ -80,13 +83,14 @@ body {
 .heading-text {
   text-align: center;
   margin-top: 150px;
-  margin-right: 55%;
+  margin-right: 60%;
   display: block;
   color: var(--fourth-color);
 }
 
 .page-divider {
-  margin: 0 calc(25% + (-190px)); /* Adjust as needed */
+  margin: 0 auto; /* Center the divider horizontally */
+  max-width: 82%; /* Set a maximum width for the divider */
   border: none;
   border-top: 1px solid rgb(0, 0, 0); /* Example border style */
 }
@@ -101,71 +105,117 @@ body {
 .btn {
   flex-basis: calc(50% - 5px); /* Adjust button width */
 }
-/*! Scrollable class to enable scrolling within each collabsed card */
+/*! Scrollable class to enable scrolling within each accordion if there are many buttons */
 .scrollable {
   max-height: 200px; /* Adjust the maximum height as needed */
   overflow-y: auto; /* Enable vertical scrolling */
 }
 
-.card {
-  margin-bottom: 10px;
-}
-
-/* Adjust button styles as needed */
-
-/*! Old card style */
-/*
-.card-deck {
+/* Accordion */
+.container {
+  height: auto;
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center; /* Center the cards horizontally 
-  margin-top: 70px;
+  justify-content: center;
+  align-items: center;
+  margin-top: 50px;
 }
 
-.card {
-  flex: 0 0 auto; /* Prevent the cards from growing 
-  margin-bottom: 15px; /* Add some bottom margin between cards 
-  margin-right: 15px; /* Add some right margin between cards 
-  min-width: calc(
-    50% - 220px
-  ); /* Adjust the width to show only two cards per row 
-  cursor: pointer;
+.accordion {
+  width: 75%;
+  background: transparent;
 }
 
-.custom-card {
-  background-color: var(--fourth-color); /* Coral color 
-  color: #fff; /* White text color 
+.accordion-item {
+  background: var(--fourth-color);
+  color: white;
+  border: none;
+  box-shadow: 2px 2px 8px rgba(141, 141, 141, 0.1),
+    -2px -2px 8px rgba(141, 141, 141, 0.1);
 }
 
-.card-title {
-  /* color: #ff7c41; 
-  color: var(--fourth-color);
+.accordion-body {
+  background: var(--fourth-color);
+  color: white;
+  font-size: 0.7rem;
 }
 
-.card-body {
-  margin: 0;
-  padding: 10px;
-  /* background-color: var(--fourth-color); 
+.accordion-button {
+  font-size: 0.9rem;
+  background: transparent;
+  outline: none;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+  font-weight: 500;
 }
 
-.box {
-  margin: 10px;
-}
-*/
-/* 
-@media (max-width: 767.98px) {
-  .card {
-    width: calc(
-      50% - 30px
-    ); 
-  }
+.accordion-button:focus {
+  box-shadow: none;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
 }
 
-@media (max-width: 575.98px) {
-  .card {
-    width: calc(
-      100% - 30px
-    ); 
-    margin-right: 0; 
-  }
-} */
+.accordion-button:not(.collapsed) {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  box-shadow: none;
+}
+
+.accordion-button::after {
+  background-image: none;
+  content: "\f0d7";
+  font-family: fontawesome;
+  color: white;
+  width: auto;
+  height: auto;
+}
+
+.accordion-button:not(.collapsed)::after {
+  background-image: none;
+}
+
+.accordion-item:last-child {
+  margin-bottom: 100px;
+}
+
+/* Footer */
+.footer {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  background-color: #333; /* Example background color */
+  color: white; /* Example text color */
+  text-align: center;
+}
+
+#footer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+  height: 65px;
+  background: var(--fourth-color);
+}
+
+#left-column {
+  flex: 1;
+  text-align: left;
+  padding-left: 60px;
+}
+
+#copyright {
+  font-style: normal;
+  font-size: 10px;
+  line-height: normal;
+  color: #fff;
+  padding-top: 10px;
+}
+
+#right-column {
+  flex: 1;
+  text-align: right;
+  padding-right: 60px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-end;
+}

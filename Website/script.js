@@ -3,6 +3,7 @@ import bodyParser from "body-parser";
 import pg from "pg";
 import session from "express-session"; // Import express-session
 import bcrypt from "bcrypt"; // Import bcrypt for password hashing
+import { randomBytes } from "crypto"; // Import crypto for generating random bytes
 
 const app = express();
 const port = 3000;
@@ -20,10 +21,20 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json()); // for parsing application/json
 app.use(express.static("public"));
 
+// Function to generate a random string of specified length
+function generateRandomString(length) {
+  return randomBytes(Math.ceil(length / 2))
+    .toString("hex") // Convert to hexadecimal format
+    .slice(0, length); // Trim to desired length
+}
+
+// Generate a secret key
+const secretKey = generateRandomString(64);
+
 // Configure express-session middleware
 app.use(
   session({
-    secret: "Secrets_have_a_cost", // Set a secret key for session encryption
+    secret: secretKey, // Set a secret key for session encryption
     resave: false,
     saveUninitialized: true,
   })
@@ -105,7 +116,7 @@ app.post("/register", async (req, res) => {
 
   try {
     // Hash the password
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, 10); //10: is the cost factor or the number of rounds of hashing to apply.
 
     // Insert the new user into the database with hashed password
     const newUserQuery = await db.query(
