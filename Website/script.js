@@ -3,10 +3,10 @@ import bodyParser from "body-parser";
 import pg from "pg";
 import session from "express-session"; // Import express-session
 import bcrypt from "bcrypt"; // Import bcrypt for password hashing
-import { randomBytes } from "crypto"; // Import crypto for generating random bytes
 
 const app = express();
 const port = 3000;
+const saltRounds = 10; //10: is the cost factor or the number of rounds of hashing to apply to the password.
 
 const db = new pg.Client({
   user: "postgres",
@@ -21,20 +21,10 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json()); // for parsing application/json
 app.use(express.static("public"));
 
-// Function to generate a random string of specified length
-function generateRandomString(length) {
-  return randomBytes(Math.ceil(length / 2))
-    .toString("hex") // Convert to hexadecimal format
-    .slice(0, length); // Trim to desired length
-}
-
-// Generate a secret key
-const secretKey = generateRandomString(64);
-
 // Configure express-session middleware
 app.use(
   session({
-    secret: secretKey, // Set a secret key for session encryption
+    secret: "RPATOPSECRETKEY", // Set a secret key for session encryption
     resave: false,
     saveUninitialized: true,
     cookie: {
@@ -42,12 +32,6 @@ app.use(
     },
   })
 );
-
-// Route to serve the login.ejs file
-app.get("/", (req, res) => {
-  // Pass an empty string as the error message initially
-  res.render("login.ejs", { errorMessage: "" });
-});
 
 // Middleware function to check if user is authenticated
 function requireLogin(req, res, next) {
@@ -58,6 +42,12 @@ function requireLogin(req, res, next) {
   }
 }
 
+// Route to serve the login.ejs file
+app.get("/", (req, res) => {
+  // Pass an empty string as the error message initially
+  res.render("login.ejs", { errorMessage: "" });
+});
+
 // Update the route for index.ejs to use the requireLogin middleware
 app.get("/index", requireLogin, (req, res) => {
   res.render("index.ejs");
@@ -66,6 +56,45 @@ app.get("/index", requireLogin, (req, res) => {
 app.get("/profile", requireLogin, (req, res) => {
   const user = req.session.user;
   res.render("profile.ejs", { user }); // Pass user data to the profile page
+});
+
+// Route to handle user logout
+app.get("/signout", (req, res) => {
+  req.session.destroy();
+  res.redirect("/");
+});
+
+// Route to handle user registration
+app.post("/register", async (req, res) => {
+  const { name, email, password, manager, superior, department } = req.body;
+
+  try {
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Insert the new user into the database with hashed password
+    const newUserQuery = await db.query(
+      "INSERT INTO users (name, email, password, manager, superior, department) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *",
+      [name, email, hashedPassword, manager, superior, department]
+    );
+
+    const newUser = newUserQuery.rows[0];
+
+    // Store user data in session
+    req.session.user = {
+      id: newUser.id,
+      name: newUser.name,
+      email: newUser.email,
+      manager: newUser.manager,
+      superior: newUser.superior,
+      department: newUser.department,
+    };
+
+    res.redirect("/index");
+  } catch (error) {
+    console.error("Error registering user:", error);
+    res.status(500).send("An error occurred while registering user");
+  }
 });
 
 // Route to handle user sign-in
@@ -118,45 +147,6 @@ app.post("/signin", async (req, res) => {
     res.render("login.ejs", {
       errorMessage: "An error occurred while signing in",
     });
-  }
-});
-
-// Route to handle user logout
-app.get("/signout", (req, res) => {
-  req.session.destroy();
-  res.redirect("/");
-});
-
-// Route to handle user registration
-app.post("/register", async (req, res) => {
-  const { name, email, password, manager, superior, department } = req.body;
-
-  try {
-    // Hash the password
-    const hashedPassword = await bcrypt.hash(password, 10); //10: is the cost factor or the number of rounds of hashing to apply.
-
-    // Insert the new user into the database with hashed password
-    const newUserQuery = await db.query(
-      "INSERT INTO users (name, email, password, manager, superior, department) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *",
-      [name, email, hashedPassword, manager, superior, department]
-    );
-
-    const newUser = newUserQuery.rows[0];
-
-    // Store user data in session
-    req.session.user = {
-      id: newUser.id,
-      name: newUser.name,
-      email: newUser.email,
-      manager: newUser.manager,
-      superior: newUser.superior,
-      department: newUser.department,
-    };
-
-    res.redirect("/index");
-  } catch (error) {
-    console.error("Error registering user:", error);
-    res.status(500).send("An error occurred while registering user");
   }
 });
 
