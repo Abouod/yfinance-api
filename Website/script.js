@@ -37,6 +37,9 @@ app.use(
     secret: secretKey, // Set a secret key for session encryption
     resave: false,
     saveUninitialized: true,
+    cookie: {
+      maxAge: 1000 * 60 * 60 * 24,
+    },
   })
 );
 
