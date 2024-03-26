@@ -91,6 +91,9 @@ app.post("/signin", async (req, res) => {
         id: user.id,
         name: user.name,
         email: user.email,
+        manager: newUser.manager,
+        superior: newUser.superior,
+        department: newUser.department,
       };
 
       // Redirect to index.ejs upon successful login
@@ -112,7 +115,7 @@ app.get("/signout", (req, res) => {
 
 // Route to handle user registration
 app.post("/register", async (req, res) => {
-  const { name, email, password } = req.body;
+  const { name, email, password, manager, superior, department } = req.body;
 
   try {
     // Hash the password
@@ -120,8 +123,8 @@ app.post("/register", async (req, res) => {
 
     // Insert the new user into the database with hashed password
     const newUserQuery = await db.query(
-      "INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING *",
-      [name, email, hashedPassword]
+      "INSERT INTO users (name, email, password, manager, superior, department) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *",
+      [name, email, hashedPassword, manager, superior, department]
     );
 
     const newUser = newUserQuery.rows[0];
@@ -131,9 +134,12 @@ app.post("/register", async (req, res) => {
       id: newUser.id,
       name: newUser.name,
       email: newUser.email,
+      manager: newUser.manager,
+      superior: newUser.superior,
+      department: newUser.department,
     };
 
-    res.redirect("/");
+    res.redirect("/index");
   } catch (error) {
     console.error("Error registering user:", error);
     res.status(500).send("An error occurred while registering user");
