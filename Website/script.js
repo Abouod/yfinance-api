@@ -42,7 +42,8 @@ app.use(
 
 // Route to serve the login.ejs file
 app.get("/", (req, res) => {
-  res.render("login.ejs");
+  // Pass an empty string as the error message initially
+  res.render("login.ejs", { errorMessage: "" });
 });
 
 // Middleware function to check if user is authenticated
@@ -69,7 +70,10 @@ app.post("/signin", async (req, res) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    return res.status(400).send("Email and password are required");
+    // Pass the error message to the template
+    return res.render("login.ejs", {
+      errorMessage: "Email and password are required",
+    });
   }
 
   try {
@@ -78,7 +82,10 @@ app.post("/signin", async (req, res) => {
     ]);
 
     if (userQuery.rows.length === 0) {
-      return res.status(401).send("Invalid email or password");
+      // Pass the error message to the template
+      return res.render("login.ejs", {
+        errorMessage: "Invalid email or password",
+      });
     }
 
     const user = userQuery.rows[0];
@@ -91,19 +98,23 @@ app.post("/signin", async (req, res) => {
         id: user.id,
         name: user.name,
         email: user.email,
-        manager: newUser.manager,
-        superior: newUser.superior,
-        department: newUser.department,
+        manager: user.manager,
+        superior: user.superior,
+        department: user.department,
       };
 
       // Redirect to index.ejs upon successful login
       res.redirect("/index");
     } else {
-      res.status(401).send("Incorrect password");
+      // Pass the error message to the template
+      res.render("login.ejs", { errorMessage: "Incorrect password" });
     }
   } catch (error) {
     console.error("Error signing in:", error);
-    res.status(500).send("An error occurred while signing in");
+    // Pass the error message to the template
+    res.render("login.ejs", {
+      errorMessage: "An error occurred while signing in",
+    });
   }
 });
 

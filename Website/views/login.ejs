@@ -38,7 +38,10 @@
                 <h1>Sign In</h1>
                 <input type="email" placeholder="Email" name="email">
                 <input type="password" placeholder="Password" name="password">
-                <span id="passwordError" style="color: red; display: none;">Incorrect Password</span>
+                <!-- Display error message -->
+                <span style="color: red;">
+                    <%= errorMessage %>
+                </span>
                 <!-- <a href="#">Forget Your Password?</a> -->
                 <button type="submit">Sign In</button>
             </form>
@@ -90,32 +93,6 @@
 
         loginBtn.addEventListener('click', () => {
             container.classList.remove("active");
-        });
-        document.getElementById('signInForm').addEventListener('submit', async function (event) {
-            event.preventDefault(); // Prevent form from submitting the traditional way
-
-            const email = this.email.value;
-            const password = this.password.value;
-
-            try {
-                const response = await fetch('/signin', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ email, password })
-                });
-
-                if (response.status === 401) {
-                    document.getElementById('passwordError').style.display = 'block';
-                } else if (response.ok) {
-                    window.location.href = '/index';
-                } else {
-                    throw new Error('Failed to login');
-                }
-            } catch (error) {
-                console.error('Error:', error);
-            }
         });
     </script>
 </body>
