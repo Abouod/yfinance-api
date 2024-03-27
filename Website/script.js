@@ -7,6 +7,7 @@ import bcrypt from "bcrypt"; // Import bcrypt for password hashing
 const app = express();
 const port = 3000;
 const saltRounds = 10; //10: is the cost factor or the number of rounds of hashing to apply to the password.
+//The greater the number the harder it is to decrypt the hash.
 
 const db = new pg.Client({
   user: "postgres",
@@ -28,7 +29,7 @@ app.use(
     resave: false,
     saveUninitialized: true,
     cookie: {
-      maxAge: 1000 * 60 * 60 * 24,
+      maxAge: 1000 * 60 * 60 * 24, //Cookie to maintain session activity
     },
   })
 );
@@ -45,7 +46,9 @@ function requireLogin(req, res, next) {
 // Route to serve the login.ejs file
 app.get("/", (req, res) => {
   // Pass an empty string as the error message initially
-  res.render("login.ejs", { errorMessage: "" });
+  res.render("login.ejs", {
+    errorMessage: "",
+  });
 });
 
 // Update the route for index.ejs to use the requireLogin middleware
@@ -69,6 +72,17 @@ app.post("/register", async (req, res) => {
   const { name, email, password, manager, superior, department } = req.body;
 
   try {
+    const userQuery = await db.query("SELECT * FROM users WHERE email = $1", [
+      email,
+    ]);
+
+    if (userQuery.rows.length > 0) {
+      // Pass the error message to the template
+      return res.render("login.ejs", {
+        errorMessage: "User Already Exists",
+      });
+    }
+
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -90,7 +104,7 @@ app.post("/register", async (req, res) => {
       department: newUser.department,
     };
 
-    res.redirect("/index");
+    //res.redirect("/index");
   } catch (error) {
     console.error("Error registering user:", error);
     res.status(500).send("An error occurred while registering user");

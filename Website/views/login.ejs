@@ -30,6 +30,10 @@
                     <option value="Logistic">Logistic</option>
                     <option value="Purchase">Purchase</option>
                 </select>
+                <!-- Display error message -->
+                <span style="color: red;">
+                    <%= errorMessage %>
+                </span>
                 <button type="submit">Sign Up</button>
             </form>
         </div>
@@ -93,6 +97,19 @@
 
         loginBtn.addEventListener('click', () => {
             container.classList.remove("active");
+        });
+
+        //Autoclick the sign in button upon registering
+        const signUpForm = document.querySelector('.sign-up form');
+        signUpForm.addEventListener('submit', function (event) {
+            // Prevent the default form submission behavior
+            event.preventDefault();
+
+            // Submit the form
+            this.submit();
+
+            // Trigger click event on the login button immediately
+            loginBtn.click();
         });
     </script>
 </body>
