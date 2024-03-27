@@ -53,7 +53,8 @@ app.get("/", (req, res) => {
 
 // Update the route for index.ejs to use the requireSignin middleware
 app.get("/index", requireSignin, (req, res) => {
-  res.render("index.ejs");
+  const userDepartment = req.session.user.department; //Getting user department from the session
+  res.render("index.ejs", { userDepartment });
 });
 
 app.get("/profile", requireSignin, (req, res) => {
