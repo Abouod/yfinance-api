@@ -25,7 +25,7 @@ app.use(express.static("public"));
 // Configure express-session middleware
 app.use(
   session({
-    secret: "RPATOPSECRETKEY", // Set a secret key for session encryption
+    secret: "RPATOPSECRETENCRYPTIONKEY", // Set a secret key for session encryption
     resave: false,
     saveUninitialized: true,
     cookie: {
@@ -73,6 +73,18 @@ app.post("/register", async (req, res) => {
   const { name, email, password, manager, superior, department } = req.body;
 
   try {
+    // Extract domain from email
+    const domain = email.split("@")[1];
+
+    // Check if domain is allowed
+    const allowedDomain = "sophicautomation.com"; // Change this to your allowed domain
+    if (domain !== allowedDomain) {
+      // Domain not allowed, reject registration
+      return res.render("signin.ejs", {
+        errorMessage: "Registration with this email domain is not allowed",
+      });
+    }
+
     const userQuery = await db.query("SELECT * FROM users WHERE email = $1", [
       email,
     ]);
