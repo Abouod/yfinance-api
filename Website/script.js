@@ -35,7 +35,7 @@ app.use(
 );
 
 // Middleware function to check if user is authenticated
-function requireLogin(req, res, next) {
+function requireSignin(req, res, next) {
   if (!req.session.user) {
     res.redirect("/");
   } else {
@@ -43,20 +43,20 @@ function requireLogin(req, res, next) {
   }
 }
 
-// Route to serve the login.ejs file
+// Route to serve the signin.ejs file
 app.get("/", (req, res) => {
   // Pass an empty string as the error message initially
-  res.render("login.ejs", {
+  res.render("signin.ejs", {
     errorMessage: "",
   });
 });
 
-// Update the route for index.ejs to use the requireLogin middleware
-app.get("/index", requireLogin, (req, res) => {
+// Update the route for index.ejs to use the requireSignin middleware
+app.get("/index", requireSignin, (req, res) => {
   res.render("index.ejs");
 });
 
-app.get("/profile", requireLogin, (req, res) => {
+app.get("/profile", requireSignin, (req, res) => {
   const user = req.session.user;
   res.render("profile.ejs", { user }); // Pass user data to the profile page
 });
@@ -78,7 +78,7 @@ app.post("/register", async (req, res) => {
 
     if (userQuery.rows.length > 0) {
       // Pass the error message to the template
-      return res.render("login.ejs", {
+      return res.render("signin.ejs", {
         errorMessage: "User Already Exists",
       });
     }
@@ -117,7 +117,7 @@ app.post("/signin", async (req, res) => {
 
   if (!email || !password) {
     // Pass the error message to the template
-    return res.render("login.ejs", {
+    return res.render("signin.ejs", {
       errorMessage: "Email and password are required",
     });
   }
@@ -129,7 +129,7 @@ app.post("/signin", async (req, res) => {
 
     if (userQuery.rows.length === 0) {
       // Pass the error message to the template
-      return res.render("login.ejs", {
+      return res.render("signin.ejs", {
         errorMessage: "Invalid email or password",
       });
     }
@@ -149,16 +149,16 @@ app.post("/signin", async (req, res) => {
         department: user.department,
       };
 
-      // Redirect to index.ejs upon successful login
+      // Redirect to index.ejs upon successful signin
       res.redirect("/index");
     } else {
       // Pass the error message to the template
-      res.render("login.ejs", { errorMessage: "Incorrect password" });
+      res.render("signin.ejs", { errorMessage: "Incorrect password" });
     }
   } catch (error) {
     console.error("Error signing in:", error);
     // Pass the error message to the template
-    res.render("login.ejs", {
+    res.render("signin.ejs", {
       errorMessage: "An error occurred while signing in",
     });
   }
