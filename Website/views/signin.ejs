@@ -19,8 +19,8 @@
                 <input class="signup" type="text" placeholder="Name" name="name" required>
                 <input class="signup" type="email" placeholder="Email" name="email" required>
                 <input class="signup" type="password" placeholder="Password" name="password" required>
-                <input class="signup" type="manager" placeholder="Manager" name="manager" required>
-                <input class="signup" type="superior" placeholder="Superior" name="superior" required>
+                <input class="signup" type="text" placeholder="Manager" name="manager" required>
+                <input class="signup" type="text" placeholder="Superior" name="superior" required>
                 <select class="signup" id="department" class="form-select" aria-label="Default select example"
                     name="department" required>
                     <option value="" disabled selected hidden>Select Department</option>
@@ -40,13 +40,13 @@
         <div class="form-container sign-in">
             <form id="signInForm" action="/signin" method="POST">
                 <h1>Sign In</h1>
-                <input type="email" placeholder="Email" name="email">
-                <input type="password" placeholder="Password" name="password">
+                <input type="email" placeholder="Email" name="email" required>
+                <input type="password" placeholder="Password" name="password" required>
                 <!-- Display error message -->
                 <span style="color: red;">
                     <%= errorMessage %>
                 </span>
-                <!-- <a href="#">Forget Your Password?</a> -->
+                <a href="#">Forget Your Password?</a>
                 <button type="submit">Sign In</button>
             </form>
         </div>
@@ -97,13 +97,6 @@
 
         signinBtn.addEventListener('click', () => {
             container.classList.remove("active");
-        });
-
-        //Autoclick the sign in button upon registering
-        const signUpForm = document.querySelector('.sign-up form');
-        signUpForm.addEventListener('submit', function (event) {
-            // Trigger click event on the signin button immediately
-            signinBtn.click();
         });
     </script>
 </body>
