@@ -18,7 +18,6 @@ body {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  overflow: hidden;
 }
 
 /* Custom Navbar Styles */
@@ -81,47 +80,164 @@ body {
   color: initial;
 }
 
-.card {
+.container {
+  margin-top: 100px !important;
+  min-width: 700px; /* Adjust the width as needed (e.g., 700px, 800px) */
+  max-width: fit-content;
+  margin: 0 auto; /* Center the container horizontally */
+}
+
+.form-control:focus {
+  box-shadow: none;
+  border-color: var(--third-color);
+}
+
+.profile-button {
+  background: var(--fourth-color);
+  box-shadow: none;
   border: none;
-  margin-top: 90px;
-  position: relative;
-  overflow: hidden;
+}
+
+.profile-button:hover {
+  background: var(--fourth-color);
+}
+
+.profile-button:focus {
+  background: var(--fourth-color);
+  box-shadow: none;
+}
+
+.profile-button:active {
+  background: var(--fourth-color);
+  box-shadow: none;
+}
+
+.back:hover {
+  color: #682773;
+  cursor: pointer;
+}
+
+.labels {
+  font-size: 11px;
+}
+
+.add-experience:hover {
+  background: #ba68c8;
+  color: #fff;
+  cursor: pointer;
+  border: solid 1px #ba68c8;
+}
+
+/* Pop up Change Password Form */
+/* .btn-open-popup {
+  padding: 12px 24px;
+  font-size: 18px;
+  background-color: green;
+  color: #fff;
+  border: none;
   border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
-.card:before {
-  content: "";
-  position: absolute;
-  left: 0;
+.btn-open-popup:hover {
+  background-color: #4caf50;
+} */
+
+.overlay-container {
+  display: none;
+  position: fixed;
   top: 0;
-  width: 4px;
-  height: 100%;
-  background-color: var(--third-color);
-  transform: scaleY(1);
-  transition: all 0.5s;
-  transform-origin: bottom;
-}
-
-.card:after {
-  content: "";
-  position: absolute;
   left: 0;
-  top: 0;
-  width: 4px;
+  width: 100%;
   height: 100%;
-  background-color: #0051b3;
-  transform: scaleY(0);
-  transition: all 0.5s;
-  transform-origin: bottom;
+  background: rgba(0, 0, 0, 0.6);
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
-.card:hover::after {
-  transform: scaleY(1);
+.popup-box {
+  background: #fff;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+  width: 320px;
+  text-align: center;
+  opacity: 0;
+  transform: scale(0.8);
+  animation: fadeInUp 0.5s ease-out forwards;
 }
 
-.details {
-  display: block;
-  margin-bottom: 50px;
+.form-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-label {
+  margin-bottom: 10px;
+  font-size: 16px;
+  color: #444;
+  text-align: left;
+}
+
+.form-input {
+  padding: 10px;
+  margin-bottom: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 16px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+input[readonly] {
+  cursor: not-allowed; /* Change cursor style to indicate non-editable */
+}
+
+.btn-submit,
+.btn-close-popup {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.btn-submit {
+  background-color: green;
+  color: #fff;
+}
+
+.btn-close-popup {
+  margin-top: 12px;
+  background-color: #e74c3c;
+  color: #fff;
+}
+
+.btn-submit:hover,
+.btn-close-popup:hover {
+  background-color: #4caf50;
+}
+
+/* Keyframes for fadeInUp animation */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Animation for popup */
+.overlay-container.show {
+  display: flex;
+  opacity: 1;
 }
 
 /* Footer */

@@ -36,33 +36,88 @@
         </div>
     </nav>
 
-    <!-- <div class="container mt-5">
-        <div class="row d-flex justify-content-center">
-            <div class="col-md-5">
-                <div class="card p-4 shadow">
-                    <div class="text-center mt-3">
-                        <h5 class="details">Name: <%= user.name %>
-                        </h5>
-                        <h5 class="details">Department: <%= user.department %>
-                        </h5>
-                        <h5 class="details">Manager: <%= user.manager %>
-                        </h5>
-                        <h5 class="details">Superior: <%= user.superior %>
-                        </h5>
-                        <h5 class="details">Phone Number: <%= user.superior %>
-                        </h5>
-                        <h5 class="details">Job Title: <%= user.superior %>
-                        </h5>
-                        <h5 class="details">Division: <%= user.superior %>
-                        </h5>
-                        <div class="buttons">
-                            <button class="btn btn-success px-4">Change Password</button>
+    <div class="container shadow rounded bg-white mt-5 mb-5">
+        <div class="row">
+            <div class="p-4 py-5">
+                <!-- Adding 3 units padding to all sides and 5 units padding to the top and bottom -->
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="text-right">Profile Settings</h4>
+                </div>
+                <div class="row mt-2"> <!-- Margin top 2 -->
+                    <div class="col-md-6">
+                        <label class="labels">Name</label>
+                        <input type="text" class="form-control" placeholder="" value="<%= user.name %>" readonly>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="labels">Department</label>
+                        <input type="text" class="form-control" placeholder="surname" value="<%= user.department %>"
+                            readonly>
+                    </div>
+                </div>
+                <div class="row mt-3"> <!-- Margin bottom 3 -->
+                    <div class="col-md-6">
+                        <label class="labels">Superior</label>
+                        <input type="text" class="form-control" placeholder="" value="<%= user.superior %>" readonly>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="labels">Manager</label>
+                        <input type="text" class="form-control" placeholder="enter address line 1"
+                            value="<%= user.manager %>" readonly>
+                    </div>
+                    <!-- Add more pairs of columns as needed -->
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        <label class="labels">Phone Number</label>
+                        <input type="text" class="form-control" placeholder="Enter your number" value="">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="labels">Job Title</label>
+                        <input type="text" class="form-control" placeholder="Enter Job Title" value="">
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-12">
+                        <label class="labels">Division</label>
+                        <input type="text" class="form-control" placeholder="Enter your division" value="">
+                    </div>
+                </div>
+                <div class="mt-5 text-center">
+                    <button class="btn btn-primary profile-button" type="button">Save Profile</button>
+                    <button class="btn-primary" onclick="togglePopup()">
+                        Change Password
+                    </button>
+
+                    <div id="popupOverlay" class="overlay-container">
+                        <!--Targeted element by js to display the pop up-->
+                        <div class="popup-box">
+                            <h4>Change Your Password</h4>
+                            <form class="form-container">
+                                <label class="form-label" for="name">
+                                    Password:
+                                </label>
+                                <input class="form-input" type="text" placeholder="Enter Your Username" id="name"
+                                    name="name" required>
+
+                                <label class="form-label" for="email">Email:</label>
+                                <input class="form-input" type="email" placeholder="Enter Your Email" id="email"
+                                    name="email" required>
+
+                                <button class="btn-submit" type="submit">
+                                    Submit
+                                </button>
+                            </form>
+
+                            <button class="btn-close-popup" onclick="togglePopup()">
+                                Close
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div> -->
+    </div>
+
 
     <footer class="footer">
         <div id="footer">
@@ -79,6 +134,12 @@
         </div>
     </footer>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function togglePopup() {
+            const overlay = document.getElementById('popupOverlay');
+            overlay.classList.toggle('show');
+        } 
+    </script>
 </body>
 
 </html>
