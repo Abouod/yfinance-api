@@ -129,20 +129,6 @@ body {
 }
 
 /* Pop up Change Password Form */
-/* .btn-open-popup {
-  padding: 12px 24px;
-  font-size: 18px;
-  background-color: green;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.btn-open-popup:hover {
-  background-color: #4caf50;
-} */
 
 .overlay-container {
   display: none;
@@ -163,7 +149,7 @@ body {
   padding: 24px;
   border-radius: 12px;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
-  width: 320px;
+  width: 30%;
   text-align: center;
   opacity: 0;
   transform: scale(0.8);
@@ -196,31 +182,6 @@ input[readonly] {
   cursor: not-allowed; /* Change cursor style to indicate non-editable */
 }
 
-.btn-submit,
-.btn-close-popup {
-  padding: 12px 24px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-.btn-submit {
-  background-color: green;
-  color: #fff;
-}
-
-.btn-close-popup {
-  margin-top: 12px;
-  background-color: #e74c3c;
-  color: #fff;
-}
-
-.btn-submit:hover,
-.btn-close-popup:hover {
-  background-color: #4caf50;
-}
-
 /* Keyframes for fadeInUp animation */
 @keyframes fadeInUp {
   from {
@@ -238,6 +199,12 @@ input[readonly] {
 .overlay-container.show {
   display: flex;
   opacity: 1;
+}
+
+.pass-btn {
+  /* Add any custom styling for the button here */
+  width: 200px; /* Adjust the width as needed */
+  margin: 0 auto; /* Center the button horizontally */
 }
 
 /* Footer */

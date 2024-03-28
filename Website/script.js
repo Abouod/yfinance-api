@@ -65,9 +65,10 @@ app.get("/index", requireSignin, (req, res) => {
   res.render("index.ejs", { userDepartment });
 });
 
+// Route to serve the profile page
 app.get("/profile", requireSignin, (req, res) => {
   const user = req.session.user;
-  res.render("profile.ejs", { user }); // Pass user data to the profile page
+  res.render("profile.ejs", { user, errorMessage: "" }); // Pass user data and an empty errorMessage
 });
 
 // Route to handle user logout
@@ -181,6 +182,54 @@ app.post("/signin", async (req, res) => {
     // Pass the error message to the template
     res.render("signin.ejs", {
       errorMessage: "An error occurred while signing in",
+    });
+  }
+});
+
+// Route to handle password update
+app.post("/update-password", requireSignin, async (req, res) => {
+  const userId = req.session.user.id;
+  const { currentPassword, newPassword, confirmNewPassword } = req.body;
+
+  try {
+    const userQuery = await db.query("SELECT * FROM users WHERE id = $1", [
+      userId,
+    ]);
+
+    if (userQuery.rows.length === 0) {
+      return res.status(404).send("User not found");
+    }
+
+    const user = userQuery.rows[0];
+    const passwordMatch = await bcrypt.compare(currentPassword, user.password);
+
+    if (!passwordMatch) {
+      return res.status(400).render("profile.ejs", {
+        user: req.session.user,
+        errorMessage: "Current password is incorrect",
+      });
+    }
+
+    if (newPassword !== confirmNewPassword) {
+      return res.status(400).render("profile.ejs", {
+        user: req.session.user,
+        errorMessage: "Passwords do not match",
+      });
+    }
+
+    const hashedNewPassword = await bcrypt.hash(newPassword, saltRounds);
+
+    await db.query("UPDATE users SET password = $1 WHERE id = $2", [
+      hashedNewPassword,
+      userId,
+    ]);
+
+    res.redirect("/profile"); // Redirect to profile page after password update
+  } catch (error) {
+    console.error("Error updating password:", error);
+    res.status(500).render("profile.ejs", {
+      user: req.session.user,
+      errorMessage: "An error occurred while updating password",
     });
   }
 });
