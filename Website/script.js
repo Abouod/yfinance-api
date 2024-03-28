@@ -51,6 +51,14 @@ app.get("/", (req, res) => {
   });
 });
 
+// Route to serve the signin.ejs file
+app.get("/signup", (req, res) => {
+  // Pass an empty string as the error message initially
+  res.render("signup.ejs", {
+    errorMessage: "",
+  });
+});
+
 // Update the route for index.ejs to use the requireSignin middleware
 app.get("/index", requireSignin, (req, res) => {
   const userDepartment = req.session.user.department; //Getting user department from the session
@@ -80,7 +88,7 @@ app.post("/register", async (req, res) => {
     const allowedDomain = "sophicautomation.com"; // Change this to your allowed domain
     if (domain !== allowedDomain) {
       // Domain not allowed, reject registration
-      return res.render("signin.ejs", {
+      return res.render("signup.ejs", {
         errorMessage: "Registration with this email domain is not allowed",
       });
     }
@@ -91,7 +99,7 @@ app.post("/register", async (req, res) => {
 
     if (userQuery.rows.length > 0) {
       // Pass the error message to the template
-      return res.render("signin.ejs", {
+      return res.render("signup.ejs", {
         errorMessage: "User Already Exists",
       });
     }
@@ -117,7 +125,7 @@ app.post("/register", async (req, res) => {
       department: newUser.department,
     };
 
-    //res.redirect("/index");
+    res.redirect("/index");
   } catch (error) {
     console.error("Error registering user:", error);
     res.status(500).send("An error occurred while registering user");
