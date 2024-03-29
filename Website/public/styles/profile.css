@@ -128,6 +128,7 @@ body {
 }
 
 /* Pop up Change Password Form */
+/* ! Deleted using bootstrap instead */
 
 .overlay-container {
   display: none;
@@ -192,12 +193,6 @@ input[readonly] {
     opacity: 1;
     transform: translateY(0);
   }
-}
-
-/* Animation for popup */
-.overlay-container.show {
-  display: flex;
-  opacity: 1;
 }
 
 .pass-btn {
