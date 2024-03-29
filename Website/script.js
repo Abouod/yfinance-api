@@ -68,7 +68,7 @@ app.get("/index", requireSignin, (req, res) => {
 // Route to serve the profile page
 app.get("/profile", requireSignin, (req, res) => {
   const user = req.session.user;
-  res.render("profile.ejs", { user, errorMessage: "" }); // Pass user data and an empty errorMessage
+  res.render("profile.ejs", { user, errorMessage: "", successMessage: "" });
 });
 
 // Route to handle user logout
@@ -224,7 +224,12 @@ app.post("/update-password", requireSignin, async (req, res) => {
       userId,
     ]);
 
-    res.redirect("/profile"); // Redirect to profile page after password update
+    // Pass success message when redirecting to profile page
+    res.render("profile.ejs", {
+      user: req.session.user,
+      successMessage: "Password updated successfully!",
+      errorMessage: "", // Ensure to provide errorMessage variable
+    });
   } catch (error) {
     console.error("Error updating password:", error);
     res.status(500).render("profile.ejs", {

@@ -81,10 +81,9 @@ body {
 }
 
 .container {
-  margin-top: 100px !important;
   min-width: 700px; /* Adjust the width as needed (e.g., 700px, 800px) */
   max-width: fit-content;
-  margin: 0 auto; /* Center the container horizontally */
+  margin: 100px auto !important; /* Center the container horizontally */
 }
 
 .form-control:focus {

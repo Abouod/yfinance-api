@@ -83,50 +83,53 @@
                     </div>
                 </div>
                 <div class="mt-5 text-center">
-                    <button class="btn btn-primary profile-button" type="button">Save Profile</button>
-                    <button class="btn btn-outline-success" onclick="togglePopup()">
-                        Change Password
-                    </button>
-
-                    <div id="popupOverlay" class="overlay-container">
-                        <!--Targeted element by js to display the pop up-->
-                        <div class="popup-box">
-                            <h4>Change Your Password</h4>
-                            <form class="form-container" action="update-password" method="POST">
-                                <label class="form-label" for="currentPassword">
-                                    Current Password:
-                                </label>
-                                <input class="form-input" type="password" placeholder="" id="currentPassword"
-                                    name="currentPassword" required>
-                                <label class="form-label" for="newPassword">New Password</label>
-                                <input class="form-input" type="password" placeholder="" id="newPassword"
-                                    name="newPassword" required>
-
-                                <label class="form-label" for="confirmNewPassword">Confirm New Password</label>
-                                <input class="form-input" type="password" placeholder="" id="confirmNewPassword"
-                                    name="confirmNewPassword" required>
-
-                                <% if(errorMessage) { %>
-                                    <div class="alert alert-danger" role="alert">
-                                        <%= errorMessage %>
-                                    </div>
-                                    <% } %>
-
-                                        <button class="btn btn-primary pass-btn" type="submit">
-                                            Update Password
-                                        </button>
-                            </form>
-                            <button class="btn btn-danger mt-2" onclick="togglePopup()">
-                                Close
-                            </button>
+                    <% if(errorMessage) { %>
+                        <div class="alert alert-danger alert-sm" role="alert">
+                            <%= errorMessage %>
                         </div>
-                    </div>
+                        <% } else if (successMessage) { %>
+                            <div class="alert alert-success alert-sm" role="alert">
+                                <%= successMessage %>
+                            </div>
+                            <% } %>
+                                <button class="btn btn-primary profile-button" type="button">Save Profile</button>
+                                <button class="btn btn-outline-success" onclick="togglePopup()">
+                                    Change Password
+                                </button>
+
+                                <div id="popupOverlay" class="overlay-container">
+                                    <!--Targeted element by js to display the pop up-->
+                                    <div class="popup-box">
+                                        <h4>Change Your Password</h4>
+                                        <form class="form-container" action="update-password" method="POST">
+                                            <label class="form-label" for="currentPassword">
+                                                Current Password:
+                                            </label>
+                                            <input class="form-input" type="password" placeholder=""
+                                                id="currentPassword" name="currentPassword" required>
+                                            <label class="form-label" for="newPassword">New Password</label>
+                                            <input class="form-input" type="password" placeholder="" id="newPassword"
+                                                name="newPassword" required>
+
+                                            <label class="form-label" for="confirmNewPassword">Confirm New
+                                                Password</label>
+                                            <input class="form-input" type="password" placeholder=""
+                                                id="confirmNewPassword" name="confirmNewPassword" required>
+
+                                            <button id="changePasswordButton" class="btn btn-primary pass-btn"
+                                                type="submit">
+                                                Update Password
+                                            </button>
+                                        </form>
+                                        <button class="btn btn-danger mt-2" onclick="togglePopup()">
+                                            Close
+                                        </button>
+                                    </div>
+                                </div>
                 </div>
             </div>
         </div>
     </div>
-
-
     <footer class="footer">
         <div id="footer">
             <div id="left-column">
@@ -146,7 +149,7 @@
         function togglePopup() {
             const overlay = document.getElementById('popupOverlay');
             overlay.classList.toggle('show');
-        } 
+        }
     </script>
 </body>
 
