@@ -3,18 +3,20 @@ import bodyParser from "body-parser";
 import pg from "pg";
 import session from "express-session"; // Import express-session
 import bcrypt from "bcrypt"; // Import bcrypt for password hashing
+import env from "dotenv";
 
 const app = express();
 const port = 3000;
 const saltRounds = 10; //10: is the cost factor or the number of rounds of hashing to apply to the password.
 //The greater the number the harder it is to decrypt the hash.
+env.config();
 
 const db = new pg.Client({
-  user: "postgres",
-  host: "localhost",
-  database: "rpa",
-  password: "200200",
-  port: 5432,
+  user: process.env.PG_USER,
+  host: process.env.PG_HOST,
+  database: process.env.PG_DB,
+  password: process.env.PG_PASSWORD,
+  port: process.env.PG_PORT,
 });
 db.connect();
 
@@ -25,7 +27,7 @@ app.use(express.static("public"));
 // Configure express-session middleware
 app.use(
   session({
-    secret: "RPATOPSECRETENCRYPTIONKEY", // Set a secret key for session encryption
+    secret: process.env.SESSION_SECRET, // Set a secret key for session encryption
     resave: false,
     saveUninitialized: true,
     cookie: {
