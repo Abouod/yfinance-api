@@ -94,39 +94,57 @@
                                     aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="d-flex flex-column">
-                                            <div class="d-flex align-items-center">
-                                                <label for="currentPassword" class="form-label">Current
-                                                    Password:</label>
-                                                <span class="toggle-password" onclick="togglePasswordVisibility(this)">
-                                                    <i class="fas fa-eye-slash"></i>
-                                                </span>
+                                <form id="changePasswordForm" action="/update-password" method="post">
+                                    <div class="row">
+                                        <div class="col-md-12 mb-3">
+                                            <div class="d-flex flex-column">
+                                                <div class="d-flex align-items-center">
+                                                    <label for="currentPassword" class="form-label">Current
+                                                        Password:</label>
+                                                    <span class="toggle-password"
+                                                        onclick="togglePasswordVisibility(this)">
+                                                        <i class="fas fa-eye-slash"></i>
+                                                    </span>
+                                                </div>
+                                                <input type="password" class="form-control" id="currentPassword"
+                                                    name="currentPassword" required>
                                             </div>
-                                            <input type="password" class="form-control" id="currentPassword"
-                                                name="currentPassword" required>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="d-flex flex-column">
+                                                <div class="d-flex align-items-center">
+                                                    <label for="newPassword" class="form-label">New Password:</label>
+                                                    <span class="toggle-password"
+                                                        onclick="togglePasswordVisibility(this)">
+                                                        <i class="fas fa-eye-slash"></i>
+                                                    </span>
+                                                </div>
+                                                <input type="password" class="form-control" id="newPassword"
+                                                    name="newPassword" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="d-flex flex-column">
+                                                <div class="d-flex align-items-center">
+                                                    <label for="confirmNewPassword" class="form-label">Confirm
+                                                        Password:</label>
+                                                    <span class="toggle-password"
+                                                        onclick="togglePasswordVisibility(this)">
+                                                        <i class="fas fa-eye-slash"></i>
+                                                    </span>
+                                                </div>
+                                                <input type="password" class="form-control" id="confirmNewPassword"
+                                                    name="confirmNewPassword" required>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="col-md-6">
-                                        <div class="d-flex flex-column">
-                                            <div class="d-flex align-items-center">
-                                                <label for="newPassword" class="form-label">New Password:</label>
-                                                <span class="toggle-password" onclick="togglePasswordVisibility(this)">
-                                                    <i class="fas fa-eye-slash"></i>
-                                                </span>
-                                            </div>
-                                            <input type="password" class="form-control" id="newPassword"
-                                                name="newPassword" required>
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- Add more rows and columns as needed -->
+                                    <!-- Add more rows and columns as needed -->
                             </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                <button type="button" class="btn btn-primary">Understood</button>
+                            <div class="modal-footer justify-content-start">
+                                <!-- <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button> -->
+                                <button type="submit" class="btn btn-success">Update Password</button>
                             </div>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -142,7 +160,7 @@
                             <% } %>
                                 <button class="btn btn-primary profile-button" type="button">Save Profile</button>
                                 <!-- Button trigger modal -->
-                                <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                <button type="button" class="btn btn-outline-success" data-bs-toggle="modal"
                                     data-bs-target="#staticBackdrop">
                                     Change Password
                                 </button>

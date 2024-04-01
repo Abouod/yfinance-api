@@ -39,6 +39,11 @@ body {
   background-color: var(--fourth-color);
 }
 
+.toggle-password {
+  margin-top: -5px;
+  margin-left: 5px;
+}
+
 .navbar-container {
   width: 90%;
   margin: 10px auto;
