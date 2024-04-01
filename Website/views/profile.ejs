@@ -36,52 +36,82 @@
         </div>
     </nav>
 
-    <div class="container shadow rounded bg-white mt-5 mb-5">
+    <div class="container shadow rounded bg-white">
         <div class="row">
             <div class="p-4 py-5">
                 <!-- Adding 3 units padding to all sides and 5 units padding to the top and bottom -->
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h4 class="text-right">Profile Settings</h4>
-                </div>
-                <div class="row mt-2"> <!-- Margin top 2 -->
-                    <div class="col-md-6">
-                        <label class="labels">Name</label>
-                        <input type="text" class="form-control" placeholder="" value="<%= user.name %>" readonly>
+                <form action="/save-profile" method="POST">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4 class="text-right">Profile Settings</h4>
                     </div>
-                    <div class="col-md-6">
-                        <label class="labels">Department</label>
-                        <input type="text" class="form-control" placeholder="surname" value="<%= user.department %>"
-                            readonly>
+                    <div class="row mt-2"> <!-- Margin top 2 -->
+                        <div class="col-md-6">
+                            <label class="labels">Name</label>
+                            <input type="text" class="form-control" value="<%= user.name %>" readonly>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="labels">Department</label>
+                            <select aria-label="Default select example" name="department" type="text"
+                                class="form-select" placeholder="Select Department">
+                                <% if(userDetails && userDetails.department) { %>
+                                    <option value="<%= userDetails.department %>" selected>
+                                        <%= userDetails.department %>
+                                    </option>
+                                    <% } else { %>
+                                        <option value="" selected>Select Department</option>
+                                        <% } %>
+                                            <option value="Technical">Technical</option>
+                                            <option value="Human Resources">Human Resources</option>
+                                            <option value="Finance">Finance</option>
+                                            <option value="Logistic">Logistic</option>
+                                            <option value="Purchase">Purchase</option>
+                            </select>
+                        </div>
+
                     </div>
-                </div>
-                <div class="row mt-3"> <!-- Margin bottom 3 -->
-                    <div class="col-md-6">
-                        <label class="labels">Superior</label>
-                        <input type="text" class="form-control" placeholder="" value="<%= user.superior %>" readonly>
+                    <div class="row mt-3"> <!-- Margin bottom 3 -->
+                        <div class="col-md-6">
+                            <label class="labels">Superior</label>
+                            <input type="text" class="form-control" placeholder="Enter Superior" name="superior"
+                                value="<%= userDetails ? userDetails.superior : '' %>">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="labels">Manager</label>
+                            <input type="text" class="form-control" placeholder="Enter Manager" name="manager"
+                                value="<%= userDetails ? userDetails.manager : '' %>">
+                        </div>
+                        <!-- Add more pairs of columns as needed -->
                     </div>
-                    <div class="col-md-6">
-                        <label class="labels">Manager</label>
-                        <input type="text" class="form-control" placeholder="enter address line 1"
-                            value="<%= user.manager %>" readonly>
+                    <div class="row mt-3">
+                        <div class="col-md-4">
+                            <label class="labels">Phone Number</label>
+                            <input type="text" class="form-control" placeholder="Enter your number" name="phonenumber"
+                                value="<%= userDetails ? userDetails.phonenumber : '' %>">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="labels">Job Title</label>
+                            <input type="text" class="form-control" placeholder="Enter Job Title" name="jobtitle"
+                                value="<%= userDetails ? userDetails.jobtitle : '' %>">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="labels">Division</label>
+                            <input type="text" class="form-control" placeholder="Enter your division" name="division"
+                                value="<%= userDetails ? userDetails.division : '' %>">
+                        </div>
                     </div>
-                    <!-- Add more pairs of columns as needed -->
-                </div>
-                <div class="row mt-3">
-                    <div class="col-md-6">
-                        <label class="labels">Phone Number</label>
-                        <input type="text" class="form-control" placeholder="Enter your number" value="">
+                    <div class="mt-5 text-center">
+                        <% if(errorMessage) { %>
+                            <div class="alert alert-danger alert-sm" role="alert">
+                                <%= errorMessage %>
+                            </div>
+                            <% } else if (successMessage) { %>
+                                <div class="alert alert-success alert-sm" role="alert">
+                                    <%= successMessage %>
+                                </div>
+                                <% } %>
+                                    <button class="btn btn-primary profile-button" type="submit">Save Profile</button>
                     </div>
-                    <div class="col-md-6">
-                        <label class="labels">Job Title</label>
-                        <input type="text" class="form-control" placeholder="Enter Job Title" value="">
-                    </div>
-                </div>
-                <div class="row mt-3">
-                    <div class="col-md-12">
-                        <label class="labels">Division</label>
-                        <input type="text" class="form-control" placeholder="Enter your division" value="">
-                    </div>
-                </div>
+                </form>
                 <!-- Modal -->
                 <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false"
                     tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
@@ -93,8 +123,8 @@
                                 <button type="button" class="btn-close" data-bs-dismiss="modal"
                                     aria-label="Close"></button>
                             </div>
-                            <div class="modal-body">
-                                <form id="changePasswordForm" action="/update-password" method="post">
+                            <form id="changePasswordForm" action="/update-password" method="POST">
+                                <div class="modal-body">
                                     <div class="row">
                                         <div class="col-md-12 mb-3">
                                             <div class="d-flex flex-column">
@@ -113,7 +143,8 @@
                                         <div class="col-md-6">
                                             <div class="d-flex flex-column">
                                                 <div class="d-flex align-items-center">
-                                                    <label for="newPassword" class="form-label">New Password:</label>
+                                                    <label for="newPassword" class="form-label">New
+                                                        Password:</label>
                                                     <span class="toggle-password"
                                                         onclick="togglePasswordVisibility(this)">
                                                         <i class="fas fa-eye-slash"></i>
@@ -139,34 +170,25 @@
                                         </div>
                                     </div>
                                     <!-- Add more rows and columns as needed -->
-                            </div>
-                            <div class="modal-footer justify-content-start">
-                                <!-- <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button> -->
-                                <button type="submit" class="btn btn-success">Update Password</button>
-                            </div>
+                                </div>
+                                <div class="mt-5 text-center">
+                                    <div class="modal-footer justify-content-start">
+                                        <!-- <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button> -->
+                                        <button type="submit" class="btn btn-success">Update Password</button>
+                                    </div>
+                                </div>
                             </form>
                         </div>
                     </div>
                 </div>
-                <div class="mt-5 text-center">
-                    <% if(errorMessage) { %>
-                        <div class="alert alert-danger alert-sm" role="alert">
-                            <%= errorMessage %>
-                        </div>
-                        <% } else if (successMessage) { %>
-                            <div class="alert alert-success alert-sm" role="alert">
-                                <%= successMessage %>
-                            </div>
-                            <% } %>
-                                <button class="btn btn-primary profile-button" type="button">Save Profile</button>
-                                <!-- Button trigger modal -->
-                                <button type="button" class="btn btn-outline-success" data-bs-toggle="modal"
-                                    data-bs-target="#staticBackdrop">
-                                    Change Password
-                                </button>
-                </div>
+                <!-- Button trigger modal -->
+                <button type="button" class="btn btn-outline-success" data-bs-toggle="modal"
+                    data-bs-target="#staticBackdrop">
+                    Change Password
+                </button>
             </div>
         </div>
+    </div>
     </div>
     <footer class="footer">
         <div id="footer">
@@ -184,11 +206,6 @@
     </footer>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        function togglePopup() {
-            const overlay = document.getElementById('popupOverlay');
-            overlay.classList.toggle('show');
-        }
-
         function togglePasswordVisibility(icon) {
             var passwordInput = icon.parentElement.nextElementSibling; // Select the input field next to the icon
             var iconElement = icon.querySelector('i');
