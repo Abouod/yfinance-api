@@ -243,7 +243,6 @@ app.post("/signin", async (req, res) => {
     });
   }
 });
-
 // Route to handle password update
 app.post("/update-password", requireSignin, async (req, res) => {
   const userId = req.session.user.id;
@@ -265,7 +264,7 @@ app.post("/update-password", requireSignin, async (req, res) => {
       return res.status(400).render("profile.ejs", {
         user: req.session.user,
         errorMessage: "Current password is incorrect",
-        userDetails: {}, // Initialize userDetails as empty object
+        userDetails: {}, // Pass an empty object for now
       });
     }
 
@@ -273,7 +272,7 @@ app.post("/update-password", requireSignin, async (req, res) => {
       return res.status(400).render("profile.ejs", {
         user: req.session.user,
         errorMessage: "Passwords do not match",
-        userDetails: {}, // Initialize userDetails as empty object
+        userDetails: {}, // Pass an empty object for now
       });
     }
 
@@ -284,12 +283,20 @@ app.post("/update-password", requireSignin, async (req, res) => {
       userId,
     ]);
 
+    // Fetch user details again after updating the password
+    const userDetailsQuery = await db.query(
+      "SELECT * FROM details WHERE user_id = $1",
+      [userId]
+    );
+    const userDetails =
+      userDetailsQuery.rows.length > 0 ? userDetailsQuery.rows[0] : null;
+
     // Pass success message when redirecting to profile page
     res.render("profile.ejs", {
       user: req.session.user,
       successMessage: "Password updated successfully!",
       errorMessage: "", // Ensure to provide errorMessage variable
-      userDetails: {}, // Initialize userDetails as empty object
+      userDetails: userDetails, // Pass the fetched user details
     });
   } catch (error) {
     console.error("Error updating password:", error);
@@ -298,7 +305,7 @@ app.post("/update-password", requireSignin, async (req, res) => {
       user: req.session.user,
       errorMessage: "An error occurred while updating password",
       successMessage: "", // Ensure to provide successMessage variable
-      userDetails: {}, // Initialize userDetails as empty object
+      userDetails: {}, // Pass an empty object for now
     });
   }
 });

@@ -85,10 +85,11 @@ body {
   color: initial;
 }
 
+/* Container and form-control */
 .container {
-  min-width: 700px; /* Adjust the width as needed (e.g., 700px, 800px) */
+  min-width: 1000px; /* Adjust the width as needed (e.g., 700px, 800px) */
   max-width: fit-content;
-  margin: 100px auto !important; /* Center the container horizontally */
+  margin: 130px auto 80px !important; /* Center the container horizontally */
 }
 
 .form-control:focus {
@@ -116,49 +117,8 @@ body {
   box-shadow: none;
 }
 
-.back:hover {
-  color: #682773;
-  cursor: pointer;
-}
-
 .labels {
   font-size: 11px;
-}
-
-.add-experience:hover {
-  background: #ba68c8;
-  color: #fff;
-  cursor: pointer;
-  border: solid 1px #ba68c8;
-}
-
-/* Pop up Change Password Form */
-/* ! Deleted using bootstrap instead */
-
-.overlay-container {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.6);
-  justify-content: center;
-  align-items: center;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.popup-box {
-  background: #fff;
-  padding: 24px;
-  border-radius: 12px;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
-  width: 30%;
-  text-align: center;
-  opacity: 0;
-  transform: scale(0.8);
-  animation: fadeInUp 0.5s ease-out forwards;
 }
 
 .form-container {
@@ -173,31 +133,8 @@ body {
   text-align: left;
 }
 
-.form-input {
-  padding: 10px;
-  margin-bottom: 20px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  font-size: 16px;
-  width: 100%;
-  box-sizing: border-box;
-}
-
 input[readonly] {
   cursor: not-allowed; /* Change cursor style to indicate non-editable */
-}
-
-/* Keyframes for fadeInUp animation */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 
 .pass-btn {
