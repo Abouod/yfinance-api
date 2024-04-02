@@ -151,17 +151,18 @@ app.post("/register", async (req, res) => {
   const { name, email, password } = req.body;
 
   try {
-    // Extract domain from email
-    const domain = email.split("@")[1];
+    //! Allow any domain for now
+    // // Extract domain from email
+    // const domain = email.split("@")[1];
 
-    // Check if domain is allowed
-    const allowedDomain = "sophicautomation.com"; // Allowed domain
-    if (domain !== allowedDomain) {
-      // Domain not allowed, reject registration
-      return res.render("signup.ejs", {
-        errorMessage: "Registration with this email domain is not allowed",
-      });
-    }
+    // // Check if domain is allowed
+    // const allowedDomain = "sophicautomation.com"; // Allowed domain
+    // if (domain !== allowedDomain) {
+    //   // Domain not allowed, reject registration
+    //   return res.render("signup.ejs", {
+    //     errorMessage: "Registration with this email domain is not allowed",
+    //   });
+    // }
 
     const userQuery = await db.query("SELECT * FROM users WHERE email = $1", [
       email,
@@ -192,7 +193,7 @@ app.post("/register", async (req, res) => {
       email: newUser.email,
     };
 
-    res.redirect("/index");
+    res.redirect("/verify");
   } catch (error) {
     console.error("Error registering user:", error);
     res.status(500).send("An error occurred while registering user");
