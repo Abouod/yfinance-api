@@ -183,6 +183,16 @@ app.get("/save-profile", (req, res) => {
   res.redirect("/profile");
 });
 
+app.get("/verifySuccess", (req, res) => {
+  // Redirect the user to the profile page
+  res.render("verifySuccess.ejs");
+});
+
+app.get("/verifyFail", (req, res) => {
+  // Redirect the user to the profile page
+  res.render("verifyFail.ejs");
+});
+
 // Route to handle user logout
 app.get("/signout", (req, res) => {
   req.session.destroy();
@@ -236,8 +246,11 @@ app.post("/register", async (req, res) => {
     // Wait for the email to be sent before redirecting
     await transporter.sendMail(mailOptions);
 
-    // Redirect the user to the verify page
-    res.redirect(`/verify?token=${verificationToken}`);
+    // Render a success message or redirect to a success page
+    // res.send(
+    //   "Verification email sent! Please check your email to verify your account."
+    // );
+    res.redirect("/verify");
   } catch (error) {
     console.error("Error registering user:", error);
     // Log the error message and stack trace

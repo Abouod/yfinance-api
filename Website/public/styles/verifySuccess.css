@@ -1,0 +1,47 @@
+@import url("https://fonts.googleapis.com/css2?family=Helvetica+Neue&display=swap");
+
+:root {
+  --first-color: #f9f7f7;
+  --second-color: #dbe2ef;
+  --third-color: #3f72af;
+  --fourth-color: #112d4e;
+}
+
+* {
+  font-family: "Helvetica Neue", sans-serif;
+}
+
+body {
+  background-color: var(--first-color);
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Container */
+.container {
+  min-width: 500px; /* Adjust the width as needed (e.g., 700px, 800px) */
+  max-width: 50%;
+  margin: 100px auto !important; /* Center the container horizontally */
+}
+
+.logo {
+  font-size: 150px; /* Adjust the size of the envelope icon */
+}
+
+.line {
+  border-bottom: 1px solid var(--fourth-color); /* Adjust thickness and color as needed */
+  margin: 0 auto;
+  max-width: 80%;
+}
+
+.location {
+  color: rgba(128, 128, 128, 0.8);
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
