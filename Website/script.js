@@ -95,6 +95,11 @@ app.get("/index", requireSignin, async (req, res) => {
   }
 });
 
+//Route to serve email verification page
+app.get("/verify", (req, res) => {
+  res.render("verify.ejs");
+});
+
 // Route to serve the profile page
 app.get("/profile", requireSignin, async (req, res) => {
   const userId = req.session.user.id;
