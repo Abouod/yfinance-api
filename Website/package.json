@@ -5,8 +5,10 @@
     "ejs": "^3.1.9",
     "express": "^4.18.3",
     "express-session": "^1.18.0",
+    "nodemailer": "^6.9.13",
     "path": "^0.12.7",
-    "pg": "^8.11.3"
+    "pg": "^8.11.3",
+    "uuid": "^9.0.1"
   },
   "name": "rpa-website",
   "type": "module",

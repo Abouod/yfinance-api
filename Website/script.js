@@ -4,12 +4,14 @@ import pg from "pg";
 import session from "express-session"; // Import express-session
 import bcrypt from "bcrypt"; // Import bcrypt for password hashing
 import env from "dotenv";
+import { v4 as uuidv4 } from "uuid"; // Import uuid library for generating unique tokens
+import nodemailer from "nodemailer";
 
 const app = express();
 const port = 3000;
 const saltRounds = 10; //10: is the cost factor or the number of rounds of hashing to apply to the password.
 //The greater the number the harder it is to decrypt the hash.
-env.config();
+env.config(); //Load environement variables from .env file
 
 const db = new pg.Client({
   user: process.env.PG_USER,
@@ -35,6 +37,20 @@ app.use(
     },
   })
 );
+
+// Configure nodemailer transporter
+const transporter = nodemailer.createTransport({
+  host: "smtp.zoho.com", // Specify the SMTP host
+  port: 465, // Specify the SMTP port
+  secure: true, // Set to true if using SSL/TLS
+  auth: {
+    user: process.env.USER_EMAIL, // SMTP username
+    pass: process.env.USER_PASS, // SMTP password
+  },
+  // tls: {
+  //   rejectUnauthorized: false, // Accept self-signed certificates
+  // },
+});
 
 // Middleware function to check if user is authenticated
 function requireSignin(req, res, next) {
@@ -95,9 +111,36 @@ app.get("/index", requireSignin, async (req, res) => {
   }
 });
 
-//Route to serve email verification page
-app.get("/verify", (req, res) => {
-  res.render("verify.ejs");
+// Route to handle verification links
+app.get("/verify", async (req, res) => {
+  try {
+    // Extract the verification token from the request query parameters
+    const { token } = req.query;
+
+    // Retrieve user information based on the verification token
+    const userQuery = await db.query(
+      "SELECT * FROM users WHERE verification_token = $1",
+      [token]
+    );
+
+    // Check if a user with the provided verification token exists
+    if (userQuery.rows.length === 0) {
+      // No user found with the provided token
+      return res.status(404).send("Invalid verification token");
+    }
+
+    // Update the user's record in the database to mark their email address as verified
+    await db.query(
+      "UPDATE users SET email_verified = TRUE WHERE verification_token = $1",
+      [token]
+    );
+
+    // Render a success message or redirect to a success page
+    res.send("Email verified successfully!");
+  } catch (error) {
+    console.error("Error verifying email:", error);
+    res.status(500).send("An error occurred while verifying email");
+  }
 });
 
 // Route to serve the profile page
@@ -146,23 +189,12 @@ app.get("/signout", (req, res) => {
   res.redirect("/");
 });
 
-// Route to handle user registration
 app.post("/register", async (req, res) => {
   const { name, email, password } = req.body;
 
   try {
-    //! Allow any domain for now
-    // // Extract domain from email
-    // const domain = email.split("@")[1];
-
-    // // Check if domain is allowed
-    // const allowedDomain = "sophicautomation.com"; // Allowed domain
-    // if (domain !== allowedDomain) {
-    //   // Domain not allowed, reject registration
-    //   return res.render("signup.ejs", {
-    //     errorMessage: "Registration with this email domain is not allowed",
-    //   });
-    // }
+    // Generate a unique verification token
+    const verificationToken = uuidv4();
 
     const userQuery = await db.query("SELECT * FROM users WHERE email = $1", [
       email,
@@ -176,12 +208,12 @@ app.post("/register", async (req, res) => {
     }
 
     // Hash the password
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
 
     // Insert the new user into the database with hashed password
     const newUserQuery = await db.query(
-      "INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING *",
-      [name, email, hashedPassword]
+      "INSERT INTO users (name, email, password, verification_token) VALUES ($1, $2, $3, $4) RETURNING *",
+      [name, email, hashedPassword, verificationToken]
     );
 
     const newUser = newUserQuery.rows[0];
@@ -193,10 +225,27 @@ app.post("/register", async (req, res) => {
       email: newUser.email,
     };
 
-    res.redirect("/verify");
+    // Send verification email
+    const mailOptions = {
+      from: process.env.USER_EMAIL,
+      to: email,
+      subject: "Sophic RPA Email Verification",
+      text: `Click the following link to verify your email: http://localhost:3000/verify?token=${verificationToken}`,
+    };
+
+    // Wait for the email to be sent before redirecting
+    await transporter.sendMail(mailOptions);
+
+    // Redirect the user to the verify page
+    res.redirect(`/verify?token=${verificationToken}`);
   } catch (error) {
     console.error("Error registering user:", error);
-    res.status(500).send("An error occurred while registering user");
+    // Log the error message and stack trace
+    console.error(error.stack);
+    // Render a generic error page with a 500 status code
+    res.status(500).render("error.ejs", {
+      errorMessage: "An error occurred while registering user",
+    });
   }
 });
 
@@ -249,6 +298,7 @@ app.post("/signin", async (req, res) => {
     });
   }
 });
+
 // Route to handle password update
 app.post("/update-password", requireSignin, async (req, res) => {
   const userId = req.session.user.id;
