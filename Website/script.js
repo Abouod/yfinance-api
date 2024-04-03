@@ -111,7 +111,6 @@ app.get("/index", requireSignin, async (req, res) => {
   }
 });
 
-// Route to handle verification links
 app.get("/verify", async (req, res) => {
   try {
     // Extract the verification token from the request query parameters
@@ -126,7 +125,7 @@ app.get("/verify", async (req, res) => {
     // Check if a user with the provided verification token exists
     if (userQuery.rows.length === 0) {
       // No user found with the provided token
-      return res.status(404).send("Invalid verification token");
+      return res.redirect("/verifyFail");
     }
 
     // Update the user's record in the database to mark their email address as verified
@@ -135,11 +134,13 @@ app.get("/verify", async (req, res) => {
       [token]
     );
 
-    // Render a success message or redirect to a success page
-    res.send("Email verified successfully!");
+    // Render the verifySuccess.ejs page upon successful verification
+    res.redirect("/verifySuccess");
   } catch (error) {
     console.error("Error verifying email:", error);
-    res.status(500).send("An error occurred while verifying email");
+    res.status(500).render("error.ejs", {
+      errorMessage: "An error occurred while verifying email",
+    });
   }
 });
 
@@ -228,13 +229,6 @@ app.post("/register", async (req, res) => {
 
     const newUser = newUserQuery.rows[0];
 
-    // Store user data in session
-    req.session.user = {
-      id: newUser.id,
-      name: newUser.name,
-      email: newUser.email,
-    };
-
     // Send verification email
     const mailOptions = {
       from: process.env.USER_EMAIL,
@@ -246,11 +240,11 @@ app.post("/register", async (req, res) => {
     // Wait for the email to be sent before redirecting
     await transporter.sendMail(mailOptions);
 
-    // Render a success message or redirect to a success page
-    // res.send(
-    //   "Verification email sent! Please check your email to verify your account."
-    // );
-    res.redirect("/verify");
+    // Redirect the user to the verify page after sending the email
+    res.render("verify.ejs", {
+      firstName: name.split(" ")[0], // Assuming first part of name is first name
+      verificationToken: verificationToken,
+    });
   } catch (error) {
     console.error("Error registering user:", error);
     // Log the error message and stack trace
@@ -262,7 +256,6 @@ app.post("/register", async (req, res) => {
   }
 });
 
-// Route to handle user sign-in
 app.post("/signin", async (req, res) => {
   const { email, password } = req.body;
 
@@ -286,6 +279,15 @@ app.post("/signin", async (req, res) => {
     }
 
     const user = userQuery.rows[0];
+
+    // Check if the user's email is verified
+    if (!user.email_verified) {
+      // Redirect the user to the verification page with an appropriate message
+      return res.render("verify.ejs", {
+        errorMessage:
+          "Email not verified. Please verify your email before signing in.",
+      });
+    }
 
     const passwordMatch = await bcrypt.compare(password, user.password);
 
