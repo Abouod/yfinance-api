@@ -40,16 +40,16 @@ app.use(
 
 // Configure nodemailer transporter
 const transporter = nodemailer.createTransport({
-  host: "smtp.zoho.com", // Specify the SMTP host
-  port: 465, // Specify the SMTP port
+  host: process.env.MAILER_HOST, // Specify the SMTP host
+  port: process.env.MAILER_PORT, // Specify the SMTP port
   secure: true, // Set to true if using SSL/TLS
   auth: {
     user: process.env.USER_EMAIL, // SMTP username
     pass: process.env.USER_PASS, // SMTP password
   },
-  // tls: {
-  //   rejectUnauthorized: false, // Accept self-signed certificates
-  // },
+  tls: {
+    rejectUnauthorized: true, // (false) Accept self-signed certificates without rejecting the connection
+  },
 });
 
 // Middleware function to check if user is authenticated
@@ -111,10 +111,16 @@ app.get("/index", requireSignin, async (req, res) => {
   }
 });
 
+// Route to handle email verification
 app.get("/verify", async (req, res) => {
   try {
     // Extract the verification token from the request query parameters
     const { token } = req.query;
+
+    // If no token is provided, redirect to /verifyFail
+    if (!token) {
+      return res.render("verifyFail.ejs");
+    }
 
     // Retrieve user information based on the verification token
     const userQuery = await db.query(
@@ -125,20 +131,31 @@ app.get("/verify", async (req, res) => {
     // Check if a user with the provided verification token exists
     if (userQuery.rows.length === 0) {
       // No user found with the provided token
-      return res.redirect("/verifyFail");
+      return res.render("verifyFail.ejs");
     }
 
-    // Update the user's record in the database to mark their email address as verified
-    await db.query(
-      "UPDATE users SET email_verified = TRUE WHERE verification_token = $1",
-      [token]
-    );
+    const user = userQuery.rows[0];
 
-    // Render the verifySuccess.ejs page upon successful verification
-    res.redirect("/verifySuccess");
+    // Check if the user's email is already verified
+    if (user.email_verified) {
+      // Redirect to verifySuccess.ejs with appropriate message
+      return res.render("verifySuccess.ejs", {
+        message: "Email already verified",
+      });
+    }
+
+    // Update user's email_verified status in the database
+    await db.query("UPDATE users SET email_verified = true WHERE id = $1", [
+      user.id,
+    ]);
+
+    // Redirect to verifySuccess.ejs if verification is successful
+    return res.render("verifySuccess.ejs", {
+      message: "Email verified successfully!",
+    });
   } catch (error) {
     console.error("Error verifying email:", error);
-    res.status(500).render("error.ejs", {
+    res.status(500).render("verifyFail.ejs", {
       errorMessage: "An error occurred while verifying email",
     });
   }
@@ -184,22 +201,13 @@ app.get("/save-profile", (req, res) => {
   res.redirect("/profile");
 });
 
-app.get("/verifySuccess", (req, res) => {
-  // Redirect the user to the profile page
-  res.render("verifySuccess.ejs");
-});
-
-app.get("/verifyFail", (req, res) => {
-  // Redirect the user to the profile page
-  res.render("verifyFail.ejs");
-});
-
 // Route to handle user logout
 app.get("/signout", (req, res) => {
   req.session.destroy();
   res.redirect("/");
 });
 
+// Route to handle user registration
 app.post("/register", async (req, res) => {
   const { name, email, password } = req.body;
 
@@ -207,21 +215,10 @@ app.post("/register", async (req, res) => {
     // Generate a unique verification token
     const verificationToken = uuidv4();
 
-    const userQuery = await db.query("SELECT * FROM users WHERE email = $1", [
-      email,
-    ]);
-
-    if (userQuery.rows.length > 0) {
-      // Pass the error message to the template
-      return res.render("signup.ejs", {
-        errorMessage: "User Already Exists",
-      });
-    }
-
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-    // Insert the new user into the database with hashed password
+    // Insert the new user into the database with hashed password and verification token
     const newUserQuery = await db.query(
       "INSERT INTO users (name, email, password, verification_token) VALUES ($1, $2, $3, $4) RETURNING *",
       [name, email, hashedPassword, verificationToken]
@@ -240,19 +237,25 @@ app.post("/register", async (req, res) => {
     // Wait for the email to be sent before redirecting
     await transporter.sendMail(mailOptions);
 
-    // Redirect the user to the verify page after sending the email
+    // Render the verify.ejs page after sending the email
     res.render("verify.ejs", {
-      firstName: name.split(" ")[0], // Assuming first part of name is first name
-      verificationToken: verificationToken,
+      firstName: name.split(" ")[0], // Extracting the first name
     });
   } catch (error) {
+    // Check if the error is due to duplicate key violation (email already exists)
+    if (error.code === "23505" && error.constraint === "users_email_key") {
+      // Render the signup page with an error message indicating duplicate email
+      return res.render("signup.ejs", {
+        errorMessage:
+          "Email address already exists. Please use a different email.",
+      });
+    }
+
     console.error("Error registering user:", error);
     // Log the error message and stack trace
     console.error(error.stack);
     // Render a generic error page with a 500 status code
-    res.status(500).render("error.ejs", {
-      errorMessage: "An error occurred while registering user",
-    });
+    res.status(500).send("An error occurred while registering user");
   }
 });
 
@@ -280,12 +283,30 @@ app.post("/signin", async (req, res) => {
 
     const user = userQuery.rows[0];
 
-    // Check if the user's email is verified
+    // Check if the user's email isn't verified
     if (!user.email_verified) {
-      // Redirect the user to the verification page with an appropriate message
+      // Generate a new verification token
+      const verificationToken = uuidv4();
+
+      // Update the verification token in the database
+      await db.query("UPDATE users SET verification_token = $1 WHERE id = $2", [
+        verificationToken,
+        user.id,
+      ]);
+
+      // Send verification email
+      const mailOptions = {
+        from: process.env.USER_EMAIL,
+        to: email,
+        subject: "Sophic RPA Email Verification",
+        text: `Click the following link to verify your email: http://localhost:3000/verify?token=${verificationToken}`,
+      };
+
+      await transporter.sendMail(mailOptions);
+
+      // Render the verify.ejs page after sending the email
       return res.render("verify.ejs", {
-        errorMessage:
-          "Email not verified. Please verify your email before signing in.",
+        firstName: user.name,
       });
     }
 

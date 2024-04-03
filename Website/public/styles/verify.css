@@ -24,7 +24,7 @@ body {
 .container {
   min-width: 500px; /* Adjust the width as needed (e.g., 700px, 800px) */
   max-width: 50%;
-  margin: 20px auto !important; /* Center the container horizontally */
+  margin: 65px auto !important; /* Center the container horizontally */
 }
 
 .logo {
@@ -55,28 +55,6 @@ body {
   margin-top: 12px;
   font-size: 16px;
   line-height: 1.6;
-}
-
-.verify-email-btn {
-  background-color: var(--fourth-color);
-  border-color: var(
-    --fourth-color
-  ); /* Adjust border color to match background */
-  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075),
-    0 0 8px rgba(var(--fourth-color), 0.5); /* Simulate hover effect */
-  color: #fff; /* Set text color to white for readability */
-}
-
-.verify-email-btn:hover,
-.verify-email-btn:active {
-  background-color: #18406f; /* Darken on hover */
-  color: white;
-}
-
-.verify-email-btn:focus,
-.verify-email-btn.focus {
-  outline: 0;
-  background-color: #18406f; /* Darken on hover */
 }
 
 /* Circle background behind icon End */
