@@ -209,7 +209,7 @@ app.get("/signout", (req, res) => {
 
 // Route to handle user registration
 app.post("/register", async (req, res) => {
-  const { name, email, password } = req.body;
+  const { firstName, lastName, email, password } = req.body;
 
   try {
     // Generate a unique verification token
@@ -220,8 +220,8 @@ app.post("/register", async (req, res) => {
 
     // Insert the new user into the database with hashed password and verification token
     const newUserQuery = await db.query(
-      "INSERT INTO users (name, email, password, verification_token) VALUES ($1, $2, $3, $4) RETURNING *",
-      [name, email, hashedPassword, verificationToken]
+      "INSERT INTO users (first_name, last_name, email, password, verification_token) VALUES ($1, $2, $3, $4, $5) RETURNING *",
+      [firstName, lastName, email, hashedPassword, verificationToken]
     );
 
     const newUser = newUserQuery.rows[0];
@@ -239,7 +239,7 @@ app.post("/register", async (req, res) => {
 
     // Render the verify.ejs page after sending the email
     res.render("verify.ejs", {
-      firstName: name.split(" ")[0], // Extracting the first name
+      firstName, // Extracting the first name
     });
   } catch (error) {
     // Check if the error is due to duplicate key violation (email already exists)
@@ -306,7 +306,7 @@ app.post("/signin", async (req, res) => {
 
       // Render the verify.ejs page after sending the email
       return res.render("verify.ejs", {
-        firstName: user.name,
+        firstName: user.first_name,
       });
     }
 
@@ -316,7 +316,8 @@ app.post("/signin", async (req, res) => {
       // Store user data in session
       req.session.user = {
         id: user.id,
-        name: user.name,
+        firstName: user.first_name,
+        lastName: user.last_name,
         email: user.email,
       };
 
