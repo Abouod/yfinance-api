@@ -1,0 +1,102 @@
+@import url("https://fonts.googleapis.com/css2?family=Helvetica+Neue&display=swap");
+
+:root {
+  --first-color: #f9f7f7;
+  --second-color: #dbe2ef;
+  --third-color: #3f72af;
+  --fourth-color: #112d4e;
+  --fifth-color: #27374d;
+  --sixth-color: #526d82;
+  --seventh-color: #9db2bf;
+  --eighth-color: #dde6ed;
+}
+
+* {
+  font-family: "Helvetica Neue", sans-serif;
+}
+
+body {
+  background-color: var(--first-color);
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Custom Navbar Styles */
+.custom-navbar {
+  background-color: var(--fourth-color);
+  padding: 0.5rem 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  display: block;
+}
+
+.custom-btn,
+.droptown-toggle {
+  border: 1px solid white;
+  background-color: var(--fourth-color);
+}
+
+.toggle-password {
+  margin-top: -5px;
+  margin-left: 5px;
+}
+
+.navbar-container {
+  width: 90%;
+  margin: 10px auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+}
+
+.bar {
+  margin-left: 40px;
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.navbar-text {
+  margin-left: 40px;
+  font-size: 1rem;
+  color: white;
+}
+
+.navbar-logo {
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  height: 4rem;
+  width: auto;
+  margin-top: -0.5rem;
+  margin-bottom: -0.5rem;
+}
+
+.dropdown-item:hover {
+  color: initial;
+}
+
+/* Container and form-control */
+.container {
+  min-width: fit-content; /* Adjust the width as needed (e.g., 700px, 800px) */
+  max-width: 1200px;
+  margin: 120px auto 80px !important; /* Center the container horizontally */
+}
+
+.form-header {
+  background-color: var(--fourth-color);
+  border-radius: inherit;
+}
