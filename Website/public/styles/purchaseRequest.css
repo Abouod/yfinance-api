@@ -37,6 +37,22 @@ body {
   display: block;
 }
 
+/* CSS to make the modal wider */
+.modal-dialog {
+  max-width: 90%; /* Set the maximum width of the modal */
+  width: auto; /* Set width to auto to ensure it expands to fit the content */
+}
+
+/* hide the navbar */
+.custom-navbar {
+  transition: top 0.5s ease; /* Add transition for smoother animation */
+}
+
+/* CSS to move the navbar to the top when hidden */
+.custom-navbar.hidden {
+  top: -105px; /* Move the navbar outside of the viewport when hidden */
+}
+
 .custom-btn,
 .droptown-toggle {
   border: 1px solid white;

@@ -147,89 +147,120 @@
                     </div>
                 </div>
                 <div class="row p-4">
-                    <div class="col-md-12 mt-4">
-                        <div class="items-container"> <!-- Added class "items-container" -->
-                            <div class="item"> <!-- Added class "item" -->
-                                <table class="table  table-light table-hover m-0 p-0">
-                                    <thead>
-                                        <tr>
-                                            <th scope="col" style="width: 5%;"><small>Item</small></th>
-                                            <th scope="col" style="width: 5%;"><small>Part No.</small></th>
-                                            <th scope="col" style="width: 10%;"><small>Brand</small></th>
-                                            <th scope="col" style="width: 10%;"><small>Description</small></th>
-                                            <th scope="col" style="width: 10%;"><small>Date Required</small></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <th scope="row">1</th>
-                                            <td><input type="text" class="form-control required"
-                                                    placeholder="Part Number"></td>
-                                            <td><input type="text" class="form-control required" placeholder="Brand">
-                                            </td>
-                                            <td><textarea class="form-control" id="exampleFormControlTextarea1" rows="3"
-                                                    placeholder="Description"></textarea></td>
-                                            <td>
-                                                <input type="date" class="form-control" placeholder="Date">
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                                <table class="table  table-light table-hover m-0 p-0">
+                    <div class="col-md-12">
+                        <!-- Button trigger modal -->
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                            data-bs-target="#staticBackdrop">
+                            Add Product Information
+                        </button>
 
-                                    <thead>
-                                        <tr>
-                                            <th scope="col"><small>Qty</small></th>
-                                            <th scope="col"><small>Currency</small></th>
-                                            <th scope="col"><small>LPP/Target Unit Price</small></th>
-                                            <th scope="col"><small>Delivery Term</small></th>
-                                            <th scope="col"><small>Lead Time</small></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td><input type="number" class="form-control required"
-                                                    placeholder="Quantity">
-                                            </td>
-                                            <td><input type="text" class="form-control required" placeholder="Currency">
-                                            </td>
-                                            <td><input type="text" class="form-control required"
-                                                    placeholder="LPP/Target Unit Price"></td>
-                                            <td><input type="text" class="form-control required"
-                                                    placeholder="Delivery Term"></td>
-                                            <td><input type="text" class="form-control required"
-                                                    placeholder="Lead Time"></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                                <table class="table  table-light table-hover mb-2 p-0">
+                        <!-- Modal -->
+                        <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false"
+                            tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Product Information</h1>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="items-container"> <!-- Added class "items-container" -->
+                                            <div class="item"> <!-- Added class "item" -->
+                                                <table class="table  table-light table-hover m-0 p-0">
+                                                    <thead>
+                                                        <tr>
+                                                            <th scope="col" style="width: 5%;"><small>Item</small></th>
+                                                            <th scope="col" style="width: 5%;"><small>Part No.</small>
+                                                            </th>
+                                                            <th scope="col" style="width: 10%;"><small>Brand</small>
+                                                            </th>
+                                                            <th scope="col" style="width: 10%;">
+                                                                <small>Description</small>
+                                                            </th>
+                                                            <th scope="col" style="width: 10%;"><small>Date
+                                                                    Required</small></th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <th scope="row">1</th>
+                                                            <td><input type="text" class="form-control required"
+                                                                    placeholder="Part Number"></td>
+                                                            <td><input type="text" class="form-control required"
+                                                                    placeholder="Brand">
+                                                            </td>
+                                                            <td><textarea class="form-control"
+                                                                    id="exampleFormControlTextarea1" rows="3"
+                                                                    placeholder="Description"></textarea></td>
+                                                            <td>
+                                                                <input type="date" class="form-control"
+                                                                    placeholder="Date">
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                                <table class="table  table-light table-hover m-0 p-0">
 
-                                    <thead>
-                                        <tr>
-                                            <th scope="col"><small>Tax (%)</small></th>
-                                            <th scope="col"><small>Total Price</small></th>
-                                            <th scope="col"><small>Exwork</small></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td><input type="text" class="form-control required" placeholder="Tax (%)">
-                                            </td>
-                                            <td><input type="text" class="form-control required"
-                                                    placeholder="Total Price"></td>
-                                            <td><input type="text" class="form-control required" placeholder="Exwork 
-address/remark ">
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                                                    <thead>
+                                                        <tr>
+                                                            <th scope="col"><small>Qty</small></th>
+                                                            <th scope="col"><small>Currency</small></th>
+                                                            <th scope="col"><small>LPP/Target Unit Price</small></th>
+                                                            <th scope="col"><small>Delivery Term</small></th>
+                                                            <th scope="col"><small>Lead Time</small></th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td><input type="number" class="form-control required"
+                                                                    placeholder="Quantity">
+                                                            </td>
+                                                            <td><input type="text" class="form-control required"
+                                                                    placeholder="Currency">
+                                                            </td>
+                                                            <td><input type="text" class="form-control required"
+                                                                    placeholder="LPP/Target Unit Price"></td>
+                                                            <td><input type="text" class="form-control required"
+                                                                    placeholder="Delivery Term">
+                                                            </td>
+                                                            <td><input type="text" class="form-control required"
+                                                                    placeholder="Lead Time"></td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                                <table class="table  table-light table-hover mb-2 p-0">
+
+                                                    <thead>
+                                                        <tr>
+                                                            <th scope="col"><small>Tax (%)</small></th>
+                                                            <th scope="col"><small>Total Price</small></th>
+                                                            <th scope="col"><small>Exwork</small></th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td><input type="text" class="form-control required"
+                                                                    placeholder="Tax (%)">
+                                                            </td>
+                                                            <td><input type="text" class="form-control required"
+                                                                    placeholder="Total Price"></td>
+                                                            <td><input type="text" class="form-control required"
+                                                                    placeholder="Exwork address/remark ">
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-bs-dismiss="modal">Close</button>
+                                        <button type="button" class="btn btn-primary" id="addItemBtn">Add Item</button>
+                                    </div>
+                                </div>
                             </div>
-
-                        </div>
-                    </div>
-                    <div class="row p-4">
-                        <div class="col-md-3">
-                            <button type="button" class="btn btn-primary" id="addItemBtn">Add Item</button>
                         </div>
                     </div>
                 </div>
@@ -255,6 +286,32 @@ address/remark ">
                 $(".items-container").append(newItem); // Append the new item
             });
         });
+
+        // Get the navbar
+        var navbar = document.querySelector(".custom-navbar");
+
+        // Get the initial position of the page
+        var prevScrollpos = window.pageYOffset;
+
+        // Function to handle scroll event
+        window.onscroll = function () {
+            // Get the current scroll position
+            var currentScrollPos = window.pageYOffset;
+
+            // If the user scrolls down
+            if (prevScrollpos < currentScrollPos) {
+                // Hide the navbar by adding a class
+                navbar.classList.add("hidden");
+            } else {
+                // Show the navbar by removing the class
+                navbar.classList.remove("hidden");
+            }
+
+            // Update the previous scroll position
+            prevScrollpos = currentScrollPos;
+        }
+
+
     </script>
 
 

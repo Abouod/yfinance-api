@@ -47,9 +47,9 @@ const transporter = nodemailer.createTransport({
     user: process.env.USER_EMAIL, // SMTP username
     pass: process.env.USER_PASS, // SMTP password
   },
-  tls: {
-    rejectUnauthorized: true, // (false) Accept self-signed certificates without rejecting the connection
-  },
+  // tls: {
+  //   rejectUnauthorized: true, // (false) Accept self-signed certificates without rejecting the connection
+  // },
 });
 
 // Middleware function to check if user is authenticated
