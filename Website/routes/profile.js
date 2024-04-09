@@ -43,9 +43,8 @@ router.get("/profile", requireSignin, async (req, res) => {
 // Route to handle GET requests to /save-profile
 router.get("/save-profile", (req, res) => {
   // Redirect the user to the profile page
-  res.redirect("/profile");
+  res.redirect("/userProfile/profile");
 });
-
 // Route to handle saving/updating user profile
 router.post("/save-profile", requireSignin, async (req, res) => {
   const userId = req.session.user.id;
@@ -90,6 +89,11 @@ router.post("/save-profile", requireSignin, async (req, res) => {
   }
 });
 
+// Route to handle GET requests to /save-profile
+router.get("/update-password", (req, res) => {
+  // Redirect the user to the profile page
+  res.redirect("/userProfile/profile");
+});
 // Route to handle password update
 router.post("/update-password", requireSignin, async (req, res) => {
   const userId = req.session.user.id;

@@ -1,5 +1,6 @@
 import express from "express";
 import { db } from "../config.js";
+import requireSignin from "./authMiddleware.js"; // Import the middleware function
 
 const router = express.Router();
 
@@ -15,7 +16,7 @@ function getFormattedDate() {
     .replace(/\//g, "");
 }
 
-router.get("/", async (req, res) => {
+router.get("/", requireSignin, async (req, res) => {
   try {
     // Get the user's ID from the session
     const userId = req.session.user.id;

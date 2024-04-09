@@ -1,10 +1,14 @@
 {
   "dependencies": {
     "bcrypt": "^5.1.1",
+    "cookie-parser": "^1.4.6",
+    "debug": "^4.3.4",
     "dotenv": "^16.4.5",
     "ejs": "^3.1.9",
     "express": "^4.18.3",
     "express-session": "^1.18.0",
+    "http-errors": "^2.0.0",
+    "morgan": "^1.10.0",
     "nodemailer": "^6.9.13",
     "path": "^0.12.7",
     "pg": "^8.11.3",
@@ -13,11 +17,11 @@
   "name": "rpa-website",
   "type": "module",
   "version": "1.0.0",
-  "main": "script.js",
   "scripts": {
+    "start": "node ./bin/www.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
+  "author": "Sophic",
   "license": "ISC",
-  "description": ""
+  "description": "RPA Website"
 }
