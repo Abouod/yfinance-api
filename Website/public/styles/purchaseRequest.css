@@ -121,3 +121,7 @@ body {
   background-color: var(--fourth-color);
   border-radius: inherit;
 }
+
+input[readonly] {
+  cursor: not-allowed; /* Change cursor style to indicate non-editable */
+}
