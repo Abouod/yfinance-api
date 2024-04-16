@@ -89,10 +89,12 @@
                         <div class="col-md-3">
                             <br>
                             <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
-                                <input type="radio" class="btn-check" name="pr-type" id="machine" autocomplete="off">
+                                <input type="radio" class="btn-check" value="Machine Build" name="pr-type" id="machine"
+                                    autocomplete="off" required>
                                 <label class="btn btn-outline-danger" for="machine">Machine Build</label>
 
-                                <input type="radio" class="btn-check" name="pr-type" id="trading" autocomplete="off">
+                                <input type="radio" class="btn-check" value="Trading" name="pr-type" id="trading"
+                                    autocomplete="off" required>
                                 <label class="btn btn-outline-success trading-label" for="trading">Trading</label>
                             </div>
                         </div>
@@ -100,9 +102,9 @@
                     <div class="row p-4">
                         <div class="col-md-6">
                             <label class="labels">Sophic Project Category</label>
-                            <select aria-label="Default select example" name="SPC" type="text" class="form-select"
-                                placeholder="Select Sophic Project Category">
-                                <!-- <option value="" disabled selected hidden>Select Sophic Project Category</option> -->
+                            <select aria-label="Default select example" name="SPC[]" type="text" class="form-select"
+                                required>
+                                <option value="" disabled selected hidden>Select Sophic Project Category</option>
                                 <option value="AIMMS-Automated Intelligent Material Management System">AIMMS-Automated
                                     Intelligent Material Management System</option>
                                 <option value="AIVIS-Automated Intelligent Vision Inspection System">AIVIS-Automated
@@ -122,11 +124,13 @@
                         <div class="col-md-3">
                             <label class="labels">Type for Purchase</label>
                             <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
-                                <input type="radio" class="btn-check" name="TFP" id="fixed-asset" autocomplete="off">
+                                <input type="radio" class="btn-check" name="TFP" id="fixed-asset" autocomplete="off"
+                                    required>
                                 <label class="btn btn-outline-danger" for="fixed-asset">Fixed
                                     Asset</label>
 
-                                <input type="radio" class="btn-check" name="TFP" id="expense" autocomplete="off">
+                                <input type="radio" class="btn-check" name="TFP" id="expense" autocomplete="off"
+                                    required>
                                 <label class="btn btn-outline-success expense-label" for="expense">Expense</label>
                             </div>
                         </div>
@@ -147,13 +151,14 @@
                         <div class="col-md-3">
                             <label class="labels">Supplier Type</label>
                             <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
-                                <input type="radio" class="btn-check" name="ST" id="oem" autocomplete="off">
+                                <input type="radio" class="btn-check" name="ST" id="oem" autocomplete="off" required>
                                 <label class="btn btn-outline-danger" for="oem">OEM</label>
 
-                                <input type="radio" class="btn-check" name="ST" id="oemd" autocomplete="off">
+                                <input type="radio" class="btn-check" name="ST" id="oemd" autocomplete="off" required>
                                 <label class="btn btn-outline-info" for="oemd">OEM D*</label>
 
-                                <input type="radio" class="btn-check" name="ST" id="st-trading" autocomplete="off">
+                                <input type="radio" class="btn-check" name="ST" id="st-trading" autocomplete="off"
+                                    required>
                                 <label class="btn btn-outline-success" for="st-trading">TRADING</label>
                             </div>
                         </div>
@@ -229,7 +234,7 @@
                                                             rows="2" name="description[]" required></textarea>
                                                     </div>
                                                     <div class="col-md-2 mb-3">
-                                                        <label class="labels">Date *</label>
+                                                        <label class="labels">Date Required *</label>
                                                         <input type="date" name="date[]" class="form-control " required>
                                                     </div>
                                                     <div class="col-md-1 mb-3">
@@ -239,9 +244,9 @@
                                                     </div>
                                                     <div class="col-md-2 mb-3">
                                                         <label class="labels">Currency *</label>
-                                                        <select class="form-select " id="currency" name="currency[]"
-                                                            required>
-                                                            <option selected disabled hidden>select currency
+                                                        <select aria-label="Currency Select" name="currency[]"
+                                                            type="text" class="form-select" id="currency" required>
+                                                            <option value="" selected disabled hidden>select currency
                                                             </option>
                                                             <option value="AFN">Afghan Afghani</option>
                                                             <option value="ALL">Albanian Lek</option>
