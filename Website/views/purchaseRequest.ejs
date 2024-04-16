@@ -47,163 +47,164 @@
         </div>
     </nav>
 
-
-    <div class="container shadow rounded bg-white">
-        <div class="row">
-            <div class="shadow rounded">
-                <div class="row form-header">
-                    <div class="d-flex justify-content-between align-items-center p-4">
-                        <h4 style="color: white;" class="text-right">Purchase Request Form</h4>
-                    </div>
-                </div>
-                <div class="row p-4">
-                    <div class="col-md-4">
-                        <label class="labels">Request by</label>
-                        <input type="text" class="form-control" value="<%= firstName %> <%= lastName %>" required>
-                    </div>
-                    <div class="col-md-4">
-                        <label class="labels">Date</label>
-                        <input type="date" class="form-control" value="<%= new Date().toISOString().split('T')[0] %>"
-                            required>
-                    </div>
-                    <div class="col-md-4">
-                        <label class="labels">Customer Name</label>
-                        <input type="text" class="form-control" required>
-                    </div>
-                </div>
-                <div class="row px-4">
-                    <div class="col-md-3">
-                        <label class="labels">Requisition No.</label>
-                        <input type="text"
-                            value="<%= 'PR' + firstName.charAt(0) + lastName.charAt(0) + - + getFormattedDate() + '00'%>"
-                            class="form-control" required>
-                    </div>
-                    <div class="col-md-3">
-                        <label class="labels">Online Purchase</label>
-                        <input type="text" class="form-control" required>
-                    </div>
-                    <div class="col-md-3">
-                        <label class="labels">Quotation No.</label>
-                        <input type="text" class="form-control" required>
-                    </div>
-                    <div class="col-md-3">
-                        <br>
-                        <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
-                            <input type="radio" class="btn-check" name="pr-type" id="machine" autocomplete="off">
-                            <label class="btn btn-outline-danger" for="machine">Machine Build</label>
-
-                            <input type="radio" class="btn-check" name="pr-type" id="trading" autocomplete="off">
-                            <label class="btn btn-outline-success trading-label" for="trading">Trading</label>
+    <form id="add-form" action="/purchase" method="POST">
+        <div class="container shadow rounded bg-white">
+            <div class="row">
+                <div class="shadow rounded">
+                    <div class="row form-header">
+                        <div class="d-flex justify-content-between align-items-center p-4">
+                            <h4 style="color: white;" class="text-right">Purchase Request Form</h4>
                         </div>
                     </div>
-                </div>
-                <div class="row p-4">
-                    <div class="col-md-6">
-                        <label class="labels">Sophic Project Category</label>
-                        <select aria-label="Default select example" name="SPC" type="text" class="form-select"
-                            placeholder="Select Sophic Project Category">
-                            <!-- <option value="" disabled selected hidden>Select Sophic Project Category</option> -->
-                            <option value="AIMMS-Automated Intelligent Material Management System">AIMMS-Automated
-                                Intelligent Material Management System</option>
-                            <option value="AIVIS-Automated Intelligent Vision Inspection System">AIVIS-Automated
-                                Intelligent Vision Inspection System</option>
-                            <option value="AMR-Automated Guided Vehicle/Automated Mobile Robot">AMR-Automated Guided
-                                Vehicle/Automated Mobile Robot</option>
-                            <option value="ICCS-Intelligent Command Center System">ICCS-Intelligent Command Center
-                                System</option>
-                            <option value="AIHTS-Automated Intelligent Handling and Testing System">AIHTS-Automated
-                                Intelligent Handling and Testing System</option>
-                            <option value="ARSG-Augmented Reality Smart Glass">ARSG-Augmented Reality Smart Glass
-                            </option>
-                            <option value="OTHERS-Trading, PCB, Service, Office Use and etc">OTHERS-Trading, PCB,
-                                Service, Office Use and etc</option>
-                        </select>
-                    </div>
-                    <div class="col-md-3">
-                        <label class="labels">Type for Purchase</label>
-                        <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
-                            <input type="radio" class="btn-check" name="TFP" id="fixed-asset" autocomplete="off">
-                            <label class="btn btn-outline-danger" for="fixed-asset">Fixed
-                                Asset</label>
-
-                            <input type="radio" class="btn-check" name="TFP" id="expense" autocomplete="off">
-                            <label class="btn btn-outline-success expense-label" for="expense">Expense</label>
+                    <div class="row p-4">
+                        <div class="col-md-4">
+                            <label class="labels">Request by</label>
+                            <input type="text" class="form-control" value="<%= firstName %> <%= lastName %>" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="labels">Date</label>
+                            <input type="date" class="form-control"
+                                value="<%= new Date().toISOString().split('T')[0] %>" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="labels">Customer Name</label>
+                            <input type="text" class="form-control" required>
                         </div>
                     </div>
-                    <div class="col-md-3">
-                        <label class="labels">Customer PO</label>
-                        <input type="text" class="form-control" required>
-                    </div>
-                </div>
-                <div class="row px-4">
-                    <div class="col-md-4">
-                        <label class="labels">Supplier Name</label>
-                        <input type="text" class="form-control" required>
-                    </div>
-                    <div class="col-md-5">
-                        <label class="labels">Project Description</label>
-                        <input type="text" class="form-control" required>
-                    </div>
-                    <div class="col-md-3">
-                        <label class="labels">Supplier Type</label>
-                        <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
-                            <input type="radio" class="btn-check" name="ST" id="oem" autocomplete="off">
-                            <label class="btn btn-outline-danger" for="oem">OEM</label>
+                    <div class="row px-4">
+                        <div class="col-md-3">
+                            <label class="labels">Requisition No.</label>
+                            <input type="text"
+                                value="<%= 'PR' + firstName.charAt(0) + lastName.charAt(0) + - + getFormattedDate() + '00'%>"
+                                class="form-control" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="labels">Online Purchase</label>
+                            <input type="text" class="form-control" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="labels">Quotation No.</label>
+                            <input type="text" class="form-control" required>
+                        </div>
+                        <div class="col-md-3">
+                            <br>
+                            <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+                                <input type="radio" class="btn-check" name="pr-type" id="machine" autocomplete="off">
+                                <label class="btn btn-outline-danger" for="machine">Machine Build</label>
 
-                            <input type="radio" class="btn-check" name="ST" id="oemd" autocomplete="off">
-                            <label class="btn btn-outline-info" for="oemd">OEM D*</label>
-
-                            <input type="radio" class="btn-check" name="ST" id="st-trading" autocomplete="off">
-                            <label class="btn btn-outline-success" for="st-trading">TRADING</label>
+                                <input type="radio" class="btn-check" name="pr-type" id="trading" autocomplete="off">
+                                <label class="btn btn-outline-success trading-label" for="trading">Trading</label>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="row p-4">
-                    <div class="collapse" id="collapseExample">
-                        <div class=" card-body">
-                            <div class="row">
-                                <div class="col-md-3">
-                                    <label class="labels">Internal Use</label>
-                                    <input type="text" class="form-control" required>
-                                </div>
-                                <div class="col-md-3">
-                                    <label class="labels">Purchase Department</label>
-                                    <input type="text" class="form-control" required>
+                    <div class="row p-4">
+                        <div class="col-md-6">
+                            <label class="labels">Sophic Project Category</label>
+                            <select aria-label="Default select example" name="SPC" type="text" class="form-select"
+                                placeholder="Select Sophic Project Category">
+                                <!-- <option value="" disabled selected hidden>Select Sophic Project Category</option> -->
+                                <option value="AIMMS-Automated Intelligent Material Management System">AIMMS-Automated
+                                    Intelligent Material Management System</option>
+                                <option value="AIVIS-Automated Intelligent Vision Inspection System">AIVIS-Automated
+                                    Intelligent Vision Inspection System</option>
+                                <option value="AMR-Automated Guided Vehicle/Automated Mobile Robot">AMR-Automated Guided
+                                    Vehicle/Automated Mobile Robot</option>
+                                <option value="ICCS-Intelligent Command Center System">ICCS-Intelligent Command Center
+                                    System</option>
+                                <option value="AIHTS-Automated Intelligent Handling and Testing System">AIHTS-Automated
+                                    Intelligent Handling and Testing System</option>
+                                <option value="ARSG-Augmented Reality Smart Glass">ARSG-Augmented Reality Smart Glass
+                                </option>
+                                <option value="OTHERS-Trading, PCB, Service, Office Use and etc">OTHERS-Trading, PCB,
+                                    Service, Office Use and etc</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="labels">Type for Purchase</label>
+                            <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+                                <input type="radio" class="btn-check" name="TFP" id="fixed-asset" autocomplete="off">
+                                <label class="btn btn-outline-danger" for="fixed-asset">Fixed
+                                    Asset</label>
+
+                                <input type="radio" class="btn-check" name="TFP" id="expense" autocomplete="off">
+                                <label class="btn btn-outline-success expense-label" for="expense">Expense</label>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="labels">Customer PO</label>
+                            <input type="text" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="row px-4">
+                        <div class="col-md-4">
+                            <label class="labels">Supplier Name</label>
+                            <input type="text" class="form-control" required>
+                        </div>
+                        <div class="col-md-5">
+                            <label class="labels">Project Description</label>
+                            <input type="text" class="form-control" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="labels">Supplier Type</label>
+                            <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+                                <input type="radio" class="btn-check" name="ST" id="oem" autocomplete="off">
+                                <label class="btn btn-outline-danger" for="oem">OEM</label>
+
+                                <input type="radio" class="btn-check" name="ST" id="oemd" autocomplete="off">
+                                <label class="btn btn-outline-info" for="oemd">OEM D*</label>
+
+                                <input type="radio" class="btn-check" name="ST" id="st-trading" autocomplete="off">
+                                <label class="btn btn-outline-success" for="st-trading">TRADING</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row p-4">
+                        <div class="collapse" id="collapseExample">
+                            <div class=" card-body">
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <label class="labels">Internal Use</label>
+                                        <input type="text" class="form-control">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="labels">Purchase Department</label>
+                                        <input type="text" class="form-control">
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="row px-4">
-                    <div class="col-md-12">
-                        <p class="d-inline-flex gap-1">
-                            <button class="btn btn-outline-primary" type="button" data-bs-toggle="collapse"
-                                data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
-                                See Optional Fields
-                            </button>
-                            <!-- Button trigger modal -->
-                            <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                                data-bs-target="#staticBackdrop">
-                                Add Product Details
-                            </button>
-                        </p>
-                    </div>
+                    <div class="row px-4">
+                        <div class="col-md-12">
+                            <p class="d-inline-flex gap-1">
+                                <button class="btn btn-outline-primary" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#collapseExample" aria-expanded="false"
+                                    aria-controls="collapseExample">
+                                    See Optional Fields
+                                </button>
+                                <!-- Button trigger modal -->
+                                <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                    data-bs-target="#staticBackdrop">
+                                    Add Product Details
+                                </button>
+                            </p>
+                        </div>
 
-                </div>
-                <div class="row px-4 pb-4">
-                    <div class="col-md-6">
-                        <!-- Modal -->
-                        <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false"
-                            tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Product Details</h1>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                            aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <form id="add-form" action="#" method="POST">
+                    </div>
+                    <div class="row px-4 pb-4">
+                        <div class="col-md-6">
+                            <!-- Modal -->
+                            <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static"
+                                data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel"
+                                aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h1 class="modal-title fs-5" id="staticBackdropLabel">Product Details</h1>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
                                             <div id="show-item">
                                                 <div class="row p-4">
                                                     <div class="col-md-1 mb-3">
@@ -214,203 +215,37 @@
 
                                                     <div class="col-md-1 mb-3">
                                                         <label class="labels">Part No. *</label>
-                                                        <input type="text" name="part-number[]" class="form-control"
+                                                        <input type="text" name="part-number[]" class="form-control "
                                                             required>
                                                     </div>
 
                                                     <div class="col-md-2 mb-3">
                                                         <label class="labels">Brand *</label>
-                                                        <input type="text" name="brand[]" class="form-control" required>
+                                                        <input type="text" name="brand[]" class="form-control "
+                                                            required>
                                                     </div>
                                                     <div class="col-md-3 mb-3">
                                                         <label class="labels">Description *</label>
-                                                        <textarea class="form-control" id="exampleFormControlTextarea1"
+                                                        <textarea class="form-control " id="exampleFormControlTextarea1"
                                                             rows="2" name="description[]" required></textarea>
                                                     </div>
                                                     <div class="col-md-2 mb-3">
                                                         <label class="labels">Date *</label>
-                                                        <input type="date" name="date[]" class="form-control" required>
+                                                        <input type="date" name="date[]" class="form-control " required>
                                                     </div>
                                                     <div class="col-md-1 mb-3">
                                                         <label class="labels">Qty *</label>
-                                                        <input type="number" name="date[]" class="form-control"
+                                                        <input type="number" name="date[]" class="form-control "
                                                             required>
                                                     </div>
                                                     <div class="col-md-2 mb-3">
                                                         <label class="labels">Currency *</label>
-                                                        <select class="form-select" id="currency" name="currency[]"
+                                                        <select class="form-select " id="currency" name="currency[]"
                                                             required>
                                                             <option selected disabled hidden>select currency
                                                             </option>
                                                             <option value="AFN">Afghan Afghani</option>
                                                             <option value="ALL">Albanian Lek</option>
-                                                            <option value="DZD">Algerian Dinar</option>
-                                                            <option value="AOA">Angolan Kwanza</option>
-                                                            <option value="ARS">Argentine Peso</option>
-                                                            <option value="AMD">Armenian Dram</option>
-                                                            <option value="AWG">Aruban Florin</option>
-                                                            <option value="AUD">Australian Dollar</option>
-                                                            <option value="AZN">Azerbaijani Manat</option>
-                                                            <option value="BSD">Bahamian Dollar</option>
-                                                            <option value="BHD">Bahraini Dinar</option>
-                                                            <option value="BDT">Bangladeshi Taka</option>
-                                                            <option value="BBD">Barbadian Dollar</option>
-                                                            <option value="BYR">Belarusian Ruble</option>
-                                                            <option value="BEF">Belgian Franc</option>
-                                                            <option value="BZD">Belize Dollar</option>
-                                                            <option value="BMD">Bermudan Dollar</option>
-                                                            <option value="BTN">Bhutanese Ngultrum</option>
-                                                            <option value="BTC">Bitcoin</option>
-                                                            <option value="BOB">Bolivian Boliviano</option>
-                                                            <option value="BAM">Bosnia-Herzegovina Convertible
-                                                                Mark</option>
-                                                            <option value="BWP">Botswanan Pula</option>
-                                                            <option value="BRL">Brazilian Real</option>
-                                                            <option value="GBP">British Pound Sterling</option>
-                                                            <option value="BND">Brunei Dollar</option>
-                                                            <option value="BGN">Bulgarian Lev</option>
-                                                            <option value="BIF">Burundian Franc</option>
-                                                            <option value="KHR">Cambodian Riel</option>
-                                                            <option value="CAD">Canadian Dollar</option>
-                                                            <option value="CVE">Cape Verdean Escudo</option>
-                                                            <option value="KYD">Cayman Islands Dollar</option>
-                                                            <option value="XOF">CFA Franc BCEAO</option>
-                                                            <option value="XAF">CFA Franc BEAC</option>
-                                                            <option value="XPF">CFP Franc</option>
-                                                            <option value="CLP">Chilean Peso</option>
-                                                            <option value="CNY">Chinese Yuan</option>
-                                                            <option value="COP">Colombian Peso</option>
-                                                            <option value="KMF">Comorian Franc</option>
-                                                            <option value="CDF">Congolese Franc</option>
-                                                            <option value="CRC">Costa Rican ColÃ³n</option>
-                                                            <option value="HRK">Croatian Kuna</option>
-                                                            <option value="CUC">Cuban Convertible Peso</option>
-                                                            <option value="CZK">Czech Republic Koruna</option>
-                                                            <option value="DKK">Danish Krone</option>
-                                                            <option value="DJF">Djiboutian Franc</option>
-                                                            <option value="DOP">Dominican Peso</option>
-                                                            <option value="XCD">East Caribbean Dollar</option>
-                                                            <option value="EGP">Egyptian Pound</option>
-                                                            <option value="ERN">Eritrean Nakfa</option>
-                                                            <option value="EEK">Estonian Kroon</option>
-                                                            <option value="ETB">Ethiopian Birr</option>
-                                                            <option value="EUR">Euro</option>
-                                                            <option value="FKP">Falkland Islands Pound</option>
-                                                            <option value="FJD">Fijian Dollar</option>
-                                                            <option value="GMD">Gambian Dalasi</option>
-                                                            <option value="GEL">Georgian Lari</option>
-                                                            <option value="DEM">German Mark</option>
-                                                            <option value="GHS">Ghanaian Cedi</option>
-                                                            <option value="GIP">Gibraltar Pound</option>
-                                                            <option value="GRD">Greek Drachma</option>
-                                                            <option value="GTQ">Guatemalan Quetzal</option>
-                                                            <option value="GNF">Guinean Franc</option>
-                                                            <option value="GYD">Guyanaese Dollar</option>
-                                                            <option value="HTG">Haitian Gourde</option>
-                                                            <option value="HNL">Honduran Lempira</option>
-                                                            <option value="HKD">Hong Kong Dollar</option>
-                                                            <option value="HUF">Hungarian Forint</option>
-                                                            <option value="ISK">Icelandic KrÃ³na</option>
-                                                            <option value="INR">Indian Rupee</option>
-                                                            <option value="IDR">Indonesian Rupiah</option>
-                                                            <option value="IRR">Iranian Rial</option>
-                                                            <option value="IQD">Iraqi Dinar</option>
-                                                            <option value="ILS">Israeli New Sheqel</option>
-                                                            <option value="ITL">Italian Lira</option>
-                                                            <option value="JMD">Jamaican Dollar</option>
-                                                            <option value="JPY">Japanese Yen</option>
-                                                            <option value="JOD">Jordanian Dinar</option>
-                                                            <option value="KZT">Kazakhstani Tenge</option>
-                                                            <option value="KES">Kenyan Shilling</option>
-                                                            <option value="KWD">Kuwaiti Dinar</option>
-                                                            <option value="KGS">Kyrgystani Som</option>
-                                                            <option value="LAK">Laotian Kip</option>
-                                                            <option value="LVL">Latvian Lats</option>
-                                                            <option value="LBP">Lebanese Pound</option>
-                                                            <option value="LSL">Lesotho Loti</option>
-                                                            <option value="LRD">Liberian Dollar</option>
-                                                            <option value="LYD">Libyan Dinar</option>
-                                                            <option value="LTL">Lithuanian Litas</option>
-                                                            <option value="MOP">Macanese Pataca</option>
-                                                            <option value="MKD">Macedonian Denar</option>
-                                                            <option value="MGA">Malagasy Ariary</option>
-                                                            <option value="MWK">Malawian Kwacha</option>
-                                                            <option value="MYR">Malaysian Ringgit</option>
-                                                            <option value="MVR">Maldivian Rufiyaa</option>
-                                                            <option value="MRO">Mauritanian Ouguiya</option>
-                                                            <option value="MUR">Mauritian Rupee</option>
-                                                            <option value="MXN">Mexican Peso</option>
-                                                            <option value="MDL">Moldovan Leu</option>
-                                                            <option value="MNT">Mongolian Tugrik</option>
-                                                            <option value="MAD">Moroccan Dirham</option>
-                                                            <option value="MZM">Mozambican Metical</option>
-                                                            <option value="MMK">Myanmar Kyat</option>
-                                                            <option value="NAD">Namibian Dollar</option>
-                                                            <option value="NPR">Nepalese Rupee</option>
-                                                            <option value="ANG">Netherlands Antillean Guilder
-                                                            </option>
-                                                            <option value="TWD">New Taiwan Dollar</option>
-                                                            <option value="NZD">New Zealand Dollar</option>
-                                                            <option value="NIO">Nicaraguan CÃ³rdoba</option>
-                                                            <option value="NGN">Nigerian Naira</option>
-                                                            <option value="KPW">North Korean Won</option>
-                                                            <option value="NOK">Norwegian Krone</option>
-                                                            <option value="OMR">Omani Rial</option>
-                                                            <option value="PKR">Pakistani Rupee</option>
-                                                            <option value="PAB">Panamanian Balboa</option>
-                                                            <option value="PGK">Papua New Guinean Kina</option>
-                                                            <option value="PYG">Paraguayan Guarani</option>
-                                                            <option value="PEN">Peruvian Nuevo Sol</option>
-                                                            <option value="PHP">Philippine Peso</option>
-                                                            <option value="PLN">Polish Zloty</option>
-                                                            <option value="QAR">Qatari Rial</option>
-                                                            <option value="RON">Romanian Leu</option>
-                                                            <option value="RUB">Russian Ruble</option>
-                                                            <option value="RWF">Rwandan Franc</option>
-                                                            <option value="SVC">Salvadoran ColÃ³n</option>
-                                                            <option value="WST">Samoan Tala</option>
-                                                            <option value="SAR">Saudi Riyal</option>
-                                                            <option value="RSD">Serbian Dinar</option>
-                                                            <option value="SCR">Seychellois Rupee</option>
-                                                            <option value="SLL">Sierra Leonean Leone</option>
-                                                            <option value="SGD">Singapore Dollar</option>
-                                                            <option value="SKK">Slovak Koruna</option>
-                                                            <option value="SBD">Solomon Islands Dollar</option>
-                                                            <option value="SOS">Somali Shilling</option>
-                                                            <option value="ZAR">South African Rand</option>
-                                                            <option value="KRW">South Korean Won</option>
-                                                            <option value="XDR">Special Drawing Rights</option>
-                                                            <option value="LKR">Sri Lankan Rupee</option>
-                                                            <option value="SHP">St. Helena Pound</option>
-                                                            <option value="SDG">Sudanese Pound</option>
-                                                            <option value="SRD">Surinamese Dollar</option>
-                                                            <option value="SZL">Swazi Lilangeni</option>
-                                                            <option value="SEK">Swedish Krona</option>
-                                                            <option value="CHF">Swiss Franc</option>
-                                                            <option value="SYP">Syrian Pound</option>
-                                                            <option value="STD">São Tomé and Príncipe Dobra
-                                                            </option>
-                                                            <option value="TJS">Tajikistani Somoni</option>
-                                                            <option value="TZS">Tanzanian Shilling</option>
-                                                            <option value="THB">Thai Baht</option>
-                                                            <option value="TOP">Tongan pa'anga</option>
-                                                            <option value="TTD">Trinidad & Tobago Dollar
-                                                            </option>
-                                                            <option value="TND">Tunisian Dinar</option>
-                                                            <option value="TRY">Turkish Lira</option>
-                                                            <option value="TMT">Turkmenistani Manat</option>
-                                                            <option value="UGX">Ugandan Shilling</option>
-                                                            <option value="UAH">Ukrainian Hryvnia</option>
-                                                            <option value="AED">United Arab Emirates Dirham
-                                                            </option>
-                                                            <option value="UYU">Uruguayan Peso</option>
-                                                            <option value="USD">US Dollar</option>
-                                                            <option value="UZS">Uzbekistan Som</option>
-                                                            <option value="VUV">Vanuatu Vatu</option>
-                                                            <option value="VEF">Venezuelan BolÃ­var</option>
-                                                            <option value="VND">Vietnamese Dong</option>
-                                                            <option value="YER">Yemeni Rial</option>
-                                                            <option value="ZMK">Zambian Kwacha</option>
                                                         </select>
                                                     </div>
 
@@ -453,7 +288,7 @@
                                                         <div class="col-md-2 mb-3">
                                                             <label class="labels">Unit Price *</label>
                                                             <input type="number" name="unit-price[]"
-                                                                class="form-control" required>
+                                                                class="form-control " required>
                                                         </div>
 
                                                         <div class="col-md-2 mb-3">
@@ -472,7 +307,8 @@
                                                                     See Optional Fields
                                                                 </button>
                                                                 <!-- Button trigger modal -->
-                                                                <button class="btn btn-success add_item_btn m-auto">Add
+                                                                <button type="button"
+                                                                    class="btn btn-success add_item_btn">Add
                                                                     More</button>
                                                             </p>
                                                         </div>
@@ -480,10 +316,10 @@
                                                 </div>
                                             </div>
                                             <div class="col-md-4 px-4">
-                                                <input type="submit" value="Submit" class="btn btn-primary w-25"
-                                                    id="add_btn">
+                                                <button type="submit" class="btn btn-primary w-25"
+                                                    id="submit_modal_btn">Submit</button>
                                             </div>
-                                        </form>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -492,12 +328,7 @@
                 </div>
             </div>
         </div>
-    </div>
-    </div>
-    </div>
-    </div>
-    </div>
-    </div>
+    </form>
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
@@ -511,6 +342,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
     <script>
+        // Hide navbar on scroll down
         // Get the navbar
         var navbar = document.querySelector(".custom-navbar");
 
@@ -536,6 +368,32 @@
         }
 
         $(document).ready(function () {
+            // Function to validate the form's required fields
+            function validateForm() {
+                var isValid = true;
+                // Loop through each input field and check if it's required and filled
+                $('input, select, textarea').each(function () {
+                    // Check if the field is required and if it's filled
+                    if ($(this).attr('required') && $(this).val().trim() === '') {
+                        isValid = false;
+                        return false; // Exit the loop if a required field is empty
+                    }
+                });
+                return isValid;
+            }
+
+            // Event listener for the Submit button inside the modal
+            $('#submit_modal_btn').click(function () {
+                // Check if all required fields are filled
+                if (validateForm()) {
+                    // Manually trigger form submission
+                    $('#add-form').submit();
+                } else {
+                    // Display an alert or error message indicating that required fields need to be filled
+                    // alert('Please fill all required fields.');
+                }
+            });
+
             //This function is triggered when any element with the class add_item_btn is clicked.
             $(".add_item_btn").click(function (e) {
                 e.preventDefault(); //Prevent default action of form being submitted 
@@ -578,172 +436,6 @@
                                                             <option selected disabled hidden>select currency
                                                             </option>
                                                             <option value="AFN">Afghan Afghani</option>
-                                                            <option value="ALL">Albanian Lek</option>
-                                                            <option value="DZD">Algerian Dinar</option>
-                                                            <option value="AOA">Angolan Kwanza</option>
-                                                            <option value="ARS">Argentine Peso</option>
-                                                            <option value="AMD">Armenian Dram</option>
-                                                            <option value="AWG">Aruban Florin</option>
-                                                            <option value="AUD">Australian Dollar</option>
-                                                            <option value="AZN">Azerbaijani Manat</option>
-                                                            <option value="BSD">Bahamian Dollar</option>
-                                                            <option value="BHD">Bahraini Dinar</option>
-                                                            <option value="BDT">Bangladeshi Taka</option>
-                                                            <option value="BBD">Barbadian Dollar</option>
-                                                            <option value="BYR">Belarusian Ruble</option>
-                                                            <option value="BEF">Belgian Franc</option>
-                                                            <option value="BZD">Belize Dollar</option>
-                                                            <option value="BMD">Bermudan Dollar</option>
-                                                            <option value="BTN">Bhutanese Ngultrum</option>
-                                                            <option value="BTC">Bitcoin</option>
-                                                            <option value="BOB">Bolivian Boliviano</option>
-                                                            <option value="BAM">Bosnia-Herzegovina Convertible
-                                                                Mark</option>
-                                                            <option value="BWP">Botswanan Pula</option>
-                                                            <option value="BRL">Brazilian Real</option>
-                                                            <option value="GBP">British Pound Sterling</option>
-                                                            <option value="BND">Brunei Dollar</option>
-                                                            <option value="BGN">Bulgarian Lev</option>
-                                                            <option value="BIF">Burundian Franc</option>
-                                                            <option value="KHR">Cambodian Riel</option>
-                                                            <option value="CAD">Canadian Dollar</option>
-                                                            <option value="CVE">Cape Verdean Escudo</option>
-                                                            <option value="KYD">Cayman Islands Dollar</option>
-                                                            <option value="XOF">CFA Franc BCEAO</option>
-                                                            <option value="XAF">CFA Franc BEAC</option>
-                                                            <option value="XPF">CFP Franc</option>
-                                                            <option value="CLP">Chilean Peso</option>
-                                                            <option value="CNY">Chinese Yuan</option>
-                                                            <option value="COP">Colombian Peso</option>
-                                                            <option value="KMF">Comorian Franc</option>
-                                                            <option value="CDF">Congolese Franc</option>
-                                                            <option value="CRC">Costa Rican ColÃ³n</option>
-                                                            <option value="HRK">Croatian Kuna</option>
-                                                            <option value="CUC">Cuban Convertible Peso</option>
-                                                            <option value="CZK">Czech Republic Koruna</option>
-                                                            <option value="DKK">Danish Krone</option>
-                                                            <option value="DJF">Djiboutian Franc</option>
-                                                            <option value="DOP">Dominican Peso</option>
-                                                            <option value="XCD">East Caribbean Dollar</option>
-                                                            <option value="EGP">Egyptian Pound</option>
-                                                            <option value="ERN">Eritrean Nakfa</option>
-                                                            <option value="EEK">Estonian Kroon</option>
-                                                            <option value="ETB">Ethiopian Birr</option>
-                                                            <option value="EUR">Euro</option>
-                                                            <option value="FKP">Falkland Islands Pound</option>
-                                                            <option value="FJD">Fijian Dollar</option>
-                                                            <option value="GMD">Gambian Dalasi</option>
-                                                            <option value="GEL">Georgian Lari</option>
-                                                            <option value="DEM">German Mark</option>
-                                                            <option value="GHS">Ghanaian Cedi</option>
-                                                            <option value="GIP">Gibraltar Pound</option>
-                                                            <option value="GRD">Greek Drachma</option>
-                                                            <option value="GTQ">Guatemalan Quetzal</option>
-                                                            <option value="GNF">Guinean Franc</option>
-                                                            <option value="GYD">Guyanaese Dollar</option>
-                                                            <option value="HTG">Haitian Gourde</option>
-                                                            <option value="HNL">Honduran Lempira</option>
-                                                            <option value="HKD">Hong Kong Dollar</option>
-                                                            <option value="HUF">Hungarian Forint</option>
-                                                            <option value="ISK">Icelandic KrÃ³na</option>
-                                                            <option value="INR">Indian Rupee</option>
-                                                            <option value="IDR">Indonesian Rupiah</option>
-                                                            <option value="IRR">Iranian Rial</option>
-                                                            <option value="IQD">Iraqi Dinar</option>
-                                                            <option value="ILS">Israeli New Sheqel</option>
-                                                            <option value="ITL">Italian Lira</option>
-                                                            <option value="JMD">Jamaican Dollar</option>
-                                                            <option value="JPY">Japanese Yen</option>
-                                                            <option value="JOD">Jordanian Dinar</option>
-                                                            <option value="KZT">Kazakhstani Tenge</option>
-                                                            <option value="KES">Kenyan Shilling</option>
-                                                            <option value="KWD">Kuwaiti Dinar</option>
-                                                            <option value="KGS">Kyrgystani Som</option>
-                                                            <option value="LAK">Laotian Kip</option>
-                                                            <option value="LVL">Latvian Lats</option>
-                                                            <option value="LBP">Lebanese Pound</option>
-                                                            <option value="LSL">Lesotho Loti</option>
-                                                            <option value="LRD">Liberian Dollar</option>
-                                                            <option value="LYD">Libyan Dinar</option>
-                                                            <option value="LTL">Lithuanian Litas</option>
-                                                            <option value="MOP">Macanese Pataca</option>
-                                                            <option value="MKD">Macedonian Denar</option>
-                                                            <option value="MGA">Malagasy Ariary</option>
-                                                            <option value="MWK">Malawian Kwacha</option>
-                                                            <option value="MYR">Malaysian Ringgit</option>
-                                                            <option value="MVR">Maldivian Rufiyaa</option>
-                                                            <option value="MRO">Mauritanian Ouguiya</option>
-                                                            <option value="MUR">Mauritian Rupee</option>
-                                                            <option value="MXN">Mexican Peso</option>
-                                                            <option value="MDL">Moldovan Leu</option>
-                                                            <option value="MNT">Mongolian Tugrik</option>
-                                                            <option value="MAD">Moroccan Dirham</option>
-                                                            <option value="MZM">Mozambican Metical</option>
-                                                            <option value="MMK">Myanmar Kyat</option>
-                                                            <option value="NAD">Namibian Dollar</option>
-                                                            <option value="NPR">Nepalese Rupee</option>
-                                                            <option value="ANG">Netherlands Antillean Guilder
-                                                            </option>
-                                                            <option value="TWD">New Taiwan Dollar</option>
-                                                            <option value="NZD">New Zealand Dollar</option>
-                                                            <option value="NIO">Nicaraguan CÃ³rdoba</option>
-                                                            <option value="NGN">Nigerian Naira</option>
-                                                            <option value="KPW">North Korean Won</option>
-                                                            <option value="NOK">Norwegian Krone</option>
-                                                            <option value="OMR">Omani Rial</option>
-                                                            <option value="PKR">Pakistani Rupee</option>
-                                                            <option value="PAB">Panamanian Balboa</option>
-                                                            <option value="PGK">Papua New Guinean Kina</option>
-                                                            <option value="PYG">Paraguayan Guarani</option>
-                                                            <option value="PEN">Peruvian Nuevo Sol</option>
-                                                            <option value="PHP">Philippine Peso</option>
-                                                            <option value="PLN">Polish Zloty</option>
-                                                            <option value="QAR">Qatari Rial</option>
-                                                            <option value="RON">Romanian Leu</option>
-                                                            <option value="RUB">Russian Ruble</option>
-                                                            <option value="RWF">Rwandan Franc</option>
-                                                            <option value="SVC">Salvadoran ColÃ³n</option>
-                                                            <option value="WST">Samoan Tala</option>
-                                                            <option value="SAR">Saudi Riyal</option>
-                                                            <option value="RSD">Serbian Dinar</option>
-                                                            <option value="SCR">Seychellois Rupee</option>
-                                                            <option value="SLL">Sierra Leonean Leone</option>
-                                                            <option value="SGD">Singapore Dollar</option>
-                                                            <option value="SKK">Slovak Koruna</option>
-                                                            <option value="SBD">Solomon Islands Dollar</option>
-                                                            <option value="SOS">Somali Shilling</option>
-                                                            <option value="ZAR">South African Rand</option>
-                                                            <option value="KRW">South Korean Won</option>
-                                                            <option value="XDR">Special Drawing Rights</option>
-                                                            <option value="LKR">Sri Lankan Rupee</option>
-                                                            <option value="SHP">St. Helena Pound</option>
-                                                            <option value="SDG">Sudanese Pound</option>
-                                                            <option value="SRD">Surinamese Dollar</option>
-                                                            <option value="SZL">Swazi Lilangeni</option>
-                                                            <option value="SEK">Swedish Krona</option>
-                                                            <option value="CHF">Swiss Franc</option>
-                                                            <option value="SYP">Syrian Pound</option>
-                                                            <option value="STD">São Tomé and Príncipe Dobra
-                                                            </option>
-                                                            <option value="TJS">Tajikistani Somoni</option>
-                                                            <option value="TZS">Tanzanian Shilling</option>
-                                                            <option value="THB">Thai Baht</option>
-                                                            <option value="TOP">Tongan pa'anga</option>
-                                                            <option value="TTD">Trinidad & Tobago Dollar
-                                                            </option>
-                                                            <option value="TND">Tunisian Dinar</option>
-                                                            <option value="TRY">Turkish Lira</option>
-                                                            <option value="TMT">Turkmenistani Manat</option>
-                                                            <option value="UGX">Ugandan Shilling</option>
-                                                            <option value="UAH">Ukrainian Hryvnia</option>
-                                                            <option value="AED">United Arab Emirates Dirham
-                                                            </option>
-                                                            <option value="UYU">Uruguayan Peso</option>
-                                                            <option value="USD">US Dollar</option>
-                                                            <option value="UZS">Uzbekistan Som</option>
-                                                            <option value="VUV">Vanuatu Vatu</option>
-                                                            <option value="VEF">Venezuelan BolÃ­var</option>
-                                                            <option value="VND">Vietnamese Dong</option>
                                                             <option value="YER">Yemeni Rial</option>
                                                             <option value="ZMK">Zambian Kwacha</option>
                                                         </select>
@@ -820,6 +512,7 @@
                 $(row_item).remove();
             });
         });
+
     </script>
 
 
