@@ -113,8 +113,13 @@ body {
 }
 
 .trading-label {
-  padding-left: 28px !important; /* Adjust margin as needed */
-  padding-right: 28px !important; /* Adjust margin as needed */
+  padding-left: 28px;
+  padding-right: 28px;
+}
+
+.expense-label {
+  padding-left: 20px;
+  padding-right: 20px;
 }
 
 .form-header {

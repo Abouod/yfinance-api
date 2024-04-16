@@ -89,10 +89,10 @@
                     <div class="col-md-3">
                         <br>
                         <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
-                            <input type="radio" class="btn-check" name="btnradio" id="machine" autocomplete="off">
+                            <input type="radio" class="btn-check" name="pr-type" id="machine" autocomplete="off">
                             <label class="btn btn-outline-danger" for="machine">Machine Build</label>
 
-                            <input type="radio" class="btn-check" name="btnradio" id="trading" autocomplete="off">
+                            <input type="radio" class="btn-check" name="pr-type" id="trading" autocomplete="off">
                             <label class="btn btn-outline-success trading-label" for="trading">Trading</label>
                         </div>
                     </div>
@@ -121,11 +121,14 @@
                     </div>
                     <div class="col-md-3">
                         <label class="labels">Type for Purchase</label>
-                        <select aria-label="Default select example" name="TFP" type="text" class="form-select"
-                            placeholder="Select Type for Purchase">
-                            <option value="Expense">Expense</option>
-                            <option value="Fixed Asset">Fixed Asset</option>
-                        </select>
+                        <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+                            <input type="radio" class="btn-check" name="TFP" id="fixed-asset" autocomplete="off">
+                            <label class="btn btn-outline-danger" for="fixed-asset">Fixed
+                                Asset</label>
+
+                            <input type="radio" class="btn-check" name="TFP" id="expense" autocomplete="off">
+                            <label class="btn btn-outline-success expense-label" for="expense">Expense</label>
+                        </div>
                     </div>
                     <div class="col-md-3">
                         <label class="labels">Customer PO</label>
@@ -144,13 +147,13 @@
                     <div class="col-md-3">
                         <label class="labels">Supplier Type</label>
                         <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
-                            <input type="radio" class="btn-check" name="btnradio" id="oem" autocomplete="off">
+                            <input type="radio" class="btn-check" name="ST" id="oem" autocomplete="off">
                             <label class="btn btn-outline-danger" for="oem">OEM</label>
 
-                            <input type="radio" class="btn-check" name="btnradio" id="oemd" autocomplete="off">
+                            <input type="radio" class="btn-check" name="ST" id="oemd" autocomplete="off">
                             <label class="btn btn-outline-info" for="oemd">OEM D*</label>
 
-                            <input type="radio" class="btn-check" name="btnradio" id="st-trading" autocomplete="off">
+                            <input type="radio" class="btn-check" name="ST" id="st-trading" autocomplete="off">
                             <label class="btn btn-outline-success" for="st-trading">TRADING</label>
                         </div>
                     </div>
@@ -195,7 +198,7 @@
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Add items</h1>
+                                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Product Details</h1>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal"
                                             aria-label="Close"></button>
                                     </div>
@@ -210,33 +213,35 @@
                                                     </div>
 
                                                     <div class="col-md-1 mb-3">
-                                                        <label class="labels">Part No.</label>
+                                                        <label class="labels">Part No. *</label>
                                                         <input type="text" name="part-number[]" class="form-control"
                                                             required>
                                                     </div>
 
                                                     <div class="col-md-2 mb-3">
-                                                        <label class="labels">Brand</label>
+                                                        <label class="labels">Brand *</label>
                                                         <input type="text" name="brand[]" class="form-control" required>
                                                     </div>
                                                     <div class="col-md-3 mb-3">
-                                                        <label class="labels">Description</label>
-                                                        <input type="text" name="description[]" class="form-control"
-                                                            required>
+                                                        <label class="labels">Description *</label>
+                                                        <textarea class="form-control" id="exampleFormControlTextarea1"
+                                                            rows="2" name="description[]" required></textarea>
                                                     </div>
                                                     <div class="col-md-2 mb-3">
-                                                        <label class="labels">Date</label>
+                                                        <label class="labels">Date *</label>
                                                         <input type="date" name="date[]" class="form-control" required>
                                                     </div>
                                                     <div class="col-md-1 mb-3">
-                                                        <label class="labels">Qty</label>
+                                                        <label class="labels">Qty *</label>
                                                         <input type="number" name="date[]" class="form-control"
                                                             required>
                                                     </div>
                                                     <div class="col-md-2 mb-3">
-                                                        <label class="labels">Currency</label>
-                                                        <select class="form-select" id="currency" name="currency[]">
-                                                            <option>select currency</option>
+                                                        <label class="labels">Currency *</label>
+                                                        <select class="form-select" id="currency" name="currency[]"
+                                                            required>
+                                                            <option selected disabled hidden>select currency
+                                                            </option>
                                                             <option value="AFN">Afghan Afghani</option>
                                                             <option value="ALL">Albanian Lek</option>
                                                             <option value="DZD">Algerian Dinar</option>
@@ -414,26 +419,29 @@
                                                             <div class="row">
                                                                 <!-- DT Optional -->
                                                                 <div class="col-md-3 mb-3">
-                                                                    <label class="labels">Delivery Term</label>
+                                                                    <label class="labels">Delivery Term
+                                                                        <small>(Optional)</small></label>
                                                                     <input type="text" class="form-control">
                                                                 </div>
 
                                                                 <!-- LT Optional -->
                                                                 <div class="col-md-3 mb-3">
-                                                                    <label class="labels">Lead Time</label>
+                                                                    <label class="labels">Lead Time
+                                                                        <small>(Optional)</small></label>
                                                                     <input type="text" class="form-control">
                                                                 </div>
 
                                                                 <!-- Tax Optional -->
                                                                 <div class="col-md-3 mb-3">
-                                                                    <label class="labels">Tax (%)</label>
+                                                                    <label class="labels">Tax (%)
+                                                                        <small>(Optional)</small></label>
                                                                     <input type="text" class="form-control">
                                                                 </div>
 
                                                                 <!-- Tax Optional -->
                                                                 <div class="col-md-3 mb-3">
                                                                     <label class="labels">Exwork
-                                                                        Address/Remark</label>
+                                                                        Address/Remark <small>(Optional)</small></label>
                                                                     <input type="text" class="form-control">
                                                                 </div>
                                                             </div>
@@ -442,13 +450,13 @@
                                                     </div>
 
                                                     <div class="row">
-                                                        <div class="col-md-3 mb-3">
-                                                            <label class="labels">Unit Price</label>
+                                                        <div class="col-md-2 mb-3">
+                                                            <label class="labels">Unit Price *</label>
                                                             <input type="number" name="unit-price[]"
                                                                 class="form-control" required>
                                                         </div>
 
-                                                        <div class="col-md-3 mb-3">
+                                                        <div class="col-md-2 mb-3">
                                                             <label class="labels">Total Price</label>
                                                             <input type="number" name="total-price[]"
                                                                 class="form-control" required>
@@ -536,37 +544,39 @@
                                                     <div class="col-md-1 mb-3">
                                                         <label class="labels">Item</label>
                                                         <input type="number" name="item-number[]" class="form-control"
-                                                            value="1" required>
+                                                            value="1" readonly>
                                                     </div>
 
                                                     <div class="col-md-1 mb-3">
-                                                        <label class="labels">Part No.</label>
+                                                        <label class="labels">Part No. *</label>
                                                         <input type="text" name="part-number[]" class="form-control"
                                                             required>
                                                     </div>
 
                                                     <div class="col-md-2 mb-3">
-                                                        <label class="labels">Brand</label>
+                                                        <label class="labels">Brand *</label>
                                                         <input type="text" name="brand[]" class="form-control" required>
                                                     </div>
                                                     <div class="col-md-3 mb-3">
-                                                        <label class="labels">Description</label>
-                                                        <input type="text" name="description[]" class="form-control"
-                                                            required>
+                                                        <label class="labels">Description *</label>
+                                                        <textarea class="form-control" id="exampleFormControlTextarea1"
+                                                            rows="2" name="description[]" required></textarea>
                                                     </div>
                                                     <div class="col-md-2 mb-3">
-                                                        <label class="labels">Date</label>
+                                                        <label class="labels">Date *</label>
                                                         <input type="date" name="date[]" class="form-control" required>
                                                     </div>
                                                     <div class="col-md-1 mb-3">
-                                                        <label class="labels">Qty</label>
+                                                        <label class="labels">Qty *</label>
                                                         <input type="number" name="date[]" class="form-control"
                                                             required>
                                                     </div>
                                                     <div class="col-md-2 mb-3">
-                                                        <label class="labels">Currency</label>
-                                                        <select class="form-select" id="currency" name="currency[]">
-                                                            <option>select currency</option>
+                                                        <label class="labels">Currency *</label>
+                                                        <select class="form-select" id="currency" name="currency[]"
+                                                            required>
+                                                            <option selected disabled hidden>select currency
+                                                            </option>
                                                             <option value="AFN">Afghan Afghani</option>
                                                             <option value="ALL">Albanian Lek</option>
                                                             <option value="DZD">Algerian Dinar</option>
@@ -739,51 +749,55 @@
                                                         </select>
                                                     </div>
 
-                                                    <div class="col-md-2 mb-3">
-                                                        <label class="labels">Unit Price</label>
-                                                        <input type="number" name="unit-price[]" class="form-control"
-                                                            required>
-                                                    </div>
-
-                                                    <div class="col-md-2 mb-3">
-                                                        <label class="labels">Total Price</label>
-                                                        <input type="number" name="total-price[]" class="form-control"
-                                                            required>
-                                                    </div>
-
                                                     <div class="row">
                                                         <div class="collapse" id="collapseExample">
                                                             <div class="row">
                                                                 <!-- DT Optional -->
-                                                                <div class="col-md-2 mb-3">
-                                                                    <label class="labels">Delivery Term</label>
-                                                                    <input type="text" class="form-control required">
+                                                                <div class="col-md-3 mb-3">
+                                                                    <label class="labels">Delivery Term
+                                                                        <small>(Optional)</small></label>
+                                                                    <input type="text" class="form-control">
                                                                 </div>
 
                                                                 <!-- LT Optional -->
-                                                                <div class="col-md-2 mb-3">
-                                                                    <label class="labels">Lead Time</label>
-                                                                    <input type="text" class="form-control required">
+                                                                <div class="col-md-3 mb-3">
+                                                                    <label class="labels">Lead Time
+                                                                        <small>(Optional)</small></label>
+                                                                    <input type="text" class="form-control">
                                                                 </div>
 
                                                                 <!-- Tax Optional -->
-                                                                <div class="col-md-2 mb-3">
-                                                                    <label class="labels">Tax (%)</label>
-                                                                    <input type="text" class="form-control required">
+                                                                <div class="col-md-3 mb-3">
+                                                                    <label class="labels">Tax (%)
+                                                                        <small>(Optional)</small></label>
+                                                                    <input type="text" class="form-control">
                                                                 </div>
 
                                                                 <!-- Tax Optional -->
-                                                                <div class="col-md-2 mb-3">
+                                                                <div class="col-md-3 mb-3">
                                                                     <label class="labels">Exwork
-                                                                        Address/Remark</label>
-                                                                    <input type="text" class="form-control required">
+                                                                        Address/Remark <small>(Optional)</small></label>
+                                                                    <input type="text" class="form-control">
                                                                 </div>
                                                             </div>
 
                                                         </div>
                                                     </div>
-                                                    <div class="row px-4">
-                                                        <div class="col-md-12">
+
+                                                    <div class="row">
+                                                        <div class="col-md-2 mb-3">
+                                                            <label class="labels">Unit Price *</label>
+                                                            <input type="number" name="unit-price[]"
+                                                                class="form-control" required>
+                                                        </div>
+
+                                                        <div class="col-md-2 mb-3">
+                                                            <label class="labels">Total Price</label>
+                                                            <input type="number" name="total-price[]"
+                                                                class="form-control" required>
+                                                        </div>
+
+                                                        <div class="col-md-6 mt-4">
                                                             <p class="d-inline-flex gap-1">
                                                                 <button class="btn btn-outline-primary" type="button"
                                                                     data-bs-toggle="collapse"
@@ -792,18 +806,17 @@
                                                                     aria-controls="collapseExample">
                                                                     See Optional Fields
                                                                 </button>
+                                                                <!-- Button trigger modal -->
+                                                                <button class="btn btn-danger remove_item_btn m-auto">Remove</button>
                                                             </p>
                                                         </div>
                                                     </div>
-                                                    <div class="col-md-2 mb-3 d-grid">
-                                                        <button class="btn btn-danger remove_item_btn m-4">X</button>
-                                                    </div>
-                                            </div>`);
+                                                </div>`);
             });
 
             $(document).on('click', '.remove_item_btn', function (e) {
                 e.preventDefault();
-                let row_item = $(this).parent().parent();
+                let row_item = $(this).parent().parent().parent().parent();
                 $(row_item).remove();
             });
         });
