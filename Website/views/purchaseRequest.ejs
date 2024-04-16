@@ -159,15 +159,15 @@
                         </div>
                     </div>
                     <div class="row p-4">
-                        <div class="collapse" id="collapseExample">
+                        <div class="collapse" id="pr-collapse">
                             <div class=" card-body">
                                 <div class="row">
                                     <div class="col-md-3">
-                                        <label class="labels">Internal Use</label>
+                                        <label class="labels">Internal Use <small>(Opt.)</small></label>
                                         <input type="text" class="form-control">
                                     </div>
                                     <div class="col-md-3">
-                                        <label class="labels">Purchase Department</label>
+                                        <label class="labels">Purchase Department <small>(Opt.)</small></label>
                                         <input type="text" class="form-control">
                                     </div>
                                 </div>
@@ -178,8 +178,7 @@
                         <div class="col-md-12">
                             <p class="d-inline-flex gap-1">
                                 <button class="btn btn-outline-primary" type="button" data-bs-toggle="collapse"
-                                    data-bs-target="#collapseExample" aria-expanded="false"
-                                    aria-controls="collapseExample">
+                                    data-bs-target="#pr-collapse" aria-expanded="false" aria-controls="pr-collapse">
                                     See Optional Fields
                                 </button>
                                 <!-- Button trigger modal -->
@@ -250,33 +249,33 @@
                                                     </div>
 
                                                     <div class="row">
-                                                        <div class="collapse" id="collapseExample">
+                                                        <div class="collapse" id="pd-collapse">
                                                             <div class="row">
                                                                 <!-- DT Optional -->
                                                                 <div class="col-md-3 mb-3">
                                                                     <label class="labels">Delivery Term
-                                                                        <small>(Optional)</small></label>
+                                                                        <small>(Opt.)</small></label>
                                                                     <input type="text" class="form-control">
                                                                 </div>
 
                                                                 <!-- LT Optional -->
                                                                 <div class="col-md-3 mb-3">
                                                                     <label class="labels">Lead Time
-                                                                        <small>(Optional)</small></label>
+                                                                        <small>(Opt.)</small></label>
                                                                     <input type="text" class="form-control">
                                                                 </div>
 
                                                                 <!-- Tax Optional -->
                                                                 <div class="col-md-3 mb-3">
                                                                     <label class="labels">Tax (%)
-                                                                        <small>(Optional)</small></label>
+                                                                        <small>(Opt.)</small></label>
                                                                     <input type="text" class="form-control">
                                                                 </div>
 
                                                                 <!-- Tax Optional -->
                                                                 <div class="col-md-3 mb-3">
                                                                     <label class="labels">Exwork
-                                                                        Address/Remark <small>(Optional)</small></label>
+                                                                        Address/Remark <small>(Opt.)</small></label>
                                                                     <input type="text" class="form-control">
                                                                 </div>
                                                             </div>
@@ -301,9 +300,8 @@
                                                             <p class="d-inline-flex gap-1">
                                                                 <button class="btn btn-outline-primary" type="button"
                                                                     data-bs-toggle="collapse"
-                                                                    data-bs-target="#collapseExample"
-                                                                    aria-expanded="false"
-                                                                    aria-controls="collapseExample">
+                                                                    data-bs-target="#pd-collapse" aria-expanded="false"
+                                                                    aria-controls="pd-collapse">
                                                                     See Optional Fields
                                                                 </button>
                                                                 <!-- Button trigger modal -->
@@ -367,7 +365,19 @@
             prevScrollpos = currentScrollPos;
         }
 
+        // Counter for generating unique IDs
+        var collapseCount = 0;
+
+        // Function to generate unique IDs for collapse elements
+        function generateUniqueCollapseID() {
+            collapseCount++;
+            return "pd-collapse" + collapseCount;
+        }
+
         $(document).ready(function () {
+            // Counter for item number
+            var itemNumber = 1;
+
             // Function to validate the form's required fields
             function validateForm() {
                 var isValid = true;
@@ -397,12 +407,20 @@
             //This function is triggered when any element with the class add_item_btn is clicked.
             $(".add_item_btn").click(function (e) {
                 e.preventDefault(); //Prevent default action of form being submitted 
+
+                // Generate unique IDs for collapse elements
+                var collapseID = generateUniqueCollapseID();
+
+                // Increment item number
+                itemNumber++;
+
+
                 //dynamically adds a new set of input fields for product to the container with class .show-item
                 $("#show-item").append(`<div class="row p-4">
                                                     <div class="col-md-1 mb-3">
                                                         <label class="labels">Item</label>
                                                         <input type="number" name="item-number[]" class="form-control"
-                                                            value="1" readonly>
+                                                            value="${itemNumber}" readonly>
                                                     </div>
 
                                                     <div class="col-md-1 mb-3">
@@ -442,7 +460,7 @@
                                                     </div>
 
                                                     <div class="row">
-                                                        <div class="collapse" id="collapseExample">
+                                                        <div class="collapse" id="${collapseID}">
                                                             <div class="row">
                                                                 <!-- DT Optional -->
                                                                 <div class="col-md-3 mb-3">
@@ -493,9 +511,9 @@
                                                             <p class="d-inline-flex gap-1">
                                                                 <button class="btn btn-outline-primary" type="button"
                                                                     data-bs-toggle="collapse"
-                                                                    data-bs-target="#collapseExample"
+                                                                    data-bs-target="#${collapseID}"
                                                                     aria-expanded="false"
-                                                                    aria-controls="collapseExample">
+                                                                    aria-controls="${collapseID}">
                                                                     See Optional Fields
                                                                 </button>
                                                                 <!-- Button trigger modal -->
@@ -508,6 +526,7 @@
 
             $(document).on('click', '.remove_item_btn', function (e) {
                 e.preventDefault();
+                itemNumber--;
                 let row_item = $(this).parent().parent().parent().parent();
                 $(row_item).remove();
             });
