@@ -12,11 +12,13 @@ import { app } from "./config.js";
 
 const port = 3000;
 
+// Set EJS as the view engine
+app.set("view engine", "ejs");
+
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json()); // for parsing application/json
 app.use(express.static("public"));
 app.use(cookieParser());
-
 // Logging HTTP requests
 app.use(logger("dev"));
 
@@ -43,9 +45,24 @@ app.use("/index", index);
 app.use("/userProfile", profile);
 app.use("/purchase", purchase);
 
-// Error handler
+// app.get("/error-test", (req, res, next) => {
+//   // Throw an error
+//   throw new Error("This is a test error");
+// });
+
+// Catch-all route for handling undefined routes
+app.use((req, res, next) => {
+  // Create a 404 Not Found error
+  const err = new Error(
+    `The requested URL ${req.url} was not found on this server.`
+  );
+  err.status = 404;
+  next(err);
+});
+
+// Error handling middleware
 app.use(function (err, req, res, next) {
-  // Use http-errors to create an error object
+  // Create an error object using http-errors
   const error = createError(err.status || 500, err.message);
 
   // Set locals, only providing error in development
@@ -53,8 +70,8 @@ app.use(function (err, req, res, next) {
   res.locals.error = req.app.get("env") === "development" ? error : {};
 
   // Render the error page
-  res.status(error.status);
-  res.render("error");
+  res.status(error.status || 500);
+  res.render("error.ejs", { error });
 });
 
 export default app;

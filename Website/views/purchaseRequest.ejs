@@ -47,7 +47,7 @@
         </div>
     </nav>
 
-    <form id="add-form" action="/purchase" method="POST">
+    <form id="add-form" action="/purchase/submit" method="POST">
         <div class="container shadow rounded bg-white">
             <div class="row">
                 <div class="shadow rounded">
@@ -59,41 +59,42 @@
                     <div class="row p-4">
                         <div class="col-md-4">
                             <label class="labels">Request by</label>
-                            <input type="text" class="form-control" value="<%= firstName %> <%= lastName %>" required>
+                            <input type="text" name="fullName" class="form-control"
+                                value="<%= firstName %> <%= lastName %>" required>
                         </div>
                         <div class="col-md-4">
                             <label class="labels">Date</label>
-                            <input type="date" class="form-control"
+                            <input type="date" name="requestDate" class="form-control"
                                 value="<%= new Date().toISOString().split('T')[0] %>" required>
                         </div>
                         <div class="col-md-4">
                             <label class="labels">Customer Name</label>
-                            <input type="text" class="form-control" required>
+                            <input name="customerName" type="text" class="form-control" required>
                         </div>
                     </div>
                     <div class="row px-4">
                         <div class="col-md-3">
                             <label class="labels">Requisition No.</label>
-                            <input type="text"
+                            <input name="requisitionNo" type="text"
                                 value="<%= 'PR' + firstName.charAt(0) + lastName.charAt(0) + - + getFormattedDate() + '00'%>"
                                 class="form-control" required>
                         </div>
                         <div class="col-md-3">
                             <label class="labels">Online Purchase</label>
-                            <input type="text" class="form-control" required>
+                            <input name="onlinePurchase" type="text" class="form-control" required>
                         </div>
                         <div class="col-md-3">
                             <label class="labels">Quotation No.</label>
-                            <input type="text" class="form-control" required>
+                            <input name="quotationNo" type="text" class="form-control" required>
                         </div>
                         <div class="col-md-3">
                             <br>
                             <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
-                                <input type="radio" class="btn-check" value="Machine Build" name="pr-type" id="machine"
+                                <input type="radio" class="btn-check" value="Machine Build" name="prType" id="machine"
                                     autocomplete="off" required>
                                 <label class="btn btn-outline-danger" for="machine">Machine Build</label>
 
-                                <input type="radio" class="btn-check" value="Trading" name="pr-type" id="trading"
+                                <input type="radio" class="btn-check" value="Trading" name="prType" id="trading"
                                     autocomplete="off" required>
                                 <label class="btn btn-outline-success trading-label" for="trading">Trading</label>
                             </div>
@@ -102,7 +103,7 @@
                     <div class="row p-4">
                         <div class="col-md-6">
                             <label class="labels">Sophic Project Category</label>
-                            <select aria-label="Default select example" name="SPC[]" type="text" class="form-select"
+                            <select aria-label="Default select example" name="SPC" type="text" class="form-select"
                                 required>
                                 <option value="" disabled selected hidden>Select Sophic Project Category</option>
                                 <option value="AIMMS-Automated Intelligent Material Management System">AIMMS-Automated
@@ -136,17 +137,17 @@
                         </div>
                         <div class="col-md-3">
                             <label class="labels">Customer PO</label>
-                            <input type="text" class="form-control" required>
+                            <input name="customerPo" type="text" class="form-control" required>
                         </div>
                     </div>
                     <div class="row px-4">
                         <div class="col-md-4">
                             <label class="labels">Supplier Name</label>
-                            <input type="text" class="form-control" required>
+                            <input name="supplierName" type="text" class="form-control" required>
                         </div>
                         <div class="col-md-5">
                             <label class="labels">Project Description</label>
-                            <input type="text" class="form-control" required>
+                            <input name="projectDescription" type="text" class="form-control" required>
                         </div>
                         <div class="col-md-3">
                             <label class="labels">Supplier Type</label>
@@ -169,165 +170,196 @@
                                 <div class="row">
                                     <div class="col-md-3">
                                         <label class="labels">Internal Use <small>(Opt.)</small></label>
-                                        <input type="text" class="form-control">
+                                        <input name="internalUse" type="text" class="form-control">
                                     </div>
                                     <div class="col-md-3">
                                         <label class="labels">Purchase Department <small>(Opt.)</small></label>
-                                        <input type="text" class="form-control">
+                                        <input name="purchaseDepartment" type="text" class="form-control">
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="row px-4">
-                        <div class="col-md-12">
-                            <p class="d-inline-flex gap-1">
-                                <button class="btn btn-outline-primary" type="button" data-bs-toggle="collapse"
-                                    data-bs-target="#pr-collapse" aria-expanded="false" aria-controls="pr-collapse">
-                                    See Optional Fields
-                                </button>
-                                <!-- Button trigger modal -->
-                                <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                                    data-bs-target="#staticBackdrop">
-                                    Add Product Details
-                                </button>
-                            </p>
-                        </div>
-
-                    </div>
-                    <div class="row px-4 pb-4">
-                        <div class="col-md-6">
-                            <!-- Modal -->
-                            <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static"
-                                data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel"
-                                aria-hidden="true">
-                                <div class="modal-dialog">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h1 class="modal-title fs-5" id="staticBackdropLabel">Product Details</h1>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                    <% if (successMessage || errorMessage) { %>
+                        <div class="text-center px-4">
+                            <% if(successMessage) { %>
+                                <div class="alert alert-success alert-sm alert-dismissible fade show" role="alert">
+                                    <%= successMessage %>
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                            aria-label="Close"></button>
+                                </div>
+                                <% } else if (errorMessage) { %>
+                                    <div class="alert alert-danger alert-sm alert-dismissible fade show" role="alert">
+                                        <%= errorMessage %>
+                                            <button type="button" class="btn-close" data-bs-dismiss="alert"
                                                 aria-label="Close"></button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <div id="show-item">
-                                                <div class="row p-4">
-                                                    <div class="col-md-1 mb-3">
-                                                        <label class="labels">Item</label>
-                                                        <input type="number" name="item-number[]" class="form-control"
-                                                            value="1" readonly>
-                                                    </div>
+                                    </div>
+                                    <% } %>
+                        </div>
+                        <% } %>
+                            <div class="row px-4">
+                                <div class="col-md-12">
+                                    <p class="d-inline-flex gap-1">
+                                        <button class="btn btn-outline-primary" type="button" data-bs-toggle="collapse"
+                                            data-bs-target="#pr-collapse" aria-expanded="false"
+                                            aria-controls="pr-collapse">
+                                            See Optional Fields
+                                        </button>
+                                        <!-- Button trigger modal -->
+                                        <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                            data-bs-target="#staticBackdrop">
+                                            Add Product Details
+                                        </button>
+                                    </p>
+                                </div>
 
-                                                    <div class="col-md-1 mb-3">
-                                                        <label class="labels">Part No. *</label>
-                                                        <input type="text" name="part-number[]" class="form-control "
-                                                            required>
-                                                    </div>
+                            </div>
+                            <div class="row px-4 pb-4">
+                                <div class="col-md-6">
+                                    <!-- Modal -->
+                                    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static"
+                                        data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel"
+                                        aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Product
+                                                        Details</h1>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                        aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <div id="show-item">
+                                                        <div class="row p-4">
+                                                            <div class="col-md-1 mb-3">
+                                                                <label class="labels">Item</label>
+                                                                <input type="number" name="itemNumber"
+                                                                    class="form-control" id="itemNumber" readonly>
+                                                            </div>
 
-                                                    <div class="col-md-2 mb-3">
-                                                        <label class="labels">Brand *</label>
-                                                        <input type="text" name="brand[]" class="form-control "
-                                                            required>
-                                                    </div>
-                                                    <div class="col-md-3 mb-3">
-                                                        <label class="labels">Description *</label>
-                                                        <textarea class="form-control " id="exampleFormControlTextarea1"
-                                                            rows="2" name="description[]" required></textarea>
-                                                    </div>
-                                                    <div class="col-md-2 mb-3">
-                                                        <label class="labels">Date Required *</label>
-                                                        <input type="date" name="date[]" class="form-control " required>
-                                                    </div>
-                                                    <div class="col-md-1 mb-3">
-                                                        <label class="labels">Qty *</label>
-                                                        <input type="number" name="date[]" class="form-control "
-                                                            required>
-                                                    </div>
-                                                    <div class="col-md-2 mb-3">
-                                                        <label class="labels">Currency *</label>
-                                                        <select aria-label="Currency Select" name="currency[]"
-                                                            type="text" class="form-select" id="currency" required>
-                                                            <option value="" selected disabled hidden>select currency
-                                                            </option>
-                                                            <option value="AFN">Afghan Afghani</option>
-                                                            <option value="ALL">Albanian Lek</option>
-                                                        </select>
-                                                    </div>
+                                                            <div class="col-md-1 mb-3">
+                                                                <label class="labels">Part No. *</label>
+                                                                <input type="text" name="partNumber[]"
+                                                                    class="form-control " required>
+                                                            </div>
 
-                                                    <div class="row">
-                                                        <div class="collapse" id="pd-collapse">
+                                                            <div class="col-md-2 mb-3">
+                                                                <label class="labels">Brand *</label>
+                                                                <input type="text" name="brand[]" class="form-control "
+                                                                    required>
+                                                            </div>
+                                                            <div class="col-md-3 mb-3">
+                                                                <label class="labels">Description *</label>
+                                                                <textarea class="form-control "
+                                                                    id="exampleFormControlTextarea1" rows="2"
+                                                                    name="description[]" required></textarea>
+                                                            </div>
+                                                            <div class="col-md-2 mb-3">
+                                                                <label class="labels">Date Required *</label>
+                                                                <input type="date" name="dateRequired[]"
+                                                                    class="form-control" required>
+                                                            </div>
+                                                            <div class="col-md-1 mb-3">
+                                                                <label class="labels">Qty *</label>
+                                                                <input type="number" name="quantity"
+                                                                    class="form-control" required>
+                                                            </div>
+                                                            <div class="col-md-2 mb-3">
+                                                                <label class="labels">Currency *</label>
+                                                                <select aria-label="Currency Select" name="currency[]"
+                                                                    type="text" class="form-select" id="currency"
+                                                                    required>
+                                                                    <option value="" selected disabled hidden>select
+                                                                        currency
+                                                                    </option>
+                                                                    <option value="AFN">Afghan Afghani</option>
+                                                                    <option value="ALL">Albanian Lek</option>
+                                                                </select>
+                                                            </div>
+
                                                             <div class="row">
-                                                                <!-- DT Optional -->
-                                                                <div class="col-md-3 mb-3">
-                                                                    <label class="labels">Delivery Term
-                                                                        <small>(Opt.)</small></label>
-                                                                    <input type="text" class="form-control">
-                                                                </div>
+                                                                <div class="collapse" id="pd-collapse">
+                                                                    <div class="row">
+                                                                        <!-- DT Optional -->
+                                                                        <div class="col-md-3 mb-3">
+                                                                            <label class="labels">Delivery Term
+                                                                                <small>(Opt.)</small></label>
+                                                                            <input name="deliveryTerm" type="text"
+                                                                                class="form-control">
+                                                                        </div>
 
-                                                                <!-- LT Optional -->
-                                                                <div class="col-md-3 mb-3">
-                                                                    <label class="labels">Lead Time
-                                                                        <small>(Opt.)</small></label>
-                                                                    <input type="text" class="form-control">
-                                                                </div>
+                                                                        <!-- LT Optional -->
+                                                                        <div class="col-md-3 mb-3">
+                                                                            <label class="labels">Lead Time
+                                                                                <small>(Opt.)</small></label>
+                                                                            <input name="leadTime" type="text"
+                                                                                class="form-control">
+                                                                        </div>
 
-                                                                <!-- Tax Optional -->
-                                                                <div class="col-md-3 mb-3">
-                                                                    <label class="labels">Tax (%)
-                                                                        <small>(Opt.)</small></label>
-                                                                    <input type="text" class="form-control">
-                                                                </div>
+                                                                        <!-- Tax Optional -->
+                                                                        <div class="col-md-3 mb-3">
+                                                                            <label class="labels">Tax (%)
+                                                                                <small>(Opt.)</small></label>
+                                                                            <input name="tax" type="number"
+                                                                                class="form-control">
+                                                                        </div>
 
-                                                                <!-- Tax Optional -->
-                                                                <div class="col-md-3 mb-3">
-                                                                    <label class="labels">Exwork
-                                                                        Address/Remark <small>(Opt.)</small></label>
-                                                                    <input type="text" class="form-control">
+                                                                        <!-- Tax Optional -->
+                                                                        <div class="col-md-3 mb-3">
+                                                                            <label class="labels">Exwork
+                                                                                Address/Remark
+                                                                                <small>(Opt.)</small></label>
+                                                                            <input name="exwork" type="text"
+                                                                                class="form-control">
+                                                                        </div>
+                                                                    </div>
+
                                                                 </div>
                                                             </div>
 
+                                                            <div class="row">
+                                                                <div class="col-md-2 mb-3">
+                                                                    <label class="labels">Unit Price *</label>
+                                                                    <input name="unitPrice" type="number"
+                                                                        name="unit-price[]" class="form-control "
+                                                                        required>
+                                                                </div>
+
+                                                                <div class="col-md-2 mb-3">
+                                                                    <label class="labels">Total Price</label>
+                                                                    <input name="totalPrice" type="number"
+                                                                        name="total-price[]" class="form-control"
+                                                                        required>
+                                                                </div>
+
+                                                                <div class="col-md-6 mt-4">
+                                                                    <p class="d-inline-flex gap-1">
+                                                                        <button class="btn btn-outline-primary"
+                                                                            type="button" data-bs-toggle="collapse"
+                                                                            data-bs-target="#pd-collapse"
+                                                                            aria-expanded="false"
+                                                                            aria-controls="pd-collapse">
+                                                                            See Optional Fields
+                                                                        </button>
+                                                                        <!-- Button trigger modal -->
+                                                                        <button type="button"
+                                                                            class="btn btn-success add_item_btn">Add
+                                                                            More</button>
+                                                                    </p>
+                                                                </div>
+                                                            </div>
                                                         </div>
                                                     </div>
-
-                                                    <div class="row">
-                                                        <div class="col-md-2 mb-3">
-                                                            <label class="labels">Unit Price *</label>
-                                                            <input type="number" name="unit-price[]"
-                                                                class="form-control " required>
-                                                        </div>
-
-                                                        <div class="col-md-2 mb-3">
-                                                            <label class="labels">Total Price</label>
-                                                            <input type="number" name="total-price[]"
-                                                                class="form-control" required>
-                                                        </div>
-
-                                                        <div class="col-md-6 mt-4">
-                                                            <p class="d-inline-flex gap-1">
-                                                                <button class="btn btn-outline-primary" type="button"
-                                                                    data-bs-toggle="collapse"
-                                                                    data-bs-target="#pd-collapse" aria-expanded="false"
-                                                                    aria-controls="pd-collapse">
-                                                                    See Optional Fields
-                                                                </button>
-                                                                <!-- Button trigger modal -->
-                                                                <button type="button"
-                                                                    class="btn btn-success add_item_btn">Add
-                                                                    More</button>
-                                                            </p>
-                                                        </div>
+                                                    <div class="col-md-4 px-4">
+                                                        <button type="submit" class="btn btn-primary w-25"
+                                                            id="submit_modal_btn">Submit</button>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div class="col-md-4 px-4">
-                                                <button type="submit" class="btn btn-primary w-25"
-                                                    id="submit_modal_btn">Submit</button>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
@@ -378,6 +410,8 @@
             collapseCount++;
             return "pd-collapse" + collapseCount;
         }
+
+        document.getElementById("itemNumber").value = 1;
 
         $(document).ready(function () {
             // Counter for item number
