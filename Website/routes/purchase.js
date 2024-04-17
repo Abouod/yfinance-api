@@ -85,7 +85,7 @@ router.post("/submit", requireSignin, async (req, res) => {
     // Generate requisitionNo by concatenating PR prefix, user initials, formatted date, and PR count
     const requisitionNo = `PR${firstName.charAt(0)}${lastName.charAt(
       0
-    )}-${formattedDate}${req.session.prCount.toString().padStart(2, "0")}`;
+    )}-${formattedDate}${req.session.prCount.toString().padStart(3, "0")}`;
 
     // Insert data into the purchase_request table
     await db.query(
@@ -163,7 +163,16 @@ router.get("/", requireSignin, async (req, res) => {
     // Get the last submission date and prCount from the session
     const lastSubmissionDate =
       req.session.lastSubmissionDate || getFormattedDate();
-    const prCount = req.session.prCount || 1;
+
+    // Define currentDate
+    const currentDate = getFormattedDate();
+
+    const prCount =
+      lastSubmissionDate === currentDate ? req.session.prCount || 1 : 1;
+
+    // Update session variables
+    req.session.lastSubmissionDate = currentDate;
+    req.session.prCount = prCount;
 
     // Fetch the user's first name and last name from the database
     const userQuery = await db.query(
@@ -183,7 +192,7 @@ router.get("/", requireSignin, async (req, res) => {
     // Generate requisitionNo by concatenating PR prefix, user initials, formatted date, and prCount
     const requisitionNo = `PR${first_name.charAt(0)}${last_name.charAt(
       0
-    )}-${lastSubmissionDate}${prCount.toString().padStart(2, "0")}`;
+    )}-${lastSubmissionDate}${prCount.toString().padStart(3, "0")}`;
 
     // Render the purchaseRequest.ejs template and pass the concatenated string
     res.render("purchaseRequest.ejs", {
