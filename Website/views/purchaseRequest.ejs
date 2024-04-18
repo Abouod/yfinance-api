@@ -163,6 +163,16 @@
                             </div>
                         </div>
                     </div>
+                    <!-- <div class="row p-4">
+                        <input list="brow">
+                        <datalist id="brow">
+                            <option value="Internet Explorer">
+                            <option value="Firefox">
+                            <option value="Chrome">
+                            <option value="Opera">
+                            <option value="Safari">
+                        </datalist>
+                    </div> -->
                     <div class="row p-4">
                         <div class="collapse" id="pr-collapse">
                             <div class=" card-body">
@@ -265,15 +275,20 @@
                                                             </div>
                                                             <div class="col-md-2 mb-3">
                                                                 <label class="labels">Currency *</label>
-                                                                <select aria-label="Currency Select" name="currency[]"
-                                                                    type="text" class="form-select" id="currency"
-                                                                    required>
+                                                                <input name="currency[]" type="text"
+                                                                    class="form-control" list="currency"
+                                                                    id="currencyInput">
+                                                                <datalist id="currency">
                                                                     <option value="" selected disabled hidden>select
                                                                         currency
                                                                     </option>
-                                                                    <option value="AFN">Afghan Afghani</option>
+                                                                    <option value="MYR">Malaysian Ringgit</option>
                                                                     <option value="ALL">Albanian Lek</option>
-                                                                </select>
+                                                                    <option value="SAR">Saudi Riyal</option>
+                                                                    <option value="USD">US Dollar</option>
+                                                                    <option value="POD">UK Pound</option>
+                                                                </datalist>
+                                                                <div id="error" style="color: red;"></div>
                                                             </div>
 
                                                             <div class="row">
@@ -569,6 +584,21 @@
                 $(row_item).remove();
             });
         });
+
+        $(document).ready(function () {
+            $('#currencyInput').on('input', function () {
+                var input = $(this).val().toUpperCase(); // Convert input to uppercase for case-insensitive comparison
+                var found = $('#currency').find('option[value="' + input + '"]').length > 0;
+                if (!found) {
+                    $('#error').text("Invalid currency");
+                    $(this).val(''); // Clear the input field
+                } else {
+                    $('#error').text('');
+                }
+            });
+        });
+
+
 
     </script>
 
