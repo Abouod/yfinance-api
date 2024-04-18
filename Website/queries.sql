@@ -46,4 +46,5 @@ CREATE TABLE IF NOT EXISTS purchase_request (
     tax numeric,
     exwork text,
     pr_count integer DEFAULT 1,
+    last_submission_date date,
 )
