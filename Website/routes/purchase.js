@@ -1,39 +1,37 @@
 import express from "express";
-import { db } from "../config.js";
+import { db, app } from "../config.js";
 import requireSignin from "./authMiddleware.js"; // Import the middleware function
 
 const router = express.Router();
 
-// Function to get today's date in the desired format (DDMMYY)
 function getFormattedDate() {
   const today = new Date();
-  return today
-    .toLocaleDateString("en-GB", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "2-digit",
-    })
-    .replace(/\//g, "");
+  const year = String(today.getFullYear()).slice(-2); // Get last two digits of the year
+  const month = String(today.getMonth() + 1).padStart(2, "0");
+  const day = String(today.getDate()).padStart(2, "0");
+  return year + month + day;
 }
 
-// // On server startup, retrieve the last prCount for the user from the database and store it in the session
-// app.use(async (req, res, next) => {
-//   try {
-//     if (req.session.user) {
-//       const userQuery = await db.query(
-//         "SELECT pr_count FROM users WHERE id = $1",
-//         [req.session.user.id]
-//       );
-//       if (userQuery.rows.length > 0) {
-//         req.session.prCount = userQuery.rows[0].pr_count || 1;
-//       }
-//     }
-//     next();
-//   } catch (error) {
-//     console.error("Error retrieving prCount from database:", error);
-//     next(error);
-//   }
-// });
+// On server startup, retrieve the last prCount for the user from the database and store it in the session
+app.use(async (req, res, next) => {
+  try {
+    if (req.session.user) {
+      const userQuery = await db.query(
+        "SELECT pr_count FROM purchase_request WHERE user_id = $1 ORDER BY id DESC LIMIT 1",
+        [req.session.user.id]
+      );
+      if (userQuery.rows.length > 0) {
+        req.session.prCount = userQuery.rows[0].pr_count;
+      } else {
+        req.session.prCount = 1; // Set prCount to 1 if no previous records found
+      }
+    }
+    next();
+  } catch (error) {
+    console.error("Error retrieving prCount from database:", error);
+    next(error);
+  }
+});
 
 //Route to handle GET requests to /submit
 router.get("/submit", (req, res) => {
@@ -89,8 +87,12 @@ router.post("/submit", requireSignin, async (req, res) => {
     // Get the last submission date from the session
     const lastSubmissionDate = req.session.lastSubmissionDate || formattedDate;
 
+    console.log("lastSubmissionDate:", lastSubmissionDate);
+
     // Reset prCount to 1 if the last submission date is different from the current date
     const currentDate = formattedDate;
+
+    console.log("currentDate:", currentDate);
 
     if (lastSubmissionDate !== currentDate) {
       // Reset prCount to 1
@@ -98,8 +100,12 @@ router.post("/submit", requireSignin, async (req, res) => {
       req.session.lastSubmissionDate = currentDate;
     }
 
+    console.log("req.session.prCount before:", req.session.prCount);
+
     // Increment prCount for each submission
     req.session.prCount = req.session.prCount ? req.session.prCount + 1 : 1;
+
+    console.log("req.session.prCount after:", req.session.prCount);
 
     // Generate requisitionNo by concatenating PR prefix, user initials, formatted date, and PR count
     const requisitionNo = `PR${firstName.charAt(0)}${lastName.charAt(
