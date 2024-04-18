@@ -92,6 +92,11 @@ body {
   margin: 130px auto 80px !important; /* Center the container horizontally */
 }
 
+.profile-header {
+  background-color: var(--fourth-color);
+  border-radius: inherit;
+}
+
 .form-control:focus {
   box-shadow: none;
   border-color: var(--third-color);
@@ -117,9 +122,9 @@ body {
   box-shadow: none;
 }
 
-.labels {
+/* .labels {
   font-size: 11px;
-}
+} */
 
 .form-container {
   display: flex;

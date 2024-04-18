@@ -163,16 +163,6 @@
                             </div>
                         </div>
                     </div>
-                    <!-- <div class="row p-4">
-                        <input list="brow">
-                        <datalist id="brow">
-                            <option value="Internet Explorer">
-                            <option value="Firefox">
-                            <option value="Chrome">
-                            <option value="Opera">
-                            <option value="Safari">
-                        </datalist>
-                    </div> -->
                     <div class="row p-4">
                         <div class="collapse" id="pr-collapse">
                             <div class=" card-body">
@@ -585,6 +575,7 @@
             });
         });
 
+        // Validate currency input
         $(document).ready(function () {
             $('#currencyInput').on('input', function () {
                 var input = $(this).val().toUpperCase(); // Convert input to uppercase for case-insensitive comparison

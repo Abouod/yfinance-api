@@ -16,6 +16,25 @@ function getFormattedDate() {
     .replace(/\//g, "");
 }
 
+// // On server startup, retrieve the last prCount for the user from the database and store it in the session
+// app.use(async (req, res, next) => {
+//   try {
+//     if (req.session.user) {
+//       const userQuery = await db.query(
+//         "SELECT pr_count FROM users WHERE id = $1",
+//         [req.session.user.id]
+//       );
+//       if (userQuery.rows.length > 0) {
+//         req.session.prCount = userQuery.rows[0].pr_count || 1;
+//       }
+//     }
+//     next();
+//   } catch (error) {
+//     console.error("Error retrieving prCount from database:", error);
+//     next(error);
+//   }
+// });
+
 //Route to handle GET requests to /submit
 router.get("/submit", (req, res) => {
   // Redirect the user to the purchase Page post submitting
