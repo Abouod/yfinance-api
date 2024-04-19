@@ -97,10 +97,10 @@ router.post("/submit", requireSignin, async (req, res) => {
     const taxValue = tax !== undefined && tax !== "" ? tax : null; //! Can be adjusted to whatever makes sense in this case (Just to prevent pg insertion error)
 
     // Check the initial value of prCount
-    console.log("Initial prCount:", prCount);
+    // console.log("Initial prCount:", prCount);
 
     // Check the value of prCount after potential increment
-    console.log("prCount after potential increment:", prCount);
+    // console.log("prCount after potential increment:", prCount);
 
     const requisitionNo = `PR${firstName.charAt(0)}${lastName.charAt(
       0
@@ -234,9 +234,9 @@ router.get("/", requireSignin, async (req, res) => {
     // Extract the user's first name and last name from the query result
     const { first_name, last_name } = userQuery.rows[0];
 
-    console.log("prCount:", prCount);
-    console.log("lastSubmissionDate:", lastSubmissionDate);
-    console.log("getFormattedDate():", getFormattedDate());
+    // console.log("prCount:", prCount);
+    // console.log("lastSubmissionDate:", lastSubmissionDate);
+    // console.log("getFormattedDate():", getFormattedDate());
 
     // Generate requisitionNo by concatenating PR prefix, user initials, formatted date, and prCount
     const requisitionNo = `PR${first_name.charAt(0)}${last_name.charAt(
