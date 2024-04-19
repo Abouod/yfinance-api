@@ -1,5 +1,5 @@
 import express from "express";
-import { db, app } from "../config.js";
+import { db } from "../config.js";
 import requireSignin from "./authMiddleware.js"; // Import the middleware function
 
 const router = express.Router();
@@ -54,13 +54,38 @@ router.post("/submit", requireSignin, async (req, res) => {
       exwork,
     } = req.body;
 
-    // Retrieve prCount and lastSubmissionDate from the user's session
-    let { prCount, lastSubmissionDate } = req.session;
+    // Retrieve prCount and lastSubmissionDate from the database
+    const prCountQuery = await db.query(
+      "SELECT pr_count FROM purchase_request WHERE user_id = $1",
+      [req.session.user.id]
+    );
+    const lastSubmissionDateQuery = await db.query(
+      "SELECT last_submission_date FROM purchase_request WHERE user_id = $1",
+      [req.session.user.id]
+    );
 
-    // If prCount and lastSubmissionDate are not present in the session, initialize them
+    let prCount = prCountQuery.rows[0]?.pr_count || 1;
+    let lastSubmissionDate =
+      lastSubmissionDateQuery.rows[0]?.last_submission_date || null;
+
+    // Check if it's a new day, reset prCount if necessary
+    if (lastSubmissionDate !== getFormattedDate()) {
+      prCount = 1;
+
+      // Update prCount in the database for the current user
+      await db.query(
+        "UPDATE purchase_request SET pr_count = $1, last_submission_date = $2 WHERE user_id = $3",
+        [prCount, getFormattedDate(), userId]
+      );
+    }
+
+    // If prCount and lastSubmissionDate are not present in the db, initialize them
     if (!prCount || !lastSubmissionDate) {
       prCount = 1;
       lastSubmissionDate = getFormattedDate();
+      prCount += 1; // Increment prCount for each submission
+    } else {
+      prCount += 1; // Increment prCount for each submission
     }
 
     // Split the fullName into firstName and lastName
@@ -72,15 +97,6 @@ router.post("/submit", requireSignin, async (req, res) => {
 
     // Check the initial value of prCount
     console.log("Initial prCount:", prCount);
-
-    // Check if it's a new day or no previous submissions, reset prCount if necessary
-    if (lastSubmissionDate !== getFormattedDate()) {
-      prCount = 1; // Initialize prCount to 1 only if it's a new day or no previous submissions
-      lastSubmissionDate = getFormattedDate(); // Update lastSubmissionDate to the current date
-    } else {
-      // Increment prCount for each submission
-      prCount += 1;
-    }
 
     // Check the value of prCount after potential increment
     console.log("prCount after potential increment:", prCount);
@@ -127,11 +143,14 @@ router.post("/submit", requireSignin, async (req, res) => {
         lastSubmissionDate, // Insert lastSubmissionDate into the database
       ]
     );
+
     await db.query("COMMIT"); // Commit the transaction
 
-    // Update the session with the new values of prCount and lastSubmissionDate
-    req.session.prCount = prCount;
-    req.session.lastSubmissionDate = lastSubmissionDate;
+    // Update prCount and lastSubmissionDate in the database
+    await db.query(
+      "UPDATE purchase_request SET pr_count = $1, last_submission_date = $2 WHERE user_id = $3",
+      [prCount, lastSubmissionDate, req.session.user.id]
+    );
 
     // Fetch the user's first name and last name again from the database
     const userQuery = await db.query(
@@ -167,18 +186,35 @@ router.get("/", requireSignin, async (req, res) => {
     // Get the user's ID from the session
     const userId = req.session.user.id;
 
-    // Retrieve prCount and lastSubmissionDate from the session
-    let { prCount, lastSubmissionDate } = req.session;
+    // Retrieve prCount and lastSubmissionDate from the database
+    const prCountQuery = await db.query(
+      "SELECT pr_count FROM purchase_request WHERE user_id = $1",
+      [userId]
+    );
+    const lastSubmissionDateQuery = await db.query(
+      "SELECT last_submission_date FROM purchase_request WHERE user_id = $1",
+      [userId]
+    );
 
-    // If prCount and lastSubmissionDate are not present in the session, initialize them
-    if (!prCount || !lastSubmissionDate) {
-      prCount = 1;
-      lastSubmissionDate = getFormattedDate();
-    }
+    let prCount = prCountQuery.rows[0]?.pr_count || 1;
+    let lastSubmissionDate =
+      lastSubmissionDateQuery.rows[0]?.last_submission_date || null;
 
     // Check if it's a new day, reset prCount if necessary
     if (lastSubmissionDate !== getFormattedDate()) {
       prCount = 1;
+
+      // Update prCount in the database for the current user
+      await db.query(
+        "UPDATE purchase_request SET pr_count = $1, last_submission_date = $2 WHERE user_id = $3",
+        [prCount, getFormattedDate(), userId]
+      );
+    }
+
+    // If prCount and lastSubmissionDate are not present in the db, initialize them
+    if (!prCount || !lastSubmissionDate) {
+      prCount = 1;
+      lastSubmissionDate = getFormattedDate();
     }
 
     // Fetch the user's first name and last name from the database
@@ -196,8 +232,9 @@ router.get("/", requireSignin, async (req, res) => {
     // Extract the user's first name and last name from the query result
     const { first_name, last_name } = userQuery.rows[0];
 
-    console.log("Session prCount:", prCount);
-    console.log("Session lastSubmissionDate:", lastSubmissionDate);
+    console.log("prCount:", prCount);
+    console.log("lastSubmissionDate:", lastSubmissionDate);
+    console.log("getFormattedDate():", getFormattedDate());
 
     // Generate requisitionNo by concatenating PR prefix, user initials, formatted date, and prCount
     const requisitionNo = `PR${first_name.charAt(0)}${last_name.charAt(

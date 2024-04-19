@@ -45,11 +45,6 @@ app.use("/index", index);
 app.use("/userProfile", profile);
 app.use("/purchase", purchase);
 
-// app.get("/error-test", (req, res, next) => {
-//   // Throw an error
-//   throw new Error("This is a test error");
-// });
-
 // Catch-all route for handling undefined routes
 app.use((req, res, next) => {
   // Create a 404 Not Found error
