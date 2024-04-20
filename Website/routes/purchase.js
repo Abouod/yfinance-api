@@ -71,6 +71,7 @@ router.post("/submit", requireSignin, async (req, res) => {
     // Check if it's a new day, reset prCount if necessary
     if (lastSubmissionDate !== getFormattedDate()) {
       prCount = 1;
+      lastSubmissionDate = getFormattedDate(); // Update lastSubmissionDate
 
       // Update prCount in the database for the current user
       await db.query(
@@ -203,6 +204,7 @@ router.get("/", requireSignin, async (req, res) => {
     // Check if it's a new day, reset prCount if necessary
     if (lastSubmissionDate !== getFormattedDate()) {
       prCount = 1;
+      lastSubmissionDate = getFormattedDate(); // Update lastSubmissionDate
 
       // Update prCount in the database for the current user
       await db.query(
