@@ -22,6 +22,8 @@ router.get("/submit", (req, res) => {
 // Route to handle form submission and save data to the database
 router.post("/submit", requireSignin, async (req, res) => {
   try {
+    console.log("Request Body:", req.body); // Log the request body to inspect incoming data
+
     await db.query("BEGIN"); // Start a transaction
     // Extract data from the request body
     const {
@@ -52,7 +54,39 @@ router.post("/submit", requireSignin, async (req, res) => {
       leadTime,
       tax,
       exwork,
+      grandTotal,
     } = req.body;
+
+    console.log("Extracted Data:", {
+      fullName,
+      requestDate,
+      customerName,
+      onlinePurchase,
+      quotationNo,
+      prType,
+      SPC,
+      TFP,
+      customerPo,
+      supplierName,
+      projectDescription,
+      ST,
+      itemNumber,
+      description,
+      partNumber,
+      brand,
+      dateRequired,
+      quantity,
+      currency,
+      unitPrice,
+      totalPrice,
+      internalUse,
+      purchaseDepartment,
+      deliveryTerm,
+      leadTime,
+      tax,
+      exwork,
+      grandTotal,
+    }); // Log the extracted data
 
     // Retrieve prCount and lastSubmissionDate from the database
     const prCountQuery = await db.query(
@@ -92,10 +126,6 @@ router.post("/submit", requireSignin, async (req, res) => {
     // Split the fullName into firstName and lastName
     const [firstName, lastName] = fullName.split(" ");
 
-    // Check if tax field is empty or undefined
-    // If it is, set it to null or any other appropriate default value
-    const taxValue = tax !== undefined && tax !== "" ? tax : null; //! Can be adjusted to whatever makes sense in this case (Just to prevent pg insertion error)
-
     // Check the initial value of prCount
     // console.log("Initial prCount:", prCount);
 
@@ -106,44 +136,56 @@ router.post("/submit", requireSignin, async (req, res) => {
       0
     )}-${getFormattedDate()}${prCount.toString().padStart(3, "0")}`;
 
-    // Insert data into the purchase_request table
-    await db.query(
-      `INSERT INTO purchase_request (user_id, request_by, request_date, customer_name, requisition_no, online_purchase, quotation_no, pr_type, project_category, type_for_purchase, customer_po, supplier_name, project_description, supplier_type, item, description, part_no, brand, date_required, quantity, currency, unit_price, total_price, internal_use, purchase_department, delivery_term, lead_time, tax, exwork, pr_count, last_submission_date)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31)`,
-      [
-        req.session.user.id,
-        fullName,
-        requestDate,
-        customerName,
-        requisitionNo,
-        onlinePurchase,
-        quotationNo,
-        prType,
-        SPC,
-        TFP,
-        customerPo,
-        supplierName,
-        projectDescription,
-        ST,
-        itemNumber,
-        description,
-        partNumber,
-        brand,
-        dateRequired,
-        quantity,
-        currency,
-        unitPrice,
-        totalPrice,
-        internalUse,
-        purchaseDepartment,
-        deliveryTerm,
-        leadTime,
-        taxValue,
-        exwork,
-        prCount, // Insert prCount
-        lastSubmissionDate, // Insert lastSubmissionDate into the database
-      ]
-    );
+    // Assuming itemNumber is an array, loop through each item
+    for (let i = 0; i < itemNumber.length; i++) {
+      const currentItemNumber = itemNumber[i];
+
+      // Parse totalPrice, unitPrice, and quantity to decimals
+      const parsedTotalPrice = parseFloat(totalPrice[i] || 0); // Default to 0 if empty or invalid
+      const parsedUnitPrice = parseFloat(unitPrice[i] || 0); // Default to 0 if empty or invalid
+      const parsedQuantity = parseFloat(quantity[i] || 0); // Default to 0 if empty or invalid
+      const parsedTax = tax[i] !== "" ? parseFloat(tax[i]) : null; // Parse tax to float or set to null if empty string
+
+      // Insert data into the purchase_request table for each item
+      await db.query(
+        `INSERT INTO purchase_request (user_id, request_by, request_date, customer_name, requisition_no, online_purchase, quotation_no, pr_type, project_category, type_for_purchase, customer_po, supplier_name, project_description, supplier_type, item, description, part_no, brand, date_required, quantity, currency, unit_price, total_price, internal_use, purchase_department, delivery_term, lead_time, tax, exwork, pr_count, last_submission_date, grand_total)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32)`,
+        [
+          req.session.user.id,
+          fullName,
+          requestDate,
+          customerName,
+          requisitionNo,
+          onlinePurchase,
+          quotationNo,
+          prType,
+          SPC,
+          TFP,
+          customerPo,
+          supplierName,
+          projectDescription,
+          ST,
+          currentItemNumber,
+          description[i],
+          partNumber[i],
+          brand[i],
+          dateRequired[i],
+          parsedQuantity,
+          currency[i],
+          parsedUnitPrice,
+          parsedTotalPrice,
+          internalUse,
+          purchaseDepartment,
+          deliveryTerm[i],
+          leadTime[i],
+          parsedTax, //Issue is here
+          exwork[i],
+          prCount, // Insert prCount
+          lastSubmissionDate, // Insert lastSubmissionDate into the database
+          grandTotal,
+        ]
+      );
+    }
 
     await db.query("COMMIT"); // Commit the transaction
 
