@@ -22,8 +22,6 @@ router.get("/submit", (req, res) => {
 // Route to handle form submission and save data to the database
 router.post("/submit", requireSignin, async (req, res) => {
   try {
-    console.log("Request Body:", req.body); // Log the request body to inspect incoming data
-
     await db.query("BEGIN"); // Start a transaction
     // Extract data from the request body
     const {
@@ -56,37 +54,6 @@ router.post("/submit", requireSignin, async (req, res) => {
       exwork,
       grandTotal,
     } = req.body;
-
-    console.log("Extracted Data:", {
-      fullName,
-      requestDate,
-      customerName,
-      onlinePurchase,
-      quotationNo,
-      prType,
-      SPC,
-      TFP,
-      customerPo,
-      supplierName,
-      projectDescription,
-      ST,
-      itemNumber,
-      description,
-      partNumber,
-      brand,
-      dateRequired,
-      quantity,
-      currency,
-      unitPrice,
-      totalPrice,
-      internalUse,
-      purchaseDepartment,
-      deliveryTerm,
-      leadTime,
-      tax,
-      exwork,
-      grandTotal,
-    }); // Log the extracted data
 
     // Retrieve prCount and lastSubmissionDate from the database
     const prCountQuery = await db.query(
@@ -125,12 +92,6 @@ router.post("/submit", requireSignin, async (req, res) => {
 
     // Split the fullName into firstName and lastName
     const [firstName, lastName] = fullName.split(" ");
-
-    // Check the initial value of prCount
-    // console.log("Initial prCount:", prCount);
-
-    // Check the value of prCount after potential increment
-    // console.log("prCount after potential increment:", prCount);
 
     const requisitionNo = `PR${firstName.charAt(0)}${lastName.charAt(
       0
@@ -275,10 +236,6 @@ router.get("/", requireSignin, async (req, res) => {
 
     // Extract the user's first name and last name from the query result
     const { first_name, last_name } = userQuery.rows[0];
-
-    // console.log("prCount:", prCount);
-    // console.log("lastSubmissionDate:", lastSubmissionDate);
-    // console.log("getFormattedDate():", getFormattedDate());
 
     // Generate requisitionNo by concatenating PR prefix, user initials, formatted date, and prCount
     const requisitionNo = `PR${first_name.charAt(0)}${last_name.charAt(

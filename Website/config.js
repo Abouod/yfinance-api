@@ -6,7 +6,7 @@ import env from "dotenv";
 import express from "express";
 
 const app = express();
-env.config(); //Load environement variables from .env file
+env.config(); //Load environment variables from .env file
 
 const db = new pg.Client({
   user: process.env.PG_USER,

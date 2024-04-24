@@ -30,6 +30,10 @@ app.get("/", (req, res) => {
   });
 });
 
+app.get("/UiPath", (req, res) => {
+  res.render("uipath.ejs");
+});
+
 // Route to serve the signup.ejs file
 app.get("/signup", (req, res) => {
   // Pass an empty string as the error message initially
