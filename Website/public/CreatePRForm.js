@@ -31,26 +31,31 @@ window.onload = () => {
     }
   );
 
-  const runRPA_CreatePurchaseRequestForm = (
-    requisitionNo,
-    requestDate,
-    fullName,
-    customerName,
-    onlinePurchase,
-    quotationNo
-  ) => {
+  const runRPA_CreatePurchaseRequestForm = () => {
+    let arguments = {
+      reqNo: document.getElementById("requisitionNo").value,
+      reqDate: document.getElementById("requestDate").value,
+      fName: document.getElementById("fullName").value,
+      cusName: document.getElementById("customerName").value,
+      oPurchase: document.getElementById("onlinePurchase").value,
+      qNo: document.getElementById("quotationNo").value,
+      pType: document.querySelector("[name='prType']").value,
+      spcValue: document.getElementById("SPC").value,
+      tfp: document.querySelector("[name='TFP']").value,
+      cusPo: document.getElementById("customerPo").value,
+      supplierN: document.getElementById("supplierName").value,
+      projectD: document.getElementById("projectDescription").value,
+      supplierT: document.querySelector("[name='ST']").value,
+      internalU: document.getElementById("internalUse").value,
+      purchaseD: document.getElementById("purchaseDepartment").value,
+    };
+
     //Initialize the process status and result
     document.getElementById("process-status").innerHTML = "";
     document.getElementById("process-result").innerHTML = "";
+
     // Run the process
-    RPA_CreatePurchaseRequestForm.start({
-      reqNo: requisitionNo,
-      reqDate: requestDate,
-      fName: fullName,
-      cusName: customerName,
-      oPurchase: onlinePurchase,
-      qNo: quotationNo,
-    })
+    RPA_CreatePurchaseRequestForm.start(arguments)
       .onStatus((status) => {
         // Log the status to the console
         console.log("Status:", status);
@@ -66,16 +71,8 @@ window.onload = () => {
           console.log(
             (document.getElementById(
               "process-result"
-            ).innerHTML = `<b>Process output:</b> <br> : ${processResults.requisitionNo}`)
+            ).innerHTML = `<b>Process output:</b> <br> : ${processResults}`)
           );
-          console.log(
-            (document.getElementById(
-              "process-result"
-            ).innerHTML = `<b>Process output:</b> <br> : ${processResults.reqNo}`)
-          );
-          document.getElementById(
-            "process-result2"
-          ).innerHTML = `<b>Process output reqNo:</b> <br> : ${processResults.reqDate}`;
         },
         (err) => {
           console.log(err);
@@ -84,27 +81,24 @@ window.onload = () => {
       );
   };
 
-  // Make it listen to the form submission
-  document.getElementById("CreatePRForm").addEventListener(
-    "submit",
-    function (event) {
-      // event.preventDefault();
-      const requisitionNo = document.getElementById("requisitionNo").value;
-      const requestDate = document.getElementById("requestDate").value;
-      const fullName = document.getElementById("fullName").value;
-      const customerName = document.getElementById("customerName").value;
-      const onlinePurchase = document.getElementById("onlinePurchase").value;
-      const quotationNo = document.getElementById("quotationNo").value;
-      // const prType = document.getElementById("prType").value;
+  // Make it listen to the button click
+  document.getElementById("submit_modal_btn").addEventListener(
+    "click",
+    async function (event) {
+      // Prevent the default form submission
+      event.preventDefault();
 
-      runRPA_CreatePurchaseRequestForm(
-        requisitionNo,
-        requestDate,
-        fullName,
-        customerName,
-        onlinePurchase,
-        quotationNo
-      );
+      runRPA_CreatePurchaseRequestForm(arguments);
+
+      //programmatically trigger a click
+      document.getElementById("close-modal-button").click();
+
+      // Set a timeout to delay the form submission after the UiPath process completes
+      setTimeout(() => {
+        // After UiPath process completes, submit the form programmatically
+        console.log("Submitting the form");
+        document.getElementById("CreatePRForm").submit();
+      }, 4500); // Adjust the timeout duration as needed
     },
     false
   );

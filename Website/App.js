@@ -14,7 +14,6 @@ const port = 3000;
 
 // Set EJS as the view engine
 app.set("view engine", "ejs");
-
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json()); // for parsing application/json
 app.use(express.static("public"));

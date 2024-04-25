@@ -95,8 +95,8 @@
                     <div class="row p-4">
                         <div class="col-md-6">
                             <label class="labels">Sophic Project Category</label>
-                            <select aria-label="Default select example" name="SPC" type="text" class="form-select"
-                                required>
+                            <select id="SPC" aria-label="Default select example" name="SPC" type="text"
+                                class="form-select" required>
                                 <option value="" disabled selected hidden>Select Sophic Project Category</option>
                                 <option value="AIMMS-Automated Intelligent Material Management System">AIMMS-Automated
                                     Intelligent Material Management System</option>
@@ -117,29 +117,30 @@
                         <div class="col-md-3">
                             <label class="labels">Type for Purchase</label>
                             <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
-                                <input type="radio" class="btn-check" name="TFP" id="fixed-asset" autocomplete="off"
-                                    required>
+                                <input type="radio" class="btn-check" value="FIXED ASSET" name="TFP" id="fixed-asset"
+                                    autocomplete="off" required>
                                 <label class="btn btn-outline-danger" for="fixed-asset">Fixed
                                     Asset</label>
 
-                                <input type="radio" class="btn-check" name="TFP" id="expense" autocomplete="off"
-                                    required>
+                                <input type="radio" class="btn-check" value="EXPENSE" name="TFP" id="expense"
+                                    autocomplete="off" required>
                                 <label class="btn btn-outline-success expense-label" for="expense">Expense</label>
                             </div>
                         </div>
                         <div class="col-md-3">
                             <label class="labels">Customer PO</label>
-                            <input name="customerPo" type="text" class="form-control" required>
+                            <input id="customerPo" name="customerPo" type="text" class="form-control" required>
                         </div>
                     </div>
                     <div class="row px-4">
                         <div class="col-md-4">
                             <label class="labels">Supplier Name</label>
-                            <input name="supplierName" type="text" class="form-control" required>
+                            <input id="supplierName" name="supplierName" type="text" class="form-control" required>
                         </div>
                         <div class="col-md-5">
                             <label class="labels">Project Description</label>
-                            <input name="projectDescription" type="text" class="form-control" required>
+                            <input id="projectDescription" name="projectDescription" type="text" class="form-control"
+                                required>
                         </div>
                         <div class="col-md-3">
                             <label class="labels">Supplier Type</label>
@@ -164,11 +165,12 @@
                                 <div class="row">
                                     <div class="col-md-3">
                                         <label class="labels">Internal Use <small>(Opt.)</small></label>
-                                        <input name="internalUse" type="text" class="form-control">
+                                        <input id="internalUse" name="internalUse" type="text" class="form-control">
                                     </div>
                                     <div class="col-md-3">
                                         <label class="labels">Purchase Department <small>(Opt.)</small></label>
-                                        <input name="purchaseDepartment" type="text" class="form-control">
+                                        <input id="purchaseDepartment" name="purchaseDepartment" type="text"
+                                            class="form-control">
                                     </div>
                                 </div>
                             </div>
@@ -191,6 +193,7 @@
                                     <% } %>
                         </div>
                         <% } %>
+                            <!-- Display UiPath Status and Result -->
                             <ul id="process-status"></ul>
                             <div id="process-result"></div>
                             <div id="process-result2"></div>
@@ -224,8 +227,8 @@
                                                 <h1 class="modal-title fs-5" id="staticBackdropLabel">
                                                     Product
                                                     Details</h1>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                    aria-label="Close"></button>
+                                                <button id="close-modal-button" type="button" class="btn-close"
+                                                    data-bs-dismiss="modal" aria-label="Close"></button>
                                             </div>
                                             <div class="modal-body">
                                                 <div id="show-item">
@@ -238,14 +241,14 @@
 
                                                         <div class="col-md-1 mb-3">
                                                             <label class="labels">Part No. *</label>
-                                                            <input type="text" name="partNumber[]" class="form-control "
+                                                            <input type="text" name="partNumber[]" class="form-control"
                                                                 required>
                                                         </div>
 
                                                         <div class="col-md-2 mb-3">
                                                             <label class="labels">Brand *</label>
-                                                            <input type="text" name="brand[]" class="form-control "
-                                                                required>
+                                                            <input id="brand" type="text" name="brand[]"
+                                                                class="form-control" required>
                                                         </div>
                                                         <div class="col-md-3 mb-3">
                                                             <label class="labels">Description *</label>
@@ -262,7 +265,7 @@
                                                         <div class="col-md-1 mb-3">
                                                             <label class="labels">Qty *</label>
                                                             <input id="quantity" type="number" name="quantity[]"
-                                                                class="quantity form-control" min="0" required>
+                                                                class="quantity form-control" min="1" required>
                                                         </div>
                                                         <div class="col-md-2 mb-3">
                                                             <label class="labels">Currency *</label>
@@ -349,7 +352,7 @@
                                                                         aria-controls="pd-collapse">
                                                                         See Optional Fields
                                                                     </button>
-                                                                    <!-- Button trigger modal -->
+                                                                    <!-- Add more In modal button -->
                                                                     <button type="button"
                                                                         class="btn btn-success add_item_btn">Add
                                                                         More</button>
@@ -366,7 +369,7 @@
                                                             type="number" readonly>
                                                     </div>
                                                     <div class="col-md-2 mt-4">
-                                                        <button type="submit" class="btn btn-primary w-100"
+                                                        <button type="button" class="btn btn-primary w-100"
                                                             id="submit_modal_btn">Submit</button>
                                                     </div>
                                                 </div>
