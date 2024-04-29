@@ -98,7 +98,7 @@ window.onload = () => {
         // After UiPath process completes, submit the form programmatically
         console.log("Submitting the form");
         document.getElementById("CreatePRForm").submit();
-      }, 4500); // Adjust the timeout duration as needed
+      }, 5000); // Adjust the timeout duration as needed
     },
     false
   );

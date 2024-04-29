@@ -1,13 +1,26 @@
-<Activity mc:Ignorable="sap sap2010" x:Class="Main" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:sap="http://schemas.microsoft.com/netfx/2009/xaml/activities/presentation" xmlns:sap2010="http://schemas.microsoft.com/netfx/2010/xaml/activities/presentation" xmlns:scg="clr-namespace:System.Collections.Generic;assembly=System.Private.CoreLib" xmlns:sco="clr-namespace:System.Collections.ObjectModel;assembly=System.Private.CoreLib" xmlns:ue="clr-namespace:UiPath.Excel;assembly=UiPath.Excel.Activities" xmlns:ueab="clr-namespace:UiPath.Excel.Activities.Business;assembly=UiPath.Excel.Activities" xmlns:ui="http://schemas.uipath.com/workflow/activities" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+<Activity mc:Ignorable="sap sap2010" x:Class="Main" xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:sap="http://schemas.microsoft.com/netfx/2009/xaml/activities/presentation" xmlns:sap2010="http://schemas.microsoft.com/netfx/2010/xaml/activities/presentation" xmlns:sc="clr-namespace:System.ComponentModel;assembly=System.ComponentModel.TypeConverter" xmlns:scg="clr-namespace:System.Collections.Generic;assembly=System.Private.CoreLib" xmlns:sco="clr-namespace:System.Collections.ObjectModel;assembly=System.Private.CoreLib" xmlns:ue="clr-namespace:UiPath.Excel;assembly=UiPath.Excel.Activities" xmlns:ueab="clr-namespace:UiPath.Excel.Activities.Business;assembly=UiPath.Excel.Activities" xmlns:ui="http://schemas.uipath.com/workflow/activities" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
   <x:Members>
     <x:Property Name="reqNo" Type="InArgument(x:String)" />
     <x:Property Name="reqDate" Type="InArgument(x:String)" />
+    <x:Property Name="fName" Type="InArgument(x:String)" />
+    <x:Property Name="cusName" Type="InArgument(x:String)" />
+    <x:Property Name="oPurchase" Type="InArgument(x:String)" />
+    <x:Property Name="qNo" Type="InArgument(x:String)" />
+    <x:Property Name="pType" Type="InArgument(x:String)" />
+    <x:Property Name="tfp" Type="InArgument(x:String)" />
+    <x:Property Name="cusPo" Type="InArgument(x:String)" />
+    <x:Property Name="spcValue" Type="InArgument(x:String)" />
+    <x:Property Name="supplierN" Type="InArgument(x:String)" />
+    <x:Property Name="projectD" Type="InArgument(x:String)" />
+    <x:Property Name="internalU" Type="InArgument(x:String)" />
+    <x:Property Name="purchaseD" Type="InArgument(x:String)" />
+    <x:Property Name="supplierT" Type="InArgument(x:String)" />
   </x:Members>
   <VisualBasic.Settings>
     <x:Null />
   </VisualBasic.Settings>
   <sap2010:Annotation.AnnotationText>UPTF00000088eyI8SGVscExpbms+a19fQmFja2luZ0ZpZWxkIjpudWxsLCI8SW5pdGlhbFRvb2x0aXA+a19fQmFja2luZ0ZpZWxkIjpudWxsLCI8VmVyc2lvbj5rX19CYWNraW5nRmllbGQiOjF9</sap2010:Annotation.AnnotationText>
-  <sap:VirtualizedContainerService.HintSize>772.8,572</sap:VirtualizedContainerService.HintSize>
+  <sap:VirtualizedContainerService.HintSize>824,6627.2</sap:VirtualizedContainerService.HintSize>
   <sap2010:WorkflowViewState.IdRef>ActivityBuilder_1</sap2010:WorkflowViewState.IdRef>
   <TextExpression.NamespacesForImplementation>
     <sco:Collection x:TypeArguments="x:String">
@@ -43,6 +56,8 @@
       <x:String>UiPath.Excel.Activities.Business</x:String>
       <x:String>UiPath.Excel.Model</x:String>
       <x:String>System.Numerics</x:String>
+      <x:String>System.ComponentModel</x:String>
+      <x:String>System.Xml.Serialization</x:String>
     </sco:Collection>
   </TextExpression.NamespacesForImplementation>
   <TextExpression.ReferencesForImplementation>
@@ -98,41 +113,178 @@
       <AssemblyReference>System.Reflection.Metadata</AssemblyReference>
       <AssemblyReference>UiPath.Excel</AssemblyReference>
       <AssemblyReference>System.Runtime.Numerics</AssemblyReference>
+      <AssemblyReference>System.ComponentModel.EventBasedAsync</AssemblyReference>
+      <AssemblyReference>System.ComponentModel.Primitives</AssemblyReference>
+      <AssemblyReference>System.Private.Xml</AssemblyReference>
     </sco:Collection>
   </TextExpression.ReferencesForImplementation>
-  <Sequence DisplayName="Main Sequence" sap:VirtualizedContainerService.HintSize="688,1226.4" sap2010:WorkflowViewState.IdRef="Sequence_1">
+  <sap:WorkflowViewStateService.ViewState>
+    <scg:Dictionary x:TypeArguments="x:String, x:Object">
+      <x:Boolean x:Key="ShouldExpandAll">False</x:Boolean>
+    </scg:Dictionary>
+  </sap:WorkflowViewStateService.ViewState>
+  <Sequence DisplayName="Main Sequence" sap:VirtualizedContainerService.HintSize="834.4,6562.4" sap2010:WorkflowViewState.IdRef="Sequence_1">
     <sap:WorkflowViewStateService.ViewState>
       <scg:Dictionary x:TypeArguments="x:String, x:Object">
         <x:Boolean x:Key="IsExpanded">True</x:Boolean>
       </scg:Dictionary>
     </sap:WorkflowViewStateService.ViewState>
-    <ui:CopyFile ContinueOnError="{x:Null}" Destination="[Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + &quot;\Downloads\PR_Form_Template.xlsx&quot;]" DisplayName="Copy File" sap:VirtualizedContainerService.HintSize="625.6,195.2" sap2010:WorkflowViewState.IdRef="CopyFile_2" Overwrite="True" Path="PR_Form_Template.xlsx" />
-    <ui:RenameFileX DisplayName="Rename File" FilePath="[Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + &quot;\Downloads\PR_Form_Template.xlsx&quot;]" sap:VirtualizedContainerService.HintSize="625.6,184" sap2010:WorkflowViewState.IdRef="RenameFileX_2" KeepExtension="True" NewName="[reqNo]" />
-    <ueab:ExcelProcessScopeX DisplayAlerts="{x:Null}" ExistingProcessAction="{x:Null}" FileConflictResolution="{x:Null}" LaunchMethod="{x:Null}" LaunchTimeout="{x:Null}" MacroSettings="{x:Null}" ProcessMode="{x:Null}" ShowExcelWindow="{x:Null}" DisplayName="Excel Process Scope" sap:VirtualizedContainerService.HintSize="625.6,758.4" sap2010:WorkflowViewState.IdRef="ExcelProcessScopeX_2">
+    <ui:CopyFile ContinueOnError="{x:Null}" Destination="[Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + &quot;\Documents\PR_Form_Template.xlsx&quot;]" DisplayName="Copy File" sap:VirtualizedContainerService.HintSize="772,195.2" sap2010:WorkflowViewState.IdRef="CopyFile_2" Overwrite="True" Path="PR_Form_Template.xlsx" />
+    <ui:RenameFileX DisplayName="Rename File" FilePath="[Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + &quot;\Documents\PR_Form_Template.xlsx&quot;]" sap:VirtualizedContainerService.HintSize="772,184" sap2010:WorkflowViewState.IdRef="RenameFileX_2" KeepExtension="True" NewName="[reqNo]" />
+    <ueab:ExcelProcessScopeX DisplayAlerts="{x:Null}" ExistingProcessAction="{x:Null}" FileConflictResolution="{x:Null}" LaunchMethod="{x:Null}" LaunchTimeout="{x:Null}" MacroSettings="{x:Null}" ProcessMode="{x:Null}" ShowExcelWindow="{x:Null}" DisplayName="Excel Process Scope" sap:VirtualizedContainerService.HintSize="772,6094.4" sap2010:WorkflowViewState.IdRef="ExcelProcessScopeX_2">
       <ueab:ExcelProcessScopeX.Body>
         <ActivityAction x:TypeArguments="ui:IExcelProcess">
           <ActivityAction.Argument>
             <DelegateInArgument x:TypeArguments="ui:IExcelProcess" Name="ExcelProcessScopeTag" />
           </ActivityAction.Argument>
-          <Sequence DisplayName="Do" sap:VirtualizedContainerService.HintSize="592,648.8" sap2010:WorkflowViewState.IdRef="Sequence_7">
+          <Sequence DisplayName="Do" sap:VirtualizedContainerService.HintSize="738.4,5984.8" sap2010:WorkflowViewState.IdRef="Sequence_7">
             <sap:WorkflowViewStateService.ViewState>
               <scg:Dictionary x:TypeArguments="x:String, x:Object">
                 <x:Boolean x:Key="IsExpanded">True</x:Boolean>
               </scg:Dictionary>
             </sap:WorkflowViewStateService.ViewState>
-            <ueab:ExcelApplicationCard Password="{x:Null}" ReadFormatting="{x:Null}" CreateNewFile="False" DisplayName="Use Excel File" sap:VirtualizedContainerService.HintSize="529.6,562.4" sap2010:WorkflowViewState.IdRef="ExcelApplicationCard_2" ResizeWindow="None" WorkbookPath="[Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + &quot;\Downloads\&quot; + reqNo +&quot;.xlsx&quot;]">
+            <ueab:ExcelApplicationCard Password="{x:Null}" ReadFormatting="{x:Null}" CreateNewFile="False" DisplayName="Use Excel File" sap:VirtualizedContainerService.HintSize="676,5898.4" sap2010:WorkflowViewState.IdRef="ExcelApplicationCard_2" ResizeWindow="None" WorkbookPath="[Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + &quot;\Documents\&quot; + reqNo +&quot;.xlsx&quot;]">
               <ueab:ExcelApplicationCard.Body>
                 <ActivityAction x:TypeArguments="ue:IWorkbookQuickHandle">
                   <ActivityAction.Argument>
                     <DelegateInArgument x:TypeArguments="ue:IWorkbookQuickHandle" Name="Excel" />
                   </ActivityAction.Argument>
-                  <Sequence DisplayName="Do" sap:VirtualizedContainerService.HintSize="496,269.6" sap2010:WorkflowViewState.IdRef="Sequence_8">
+                  <Sequence DisplayName="Do" sap:VirtualizedContainerService.HintSize="642.4,5605.6" sap2010:WorkflowViewState.IdRef="Sequence_8">
+                    <Sequence.Variables>
+                      <Variable x:TypeArguments="x:String" Name="slashValue" />
+                    </Sequence.Variables>
                     <sap:WorkflowViewStateService.ViewState>
                       <scg:Dictionary x:TypeArguments="x:String, x:Object">
                         <x:Boolean x:Key="IsExpanded">True</x:Boolean>
                       </scg:Dictionary>
                     </sap:WorkflowViewStateService.ViewState>
-                    <ueab:WriteCellX Cell="[Excel.Sheet(&quot;Internal PQ&quot;).Cell(&quot;F7&quot;)]" DisplayName="Write Cell" sap:VirtualizedContainerService.HintSize="433.6,183.2" sap2010:WorkflowViewState.IdRef="WriteCellX_4" Value="[reqDate]" />
+                    <ueab:WriteCellX Cell="[Excel.Sheet(&quot;Internal PQ&quot;).Cell(&quot;F7:R7&quot;)]" DisplayName="Write Cell" sap:VirtualizedContainerService.HintSize="580,200" sap2010:WorkflowViewState.IdRef="WriteCellX_4" Value="[reqDate]" />
+                    <ueab:WriteCellX Cell="[Excel.Sheet(&quot;Internal PQ&quot;).Cell(&quot;C7&quot;)]" DisplayName="Write Cell" sap:VirtualizedContainerService.HintSize="580,200" sap2010:WorkflowViewState.IdRef="WriteCellX_5" Value="[fName]" />
+                    <ueab:WriteCellX Cell="[Excel.Sheet(&quot;Internal PQ&quot;).Cell(&quot;C11:D11&quot;)]" DisplayName="Write Cell" sap:VirtualizedContainerService.HintSize="580,200" sap2010:WorkflowViewState.IdRef="WriteCellX_6" Value="[cusName]" />
+                    <ueab:WriteCellX Cell="[Excel.Sheet(&quot;Internal PQ&quot;).Cell(&quot;F8:R8&quot;)]" DisplayName="Write Cell" sap:VirtualizedContainerService.HintSize="580,200" sap2010:WorkflowViewState.IdRef="WriteCellX_7" Value="[oPurchase]" />
+                    <ueab:WriteCellX Cell="[Excel.Sheet(&quot;Internal PQ&quot;).Cell(&quot;F12:R12&quot;)]" DisplayName="Write Cell" sap:VirtualizedContainerService.HintSize="580,200" sap2010:WorkflowViewState.IdRef="WriteCellX_8" Value="[qNo]" />
+                    <ueab:WriteCellX Cell="[Excel.Sheet(&quot;Internal PQ&quot;).Cell(&quot;A7:B7&quot;)]" DisplayName="Write Cell" sap:VirtualizedContainerService.HintSize="580,200" sap2010:WorkflowViewState.IdRef="WriteCellX_9" Value="[reqNo]" />
+                    <Assign sap:VirtualizedContainerService.HintSize="580,121.6" sap2010:WorkflowViewState.IdRef="Assign_3">
+                      <Assign.To>
+                        <OutArgument x:TypeArguments="x:String">[slashValue]</OutArgument>
+                      </Assign.To>
+                      <Assign.Value>
+                        <InArgument x:TypeArguments="x:String">/</InArgument>
+                      </Assign.Value>
+                    </Assign>
+                    <If Condition="[pType.Equals(&quot;Trading&quot;, StringComparison.OrdinalIgnoreCase)]" sap:VirtualizedContainerService.HintSize="580,717.6" sap2010:WorkflowViewState.IdRef="If_1">
+                      <sap:WorkflowViewStateService.ViewState>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object">
+                          <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+                          <x:Boolean x:Key="IsPinned">False</x:Boolean>
+                        </scg:Dictionary>
+                      </sap:WorkflowViewStateService.ViewState>
+                      <If.Then>
+                        <Sequence DisplayName="Then" sap:VirtualizedContainerService.HintSize="496,269.6" sap2010:WorkflowViewState.IdRef="Sequence_9">
+                          <sap:WorkflowViewStateService.ViewState>
+                            <scg:Dictionary x:TypeArguments="x:String, x:Object">
+                              <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+                            </scg:Dictionary>
+                          </sap:WorkflowViewStateService.ViewState>
+                          <ueab:WriteCellX Cell="[Excel.Sheet(&quot;Internal PQ&quot;).Cell(&quot;N4&quot;)]" DisplayName="Write Cell" sap:VirtualizedContainerService.HintSize="433.6,183.2" sap2010:WorkflowViewState.IdRef="WriteCellX_10" Value="[slashValue]" />
+                        </Sequence>
+                      </If.Then>
+                      <If.Else>
+                        <Sequence DisplayName="Else" sap:VirtualizedContainerService.HintSize="496,269.6" sap2010:WorkflowViewState.IdRef="Sequence_10">
+                          <sap:WorkflowViewStateService.ViewState>
+                            <scg:Dictionary x:TypeArguments="x:String, x:Object">
+                              <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+                            </scg:Dictionary>
+                          </sap:WorkflowViewStateService.ViewState>
+                          <ueab:WriteCellX Cell="[Excel.Sheet(&quot;Internal PQ&quot;).Cell(&quot;K4&quot;)]" DisplayName="Write Cell" sap:VirtualizedContainerService.HintSize="433.6,183.2" sap2010:WorkflowViewState.IdRef="WriteCellX_11" Value="[slashValue]" />
+                        </Sequence>
+                      </If.Else>
+                    </If>
+                    <ueab:WriteCellX Cell="[Excel.Sheet(&quot;Internal PQ&quot;).Cell(&quot;C9:R9&quot;)]" DisplayName="Write Cell" sap:VirtualizedContainerService.HintSize="580,200" sap2010:WorkflowViewState.IdRef="WriteCellX_12" Value="[spcValue]" />
+                    <ueab:WriteCellX Cell="[Excel.Sheet(&quot;Internal PQ&quot;).Cell(&quot;C13&quot;)]" DisplayName="Write Cell" sap:VirtualizedContainerService.HintSize="580,200" sap2010:WorkflowViewState.IdRef="WriteCellX_13" Value="[tfp]" />
+                    <If Condition="[tfp.Equals(&quot;EXPENSE&quot;, StringComparison.OrdinalIgnoreCase)]" sap:VirtualizedContainerService.HintSize="580,717.6" sap2010:WorkflowViewState.IdRef="If_2">
+                      <sap:WorkflowViewStateService.ViewState>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object">
+                          <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+                          <x:Boolean x:Key="IsPinned">False</x:Boolean>
+                        </scg:Dictionary>
+                      </sap:WorkflowViewStateService.ViewState>
+                      <If.Then>
+                        <Sequence DisplayName="Then" sap:VirtualizedContainerService.HintSize="496,269.6" sap2010:WorkflowViewState.IdRef="Sequence_11">
+                          <sap:WorkflowViewStateService.ViewState>
+                            <scg:Dictionary x:TypeArguments="x:String, x:Object">
+                              <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+                            </scg:Dictionary>
+                          </sap:WorkflowViewStateService.ViewState>
+                          <ueab:WriteCellX Cell="[Excel.Sheet(&quot;Internal PQ&quot;).Cell(&quot;C13&quot;)]" DisplayName="Write Cell" sap:VirtualizedContainerService.HintSize="433.6,183.2" sap2010:WorkflowViewState.IdRef="WriteCellX_14" Value="[tfp]" />
+                        </Sequence>
+                      </If.Then>
+                      <If.Else>
+                        <Sequence DisplayName="Else" sap:VirtualizedContainerService.HintSize="496,269.6" sap2010:WorkflowViewState.IdRef="Sequence_12">
+                          <sap:WorkflowViewStateService.ViewState>
+                            <scg:Dictionary x:TypeArguments="x:String, x:Object">
+                              <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+                            </scg:Dictionary>
+                          </sap:WorkflowViewStateService.ViewState>
+                          <ueab:WriteCellX Cell="[Excel.Sheet(&quot;Internal PQ&quot;).Cell(&quot;C13&quot;)]" DisplayName="Write Cell" sap:VirtualizedContainerService.HintSize="433.6,183.2" sap2010:WorkflowViewState.IdRef="WriteCellX_15" Value="[tfp]" />
+                        </Sequence>
+                      </If.Else>
+                    </If>
+                    <ueab:WriteCellX Cell="[Excel.Sheet(&quot;Internal PQ&quot;).Cell(&quot;C12:D12&quot;)]" DisplayName="Write Cell" sap:VirtualizedContainerService.HintSize="580,200" sap2010:WorkflowViewState.IdRef="WriteCellX_16" Value="[cusPo]" />
+                    <ueab:WriteCellX Cell="[Excel.Sheet(&quot;Internal PQ&quot;).Cell(&quot;F11:K11&quot;)]" DisplayName="Write Cell" sap:VirtualizedContainerService.HintSize="580,200" sap2010:WorkflowViewState.IdRef="WriteCellX_17" Value="[supplierN]" />
+                    <ueab:WriteCellX Cell="[Excel.Sheet(&quot;Internal PQ&quot;).Cell(&quot;C10:R10&quot;)]" DisplayName="Write Cell" sap:VirtualizedContainerService.HintSize="580,200" sap2010:WorkflowViewState.IdRef="WriteCellX_18" Value="[projectD]" />
+                    <If Condition="[supplierT.Equals(&quot;TRADING&quot;, StringComparison.OrdinalIgnoreCase)]" sap:VirtualizedContainerService.HintSize="580,1379.2" sap2010:WorkflowViewState.IdRef="If_3">
+                      <sap:WorkflowViewStateService.ViewState>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object">
+                          <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+                          <x:Boolean x:Key="IsPinned">False</x:Boolean>
+                        </scg:Dictionary>
+                      </sap:WorkflowViewStateService.ViewState>
+                      <If.Then>
+                        <Sequence DisplayName="Then" sap:VirtualizedContainerService.HintSize="496,269.6" sap2010:WorkflowViewState.IdRef="Sequence_13">
+                          <sap:WorkflowViewStateService.ViewState>
+                            <scg:Dictionary x:TypeArguments="x:String, x:Object">
+                              <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+                            </scg:Dictionary>
+                          </sap:WorkflowViewStateService.ViewState>
+                          <ueab:WriteCellX Cell="[Excel.Sheet(&quot;Internal PQ&quot;).Cell(&quot;R11&quot;)]" DisplayName="Write Cell" sap:VirtualizedContainerService.HintSize="433.6,183.2" sap2010:WorkflowViewState.IdRef="WriteCellX_19" Value="[slashValue]" />
+                        </Sequence>
+                      </If.Then>
+                      <If.Else>
+                        <ui:IfElseIf DisplayName="Else If" sap:VirtualizedContainerService.HintSize="546.4,931.2" sap2010:WorkflowViewState.IdRef="IfElseIf_4">
+                          <ui:IfElseIf.ConditionBlocks>
+                            <sc:BindingList x:TypeArguments="ui:IfElseIfBlock" AllowEdit="True" AllowNew="True" AllowRemove="True" RaiseListChangedEvents="True">
+                              <ui:IfElseIfBlock BlockType="If" Condition="[supplierT.Equals(&quot;OEM&quot;, StringComparison.OrdinalIgnoreCase)]" DisplayName="If else if block" sap2010:WorkflowViewState.IdRef="IfElseIfBlock_7">
+                                <ui:IfElseIfBlock.Then>
+                                  <Sequence DisplayName="Body" sap:VirtualizedContainerService.HintSize="496,269.6" sap2010:WorkflowViewState.IdRef="Sequence_21">
+                                    <sap:WorkflowViewStateService.ViewState>
+                                      <scg:Dictionary x:TypeArguments="x:String, x:Object">
+                                        <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+                                      </scg:Dictionary>
+                                    </sap:WorkflowViewStateService.ViewState>
+                                    <ueab:WriteCellX Cell="[Excel.Sheet(&quot;Internal PQ&quot;).Cell(&quot;N11&quot;)]" DisplayName="Write Cell" sap:VirtualizedContainerService.HintSize="433.6,183.2" sap2010:WorkflowViewState.IdRef="WriteCellX_28" Value="[slashValue]" />
+                                  </Sequence>
+                                </ui:IfElseIfBlock.Then>
+                              </ui:IfElseIfBlock>
+                              <ui:IfElseIfBlock BlockType="Else" DisplayName="If else if block" sap2010:WorkflowViewState.IdRef="IfElseIfBlock_9">
+                                <ui:IfElseIfBlock.Then>
+                                  <Sequence DisplayName="Body" sap:VirtualizedContainerService.HintSize="496,269.6" sap2010:WorkflowViewState.IdRef="Sequence_23">
+                                    <sap:WorkflowViewStateService.ViewState>
+                                      <scg:Dictionary x:TypeArguments="x:String, x:Object">
+                                        <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+                                      </scg:Dictionary>
+                                    </sap:WorkflowViewStateService.ViewState>
+                                    <ueab:WriteCellX AutoIncrementRow="True" Cell="[Excel.Sheet(&quot;Internal PQ&quot;).Cell(&quot;P11&quot;)]" DisplayName="Write Cell" sap:VirtualizedContainerService.HintSize="433.6,183.2" sap2010:WorkflowViewState.IdRef="WriteCellX_30" Value="[slashValue]" />
+                                  </Sequence>
+                                </ui:IfElseIfBlock.Then>
+                              </ui:IfElseIfBlock>
+                            </sc:BindingList>
+                          </ui:IfElseIf.ConditionBlocks>
+                        </ui:IfElseIf>
+                      </If.Else>
+                    </If>
+                    <ueab:WriteCellX Cell="[Excel.Sheet(&quot;Internal PQ&quot;).Cell(&quot;F6:R6&quot;)]" DisplayName="Write Cell" sap:VirtualizedContainerService.HintSize="580,200" sap2010:WorkflowViewState.IdRef="WriteCellX_23" Value="[internalU]" />
+                    <ueab:WriteCellX Cell="[Excel.Sheet(&quot;Internal PQ&quot;).Cell(&quot;C4:E4&quot;)]" DisplayName="Write Cell" sap:VirtualizedContainerService.HintSize="580,183.2" sap2010:WorkflowViewState.IdRef="WriteCellX_24" Value="[purchaseD]" />
                   </Sequence>
                 </ActivityAction>
               </ueab:ExcelApplicationCard.Body>

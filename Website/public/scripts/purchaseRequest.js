@@ -38,31 +38,31 @@ $(document).ready(function () {
   // Counter for item number
   let itemNumber = 1;
 
-  // // Function to validate the form's required fields
-  // function validateForm() {
-  //   let isValid = true;
-  //   // Loop through each input field and check if it's required and filled
-  //   $("input, select, textarea").each(function () {
-  //     // Check if the field is required and if it's filled
-  //     if ($(this).attr("required") && $(this).val().trim() === "") {
-  //       isValid = false;
-  //       return false; // Exit the loop if a required field is empty
-  //     }
-  //   });
-  //   return isValid;
-  // }
+  // Function to validate the form's required fields
+  function validateForm() {
+    let isValid = true;
+    // Loop through each input field and check if it's required and filled
+    $("input, select, textarea").each(function () {
+      // Check if the field is required and if it's filled
+      if ($(this).attr("required") && $(this).val().trim() === "") {
+        isValid = false;
+        return false; // Exit the loop if a required field is empty
+      }
+    });
+    return isValid;
+  }
 
-  // // Event listener for the Submit button inside the modal
-  // $("#submit_modal_btn").click(function (e) {
-  //   // Check if all required fields are filled
-  //   if (validateForm()) {
-  //     // Manually trigger form submission
-  //     $("#CreatePRForm").submit();
-  //   } else {
-  //     // Display an alert or error message indicating that required fields need to be filled
-  //     // alert('Please fill all required fields.');
-  //   }
-  // });
+  // Event listener for the Submit button inside the modal
+  $("#submit_modal_btn").click(function (e) {
+    // Check if all required fields are filled
+    if (validateForm()) {
+      // Manually trigger form submission
+      $("#CreatePRForm").submit();
+    } else {
+      // Display an alert or error message indicating that required fields need to be filled
+      // alert('Please fill all required fields.');
+    }
+  });
 
   //This function is triggered when any element with the class add_item_btn is clicked.
   $(".add_item_btn").click(function (e) {
