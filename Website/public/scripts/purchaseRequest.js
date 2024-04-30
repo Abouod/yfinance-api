@@ -38,31 +38,22 @@ $(document).ready(function () {
   // Counter for item number
   let itemNumber = 1;
 
-  // Function to validate the form's required fields
-  function validateForm() {
-    let isValid = true;
-    // Loop through each input field and check if it's required and filled
-    $("input, select, textarea").each(function () {
-      // Check if the field is required and if it's filled
-      if ($(this).attr("required") && $(this).val().trim() === "") {
-        isValid = false;
-        return false; // Exit the loop if a required field is empty
-      }
-    });
-    return isValid;
-  }
+  // JavaScript to handle form validation on button click and display an alert
+  // document
+  //   .getElementById("submit_modal_btn")
+  //   .addEventListener("click", function () {
+  //     // Get the form element
+  //     let form = document.getElementById("CreatePRForm");
 
-  // Event listener for the Submit button inside the modal
-  $("#submit_modal_btn").click(function (e) {
-    // Check if all required fields are filled
-    if (validateForm()) {
-      // Manually trigger form submission
-      $("#CreatePRForm").submit();
-    } else {
-      // Display an alert or error message indicating that required fields need to be filled
-      // alert('Please fill all required fields.');
-    }
-  });
+  //     // Check if the form is valid
+  //     if (form.checkValidity()) {
+  //       // If the form is valid, Allow submission
+  //       // form.submit();
+  //     } else {
+  //       // If the form is not valid, display an error message or handle it as needed
+  //       alert("Please fill out all required fields.");
+  //     }
+  //   });
 
   //This function is triggered when any element with the class add_item_btn is clicked.
   $(".add_item_btn").click(function (e) {

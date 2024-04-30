@@ -31,7 +31,7 @@
                     <img src="/images/menu.png" alt="Bars Image">
                 </button>
                 <div class="dropdown-menu">
-                    <a class="dropdown-item" href="/index"><i class="far fa-home"></i> Home Page</a>
+                    <a class="dropdown-item" href="/index">Home Page</a>
                     <a class="dropdown-item" href="/userProfile/profile">User Profile</a>
                     <div class="dropdown-divider"></div>
                     <a class="dropdown-item" href="/auth/signout">Signout</a>
@@ -51,6 +51,11 @@
                     </div>
                     <div class="row p-4">
                         <div class="col-md-4">
+                            <label class="labels">Requisition No.</label>
+                            <input id="requisitionNo" name="requisitionNo" type="text" value="<%= requisitionNo %>"
+                                class="form-control" readonly>
+                        </div>
+                        <div class="col-md-4">
                             <label class="labels">Request by</label>
                             <input id="fullName" type="text" name="fullName" class="form-control"
                                 value="<%= firstName %> <%= lastName %>" readonly>
@@ -60,27 +65,42 @@
                             <input id="requestDate" type="date" name="requestDate" class="form-control"
                                 value="<%= new Date().toISOString().split('T')[0] %>" readonly>
                         </div>
-                        <div class="col-md-4">
-                            <label class="labels">Customer Name</label>
-                            <input id="customerName" name="customerName" type="text" class="form-control" required>
-                        </div>
                     </div>
                     <div class="row px-4">
                         <div class="col-md-3">
-                            <label class="labels">Requisition No.</label>
-                            <input id="requisitionNo" name="requisitionNo" type="text" value="<%= requisitionNo %>"
-                                class="form-control" readonly>
+                            <label class="labels">Customer Name</label>
+                            <input id="customerName" name="customerName" type="text" class="form-control" required>
                         </div>
                         <div class="col-md-3">
-                            <label class="labels">Online Purchase</label>
-                            <input id="onlinePurchase" name="onlinePurchase" type="text" class="form-control" required>
+                            <label class="labels">Customer PO</label>
+                            <input id="customerPo" name="customerPo" type="text" class="form-control" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="labels">Type for Purchase</label>
+                            <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+                                <input type="radio" class="btn-check" value="FIXED ASSET" name="TFP" id="fixed-asset"
+                                    autocomplete="off" required>
+                                <label class="btn btn-outline-danger" for="fixed-asset">Fixed
+                                    Asset</label>
+
+                                <input type="radio" class="btn-check" value="EXPENSE" name="TFP" id="expense"
+                                    autocomplete="off" required>
+                                <label class="btn btn-outline-success expense-label" for="expense">Expense</label>
+                            </div>
                         </div>
                         <div class="col-md-3">
                             <label class="labels">Quotation No.</label>
                             <input id="quotationNo" name="quotationNo" type="text" class="form-control" required>
                         </div>
+                    </div>
+                    <div class="row p-4">
                         <div class="col-md-3">
-                            <label class="labels">PR Type</label>
+                            <label class="labels">Purchase Department</label>
+                            <input id="purchaseDepartment" name="purchaseDepartment" type="text" class="form-control"
+                                required>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="labels d-block">PR Type</label>
                             <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
                                 <input type="radio" class="btn-check" value="Machine Build" name="prType" id="machine"
                                     autocomplete="off" required>
@@ -91,8 +111,28 @@
                                 <label class="btn btn-outline-success trading-label" for="trading">Trading</label>
                             </div>
                         </div>
+                        <div class="col-md-3">
+                            <label class="labels">Supplier Name</label>
+                            <input id="supplierName" name="supplierName" type="text" class="form-control" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="labels">Supplier Type</label>
+                            <div class="btn-group" role="st-group" aria-label="Basic radio toggle button st-group">
+                                <input type="radio" class="btn-check" value="OEM" name="ST" id="oem" autocomplete="off"
+                                    required>
+                                <label class="btn btn-outline-danger" for="oem">OEM</label>
+
+                                <input type="radio" class="btn-check" value="OEM D*" name="ST" id="oemd"
+                                    autocomplete="off" required>
+                                <label class="btn btn-outline-info" for="oemd">OEM D*</label>
+
+                                <input type="radio" class="btn-check" value="TRADING" name="ST" id="st-trading"
+                                    autocomplete="off" required>
+                                <label class="btn btn-outline-success" for="st-trading">TRADING</label>
+                            </div>
+                        </div>
                     </div>
-                    <div class="row p-4">
+                    <div class="row px-4">
                         <div class="col-md-6">
                             <label class="labels">Sophic Project Category</label>
                             <select id="SPC" aria-label="Default select example" name="SPC" type="text"
@@ -115,49 +155,18 @@
                             </select>
                         </div>
                         <div class="col-md-3">
-                            <label class="labels">Type for Purchase</label>
-                            <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
-                                <input type="radio" class="btn-check" value="FIXED ASSET" name="TFP" id="fixed-asset"
-                                    autocomplete="off" required>
-                                <label class="btn btn-outline-danger" for="fixed-asset">Fixed
-                                    Asset</label>
-
-                                <input type="radio" class="btn-check" value="EXPENSE" name="TFP" id="expense"
-                                    autocomplete="off" required>
-                                <label class="btn btn-outline-success expense-label" for="expense">Expense</label>
-                            </div>
+                            <label class="labels">Procurement Category</label>
+                            <input id="ProcurementCategory" name="ProcurementCategory" type="text" class="form-control"
+                                required>
                         </div>
                         <div class="col-md-3">
-                            <label class="labels">Customer PO</label>
-                            <input id="customerPo" name="customerPo" type="text" class="form-control" required>
-                        </div>
-                    </div>
-                    <div class="row px-4">
-                        <div class="col-md-4">
-                            <label class="labels">Supplier Name</label>
-                            <input id="supplierName" name="supplierName" type="text" class="form-control" required>
-                        </div>
-                        <div class="col-md-5">
                             <label class="labels">Project Description</label>
                             <input id="projectDescription" name="projectDescription" type="text" class="form-control"
                                 required>
                         </div>
-                        <div class="col-md-3">
-                            <label class="labels">Supplier Type</label>
-                            <div class="btn-group" role="st-group" aria-label="Basic radio toggle button st-group">
-                                <input type="radio" class="btn-check" value="OEM" name="ST" id="oem" autocomplete="off"
-                                    required>
-                                <label class="btn btn-outline-danger" for="oem">OEM</label>
+                    </div>
+                    <div class="row px-4">
 
-                                <input type="radio" class="btn-check" value="OEM D*" name="ST" id="oemd"
-                                    autocomplete="off" required>
-                                <label class="btn btn-outline-info" for="oemd">OEM D*</label>
-
-                                <input type="radio" class="btn-check" value="TRADING" name="ST" id="st-trading"
-                                    autocomplete="off" required>
-                                <label class="btn btn-outline-success" for="st-trading">TRADING</label>
-                            </div>
-                        </div>
                     </div>
                     <div class="row p-4">
                         <div class="collapse" id="pr-collapse">
@@ -168,8 +177,8 @@
                                         <input id="internalUse" name="internalUse" type="text" class="form-control">
                                     </div>
                                     <div class="col-md-3">
-                                        <label class="labels">Purchase Department <small>(Opt.)</small></label>
-                                        <input id="purchaseDepartment" name="purchaseDepartment" type="text"
+                                        <label class="labels">Online Purchase <small>(Opt.)</small></label>
+                                        <input id="onlinePurchase" name="onlinePurchase" type="text"
                                             class="form-control">
                                     </div>
                                 </div>
@@ -240,35 +249,34 @@
                                                         </div>
 
                                                         <div class="col-md-1 mb-3">
-                                                            <label class="labels">Part No. *</label>
+                                                            <label class="labels">Part No.</label>
                                                             <input type="text" name="partNumber[]" class="form-control"
                                                                 required>
                                                         </div>
 
                                                         <div class="col-md-2 mb-3">
-                                                            <label class="labels">Brand *</label>
+                                                            <label class="labels">Brand</label>
                                                             <input id="brand" type="text" name="brand[]"
                                                                 class="form-control" required>
                                                         </div>
                                                         <div class="col-md-3 mb-3">
-                                                            <label class="labels">Description *</label>
+                                                            <label class="labels">Description</label>
                                                             <textarea class="form-control "
                                                                 id="exampleFormControlTextarea1" rows="2"
                                                                 name="description[]" required></textarea>
                                                         </div>
                                                         <div class="col-md-2 mb-3">
-                                                            <label class="labels">Date Required
-                                                                *</label>
+                                                            <label class="labels">Date Required</label>
                                                             <input type="date" name="dateRequired[]"
                                                                 class="form-control" required>
                                                         </div>
                                                         <div class="col-md-1 mb-3">
-                                                            <label class="labels">Qty *</label>
+                                                            <label class="labels">Qty</label>
                                                             <input id="quantity" type="number" name="quantity[]"
                                                                 class="quantity form-control" min="1" required>
                                                         </div>
                                                         <div class="col-md-2 mb-3">
-                                                            <label class="labels">Currency *</label>
+                                                            <label class="labels">Currency</label>
                                                             <input name="currency[]" type="text" class="form-control"
                                                                 list="currency" id="currencyInput">
                                                             <datalist id="currency">
@@ -329,8 +337,7 @@
 
                                                         <div class="row">
                                                             <div class="col-md-2 mb-3">
-                                                                <label class="labels">Unit Price
-                                                                    *</label>
+                                                                <label class="labels">Unit Price</label>
                                                                 <input id="unitPrice" type="number" name="unitPrice[]"
                                                                     class="unitPrice form-control" min="0" required>
                                                             </div>
@@ -369,7 +376,7 @@
                                                             type="number" readonly>
                                                     </div>
                                                     <div class="col-md-2 mt-4">
-                                                        <button type="button" class="btn btn-primary w-100"
+                                                        <button type="submit" class="btn btn-primary w-100"
                                                             id="submit_modal_btn">Submit</button>
                                                     </div>
                                                 </div>
