@@ -61,10 +61,12 @@ window.onload = () => {
         .onStatus((status) => {
           // Log the status to the console
           console.log("Status:", status);
+          document.getElementById("target-row").className += "row px-5";
+          document.getElementById("target-process").className +=
+            " text-center alert alert-primary";
+
           if (status) {
-            document.getElementById(
-              "process-status"
-            ).innerHTML += `<li>${status}</li>`;
+            document.getElementById("process-status").innerHTML += `${status}`;
           }
         })
         .then(
@@ -93,10 +95,24 @@ window.onload = () => {
         // If any required field is empty, the browser will display the default validation message
         return;
       }
+
+      // Validate the currency input
+      const isValidCurrency = validateCurrencyInput();
+
+      // If the currency input is not valid, prevent form submission and show an error message
+      if (!isValidCurrency) {
+        event.preventDefault(); // Prevent form submission
+        alert("Please select a valid currency from the options."); // Show error message
+        return;
+      }
+
       // Prevent the default form submission
       event.preventDefault();
 
       try {
+        alert(
+          "RPA process will start! Don't click on the Mouse or Keyboard until the process is completed!"
+        );
         // Close the modal
         document.getElementById("close-modal-button").click();
 
@@ -116,4 +132,6 @@ window.onload = () => {
 
 function showError(err) {
   document.getElementById("error-message").innerHTML = err;
+  document.getElementById("error-message").innerHTML +=
+    " An Error Occurred! Could be a connection issue, Or File already Created for this Requisition Number!<br> Please delete the file and try again!";
 }

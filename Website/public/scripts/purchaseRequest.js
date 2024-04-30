@@ -1,4 +1,14 @@
-// Hide navbar on scroll down
+//!Validation for date required field to not enter a date in the past
+// Get the input element
+const dateRequiredInput = document.getElementById("dateRequiredInput");
+
+// Get today's date in the format YYYY-MM-DD
+const today = new Date().toISOString().split("T")[0];
+
+// Set the min attribute to today's date
+dateRequiredInput.min = today;
+
+//! Hide navbar on scroll down
 // Get the navbar
 let navbar = document.querySelector(".custom-navbar");
 
@@ -26,7 +36,7 @@ window.onscroll = function () {
 // Counter for generating unique IDs
 let collapseCount = 0;
 
-// Function to generate unique IDs for collapse elements
+//! Function to generate unique IDs for collapse elements
 function generateUniqueCollapseID() {
   collapseCount++;
   return "pd-collapse" + collapseCount;
@@ -35,6 +45,11 @@ function generateUniqueCollapseID() {
 document.getElementById("itemNumber").value = 1;
 
 $(document).ready(function () {
+  // Fade out the success message after 3 seconds
+  setTimeout(function () {
+    $(".alert-success").fadeOut("slow");
+  }, 3000);
+
   // Counter for item number
   let itemNumber = 1;
 
@@ -55,9 +70,9 @@ $(document).ready(function () {
   //     }
   //   });
 
-  //This function is triggered when any element with the class add_item_btn is clicked.
-  $(".add_item_btn").click(function (e) {
-    e.preventDefault(); //Prevent default action of form being submitted
+  //! This function is triggered when any element with the class add_item_btn is clicked.
+  $(".add_item_btn").click(function (event) {
+    event.preventDefault(); //Prevent default action of form being submitted
 
     // Generate unique IDs for collapse elements
     let collapseID = generateUniqueCollapseID();
@@ -187,49 +202,49 @@ $(document).ready(function () {
                                                     </div>
                                                 </div>`);
 
-    // Add event listeners for calculating total price to the newly added row
+    //! Add event listeners for calculating total price to the newly added row
     addTotalPriceListeners();
   });
 
-  $(document).on("click", ".remove_item_btn", function (e) {
-    e.preventDefault();
+  $(document).on("click", ".remove_item_btn", function (event) {
+    event.preventDefault();
     itemNumber--;
     let row_item = $(this).parent().parent().parent().parent();
+    const totalPriceInput = row_item.find(".totalPrice")[0];
+    const totalPrice = parseFloat(totalPriceInput.value) || 0;
+    const grandTotalInput = document.getElementById("grandTotal");
+    const currentGrandTotal = parseFloat(grandTotalInput.value) || 0;
+    grandTotalInput.value = (currentGrandTotal - totalPrice).toFixed(2);
     $(row_item).remove();
   });
 
   addTotalPriceListeners();
 });
 
-// Validate currency input
-document.getElementById("currencyInput").addEventListener("blur", function () {
-  let input = this.value;
-  let datalist = document.getElementById("currency");
-  let options = datalist.getElementsByTagName("option");
-  let isValid = false;
+//! Validate currency input
+function validateCurrencyInput() {
+  // Get the value entered by the user
+  const userInput = document.getElementById("currencyInput").value;
 
-  for (let i = 0; i < options.length; i++) {
-    if (input === options[i].value) {
-      isValid = true;
-      break;
+  // Get the datalist options
+  const currencyOptions = document.getElementById("currency").options;
+
+  // Check if the entered value exists in the datalist options
+  for (let i = 0; i < currencyOptions.length; i++) {
+    if (currencyOptions[i].value === userInput) {
+      return true; // Valid input
     }
   }
 
-  if (!isValid) {
-    this.value = ""; // Clear invalid value
-    document.getElementById("error").textContent =
-      "Invalid currency. Please select from the list.";
-  } else {
-    document.getElementById("error").textContent = ""; // Clear error message
-  }
-});
+  return false; // Invalid input
+}
 
-// Function to add event listeners for calculating total price
+//! Function to add event listeners for calculating total price
 function addTotalPriceListeners() {
   // Get relevant input elements for the newly added row
   const quantityInputs = document.querySelectorAll(".quantity");
   const unitPriceInputs = document.querySelectorAll(".unitPrice");
-  const taxInputs = document.querySelectorAll('input[name="tax[]"]'); // Corrected selector
+  const taxInputs = document.querySelectorAll(".tax"); // Corrected selector
   const totalPriceInputs = document.querySelectorAll(".totalPrice");
 
   // Loop through each newly added row and apply event listeners
@@ -253,7 +268,7 @@ function addTotalPriceListeners() {
   });
 }
 
-// Function to calculate total price
+//! Function to calculate total price
 function calculateTotalPrice(
   quantityInput,
   unitPriceInput,
@@ -272,9 +287,9 @@ function calculateTotalPrice(
   totalPriceInput.value = totalPrice.toFixed(2);
 }
 
-// Function to calculate grand total
+//! Function to calculate grand total
 function calculateGrandTotal() {
-  let totalPrices = document.querySelectorAll('input[name="totalPrice[]"]');
+  let totalPrices = document.querySelectorAll(".totalPrice");
   let grandTotal = 0;
   totalPrices.forEach(function (input) {
     grandTotal += parseFloat(input.value) || 0;
@@ -284,7 +299,7 @@ function calculateGrandTotal() {
 
 // Event listener for dynamic changes
 document.addEventListener("input", function (event) {
-  if (event.target && event.target.matches('input[name="totalPrice[]"]')) {
+  if (event.target && event.target.matches(".totalPrice")) {
     calculateGrandTotal();
     // Add event listeners for calculating total price to the newly added row
     addTotalPriceListeners();

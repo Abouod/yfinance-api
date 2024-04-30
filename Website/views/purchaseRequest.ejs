@@ -203,10 +203,13 @@
                         </div>
                         <% } %>
                             <!-- Display UiPath Status and Result -->
-                            <ul id="process-status"></ul>
-                            <div id="process-result"></div>
-                            <div id="process-result2"></div>
-                            <div id="error-message" style="color: red"></div>
+                            <div id="target-row">
+                                <div id="target-process" role="alert">
+                                    <div id="process-status"></div>
+                                    <div id="process-result"></div>
+                                    <div id="error-message" style="color: red"></div>
+                                </div>
+                            </div>
                             <div class="row px-4">
                                 <div class="col-md-12">
                                     <p class="d-inline-flex gap-1">
@@ -268,7 +271,7 @@
                                                         <div class="col-md-2 mb-3">
                                                             <label class="labels">Date Required</label>
                                                             <input type="date" name="dateRequired[]"
-                                                                class="form-control" required>
+                                                                class="form-control" id="dateRequiredInput" required>
                                                         </div>
                                                         <div class="col-md-1 mb-3">
                                                             <label class="labels">Qty</label>
@@ -319,7 +322,7 @@
                                                                         <label class="labels">Tax (%)
                                                                             <small>(Opt.)</small></label>
                                                                         <input id="tax" name="tax[]" type="number"
-                                                                            min="0" class="form-control">
+                                                                            min="0" class="tax form-control">
                                                                     </div>
 
                                                                     <!-- Tax Optional -->
