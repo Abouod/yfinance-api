@@ -33,6 +33,26 @@ window.onload = () => {
 
   const runRPA_CreatePurchaseRequestForm = () => {
     return new Promise((resolve, reject) => {
+      function getFieldValues(fieldClassName) {
+        const fieldInputs = document.querySelectorAll(`.${fieldClassName}`);
+        const fieldValues = Array.from(fieldInputs).map((input) => input.value);
+        return fieldValues;
+      }
+
+      const itemNumbers = getFieldValues("itemNumber");
+      const partNumbers = getFieldValues("partNumber");
+      const brands = getFieldValues("brand");
+      const descriptions = getFieldValues("description");
+      const datesRequired = getFieldValues("dateRequired");
+      const quantities = getFieldValues("quantity");
+      const currencies = getFieldValues("currency");
+      const deliveryTerms = getFieldValues("deliveryTerm");
+      const leadTimes = getFieldValues("leadTime");
+      const tax = getFieldValues("tax");
+      const exworks = getFieldValues("exwork");
+      const unitPrices = getFieldValues("unitPrice");
+      const totalPrices = getFieldValues("totalPrice");
+
       let arguments = {
         reqNo: document.getElementById("requisitionNo").value,
         reqDate: document.getElementById("requestDate").value,
@@ -50,11 +70,31 @@ window.onload = () => {
         internalU: document.getElementById("internalUse").value,
         purchaseD: document.getElementById("purchaseDepartment").value,
         procurementCat: document.getElementById("ProcurementCategory").value,
+        itemN: itemNumbers,
+        partN: partNumbers,
+        brand: brands,
+        description: descriptions,
+        dateR: datesRequired,
+        quantity: quantities,
+        currency: currencies,
+        deliveryT: deliveryTerms,
+        leadT: leadTimes,
+        tax: tax,
+        exwork: exworks,
+        unitP: unitPrices,
+        totalP: totalPrices,
       };
 
       //Initialize the process status and result
       document.getElementById("process-status").innerHTML = "";
       document.getElementById("process-result").innerHTML = "";
+
+      console.log("Item number:", arguments.itemN);
+      console.log("Part number:", arguments.partN);
+      console.log("Brand:", arguments.brand);
+      console.log("Description:", arguments.description);
+      console.log("Date required:", arguments.dateR);
+      console.log("Quantity:", arguments.quantity);
 
       // Run the process
       RPA_CreatePurchaseRequestForm.start(arguments)
@@ -110,9 +150,6 @@ window.onload = () => {
       event.preventDefault();
 
       try {
-        alert(
-          "RPA process will start! Don't click on the Mouse or Keyboard until the process is completed!"
-        );
         // Close the modal
         document.getElementById("close-modal-button").click();
 

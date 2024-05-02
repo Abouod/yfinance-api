@@ -247,31 +247,33 @@
                                                     <div class="row p-4">
                                                         <div class="col-md-1 mb-3">
                                                             <label class="labels">Item</label>
-                                                            <input type="number" name="itemNumber" class="form-control"
-                                                                id="itemNumber" readonly>
+                                                            <input type="number" name="itemNumber[]"
+                                                                class="itemNumber form-control" id="itemNumber"
+                                                                readonly>
                                                         </div>
 
                                                         <div class="col-md-1 mb-3">
                                                             <label class="labels">Part No.</label>
-                                                            <input type="text" name="partNumber[]" class="form-control"
-                                                                required>
+                                                            <input type="text" name="partNumber[]"
+                                                                class="partNumber form-control" required>
                                                         </div>
 
                                                         <div class="col-md-2 mb-3">
                                                             <label class="labels">Brand</label>
                                                             <input id="brand" type="text" name="brand[]"
-                                                                class="form-control" required>
+                                                                class="brand form-control" required>
                                                         </div>
                                                         <div class="col-md-3 mb-3">
                                                             <label class="labels">Description</label>
-                                                            <textarea class="form-control "
+                                                            <textarea class="description form-control "
                                                                 id="exampleFormControlTextarea1" rows="2"
                                                                 name="description[]" required></textarea>
                                                         </div>
                                                         <div class="col-md-2 mb-3">
                                                             <label class="labels">Date Required</label>
                                                             <input type="date" name="dateRequired[]"
-                                                                class="form-control" id="dateRequiredInput" required>
+                                                                class="dateRequired form-control" id="dateRequiredInput"
+                                                                required>
                                                         </div>
                                                         <div class="col-md-1 mb-3">
                                                             <label class="labels">Qty</label>
@@ -280,8 +282,9 @@
                                                         </div>
                                                         <div class="col-md-2 mb-3">
                                                             <label class="labels">Currency</label>
-                                                            <input name="currency[]" type="text" class="form-control"
-                                                                list="currency" id="currencyInput">
+                                                            <input name="currency[]" type="text"
+                                                                class="currency form-control" list="currency"
+                                                                id="currencyInput">
                                                             <datalist id="currency">
                                                                 <option value="" selected disabled hidden>select
                                                                     currency
@@ -305,16 +308,16 @@
                                                                         <label class="labels">Delivery
                                                                             Term
                                                                             <small>(Opt.)</small></label>
-                                                                        <input name="deliveryTerm" type="text"
-                                                                            class="form-control">
+                                                                        <input name="deliveryTerm[]" type="text"
+                                                                            class="deliveryTerm form-control">
                                                                     </div>
 
                                                                     <!-- LT Optional -->
                                                                     <div class="col-md-3 mb-3">
                                                                         <label class="labels">Lead Time
                                                                             <small>(Opt.)</small></label>
-                                                                        <input name="leadTime" type="text"
-                                                                            class="form-control">
+                                                                        <input name="leadTime[]" type="text"
+                                                                            class="leadTime form-control">
                                                                     </div>
 
                                                                     <!-- Tax Optional -->
@@ -330,8 +333,8 @@
                                                                         <label class="labels">Exwork
                                                                             Address/Remark
                                                                             <small>(Opt.)</small></label>
-                                                                        <input name="exwork" type="text"
-                                                                            class="form-control">
+                                                                        <input name="exwork[]" type="text"
+                                                                            class="exwork form-control">
                                                                     </div>
                                                                 </div>
 

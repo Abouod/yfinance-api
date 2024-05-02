@@ -48,12 +48,13 @@ $(document).ready(function () {
   // Fade out the success message after 3 seconds
   setTimeout(function () {
     $(".alert-success").fadeOut("slow");
-  }, 3000);
+  }, 2000);
 
   // Counter for item number
   let itemNumber = 1;
 
   // JavaScript to handle form validation on button click and display an alert
+  //! Should be moved to CreatePRForm.js if possible in case of use in the site
   // document
   //   .getElementById("submit_modal_btn")
   //   .addEventListener("click", function () {
@@ -70,53 +71,59 @@ $(document).ready(function () {
   //     }
   //   });
 
+  //! Function to check if maximum rows limit reached
+  function isMaxRowsReached() {
+    return $("#show-item > .row").length >= 10;
+  }
+
   //! This function is triggered when any element with the class add_item_btn is clicked.
   $(".add_item_btn").click(function (event) {
     event.preventDefault(); //Prevent default action of form being submitted
 
-    // Generate unique IDs for collapse elements
-    let collapseID = generateUniqueCollapseID();
+    if (!isMaxRowsReached()) {
+      // Generate unique IDs for collapse elements
+      let collapseID = generateUniqueCollapseID();
 
-    // Increment item number
-    itemNumber++;
+      // Increment item number
+      itemNumber++;
 
-    //dynamically adds a new set of input fields for product to the container with class .show-item
-    $("#show-item").append(`<div class="row p-4">
+      //dynamically adds a new set of input fields for product to the container with class .show-item
+      $("#show-item").append(`<div class="row p-4">
                                                     <div class="col-md-1 mb-3">
                                                        <label class="labels">Item</label>
-                                                            <input type="number" name="itemNumber" class="form-control"
+                                                            <input type="number" name="itemNumber[]" class="itemNumber form-control"
                                                                value="${itemNumber}" id="itemNumber" readonly>
                                                     </div>
 
                                                      <div class="col-md-1 mb-3">
-                                                        <label class="labels">Part No. *</label>
+                                                        <label class="labels">Part No.</label>
                                                         <input type="text" name="partNumber[]"
-                                                            class="form-control " required>
+                                                            class="partNumber form-control" required>
                                                     </div>
 
                                                     <div class="col-md-2 mb-3">
-                                                        <label class="labels">Brand *</label>
-                                                        <input type="text" name="brand[]" class="form-control" required>
+                                                        <label class="labels">Brand</label>
+                                                        <input type="text" name="brand[]" class="brand form-control" required>
                                                     </div>
                                                     <div class="col-md-3 mb-3">
-                                                        <label class="labels">Description *</label>
-                                                        <textarea class="form-control" id="exampleFormControlTextarea1"
+                                                        <label class="labels">Description</label>
+                                                        <textarea class="description form-control" id="exampleFormControlTextarea1"
                                                             rows="2" name="description[]" required></textarea>
                                                     </div>
                                                    <div class="col-md-2 mb-3">
-                                                        <label class="labels">Date Required *</label>
+                                                        <label class="labels">Date Required</label>
                                                         <input type="date" name="dateRequired[]"
-                                                            class="form-control" required>
+                                                            class="dateRequired form-control" required>
                                                     </div>
                                                     <div class="col-md-1 mb-3">
-                                                         <label class="labels">Qty *</label>
+                                                         <label class="labels">Qty</label>
                                                          <input id="quantity" type="number" name="quantity[]"
-                                                                class="quantity form-control" min="0" required>
+                                                                class="quantity form-control" min="1" required>
                                                     </div>
                                                    <div class="col-md-2 mb-3">
-                                                        <label class="labels">Currency *</label>
+                                                        <label class="labels">Currency</label>
                                                         <input name="currency[]" type="text"
-                                                            class="form-control" list="currency"
+                                                            class="currency form-control" list="currency"
                                                             id="currencyInput">
                                                         <datalist id="currency">
                                                             <option value="" selected disabled hidden>select
@@ -139,7 +146,7 @@ $(document).ready(function () {
                                                                     <label class="labels">Delivery Term
                                                                         <small>(Opt.)</small></label>
                                                                     <input name="deliveryTerm[]" type="text"
-                                                                        class="form-control">
+                                                                        class="deliveryTerm form-control">
                                                                 </div>
 
                                                                 <!-- LT Optional -->
@@ -147,7 +154,7 @@ $(document).ready(function () {
                                                                     <label class="labels">Lead Time
                                                                         <small>(Opt.)</small></label>
                                                                     <input name="leadTime[]" type="text"
-                                                                        class="form-control">
+                                                                        class="leadTime form-control">
                                                                 </div>
 
                                                                 <!-- Tax Optional -->
@@ -155,7 +162,7 @@ $(document).ready(function () {
                                                                     <label class="labels">Tax (%)
                                                                     <small>(Opt.)</small></label>
                                                                     <input id="tax" name="tax[]" type="number"
-                                                                            min="0" class="form-control">
+                                                                            min="0" class="tax form-control">
                                                                 </div>
 
                                                                 <!-- Tax Optional -->
@@ -164,7 +171,7 @@ $(document).ready(function () {
                                                                         Address/Remark
                                                                         <small>(Opt.)</small></label>
                                                                     <input name="exwork[]" type="text"
-                                                                        class="form-control">
+                                                                        class="exwork form-control">
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -202,8 +209,11 @@ $(document).ready(function () {
                                                     </div>
                                                 </div>`);
 
-    //! Add event listeners for calculating total price to the newly added row
-    addTotalPriceListeners();
+      //! Add event listeners for calculating total price to the newly added row
+      addTotalPriceListeners();
+    } else {
+      alert("Maximum limit of 10 items reached!");
+    }
   });
 
   $(document).on("click", ".remove_item_btn", function (event) {
