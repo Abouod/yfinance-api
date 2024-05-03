@@ -1,0 +1,147 @@
+/* Adjust the width of table columns */
+.styled-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 25px 0;
+    font-size: 0.9em;
+    font-family: sans-serif;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+    text-align: center;
+}
+
+.styled-table thead {
+    background-color: #ffffff; /* White background for the header */
+    color: #000000; /* Black text color for the header */
+}
+
+.styled-table th {
+    padding: 12px 15px;
+}
+
+/* Adjust column widths */
+.styled-table th:nth-child(4),
+.styled-table td:nth-child(4) {
+    width: 30%; /* Description column */
+}
+
+.styled-table th:nth-child(5),
+.styled-table td:nth-child(5) {
+    width: 15%; /* Invoice Amount column */
+}
+
+/* Button styling */
+.action-buttons {
+    display: flex;
+    justify-content: space-between;
+}
+
+.action-buttons button {
+    padding: 6px 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.action-buttons button.edit-btn {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.action-buttons button.delete-btn {
+    background-color: #f44336;
+    color: white;
+}
+
+.action-buttons button:hover {
+    opacity: 0.8;
+}
+
+
+
+
+        /* The Modal (background) */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1000; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+        }
+
+        /* Modal content */
+        .modal-content {
+            background-color: #fefefe;
+            margin: 10% auto; /* 15% from the top and centered */
+            width: 80%; /* Could be more or less, depending on screen size */
+            padding: 20px;
+            border: 1px solid #888;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+    
+        /* Close Button */
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+    
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+    /* Form grid layout */
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr; /* Two columns */
+        grid-gap: 10px; /* Spacing between grid items */
+    }
+
+    /* Each form element in the grid */
+    .form-grid div {
+        margin-bottom: 10px;
+    }
+
+    .form-grid label {
+        display: block;
+    }
+
+    .form-grid input[type="text"],
+    .form-grid input[type="number"],
+    .form-grid input[type="date"] {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-sizing: border-box;
+    }
+
+    /* Button group */
+    .button-group {
+        margin-top: 20px;
+        text-align: right;
+    }
+
+    .button-group button {
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        padding: 10px 20px;
+        margin-left: 10px;
+    }
+
+    .button-group button:hover {
+        background-color: #45a049;
+    }
+
+  

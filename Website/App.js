@@ -8,6 +8,7 @@ import profile from "./routes/profile.js";
 import purchase from "./routes/purchase.js";
 import index from "./routes/index.js";
 import verify from "./routes/verify.js";
+import claimForm from "./routes/claimForm.js";
 import { app } from "./config.js";
 
 const port = 3000;
@@ -47,6 +48,7 @@ app.use("/verify", verify);
 app.use("/index", index);
 app.use("/userProfile", profile);
 app.use("/purchase", purchase);
+app.use("/claimForm", claimForm);
 
 // Catch-all route for handling undefined routes
 app.use((req, res, next) => {
