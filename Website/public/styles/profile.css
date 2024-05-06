@@ -89,7 +89,7 @@ body {
 .container {
   min-width: 1000px; /* Adjust the width as needed (e.g., 700px, 800px) */
   max-width: fit-content;
-  margin: 130px auto 80px !important; /* Center the container horizontally */
+  margin: 120px auto 80px !important; /* Center the container horizontally */
 }
 
 .profile-header {
@@ -190,4 +190,8 @@ input[readonly] {
   display: flex;
   justify-content: flex-end;
   align-items: flex-end;
+}
+
+.hidden {
+  display: none;
 }

@@ -1,6 +1,9 @@
 import express from "express";
 import { db } from "../config.js";
 import requireSignin from "./authMiddleware.js"; // Import the middleware function
+import os from "os";
+import fs from "fs";
+import path from "path";
 
 const router = express.Router();
 
@@ -96,6 +99,14 @@ router.post("/submit", requireSignin, async (req, res) => {
     const requisitionNo = `PR${firstName.charAt(0)}${lastName.charAt(
       0
     )}-${getFormattedDate()}${prCount.toString().padStart(3, "0")}`;
+
+    // Create folder in the user's documents folder
+    const folderName = `${firstName}_${lastName}_${getFormattedDate()}`;
+    const folderResult = createFolderInDocuments(folderName);
+
+    if (folderResult.error) {
+      throw new Error("Error creating folder: " + folderResult.error);
+    }
 
     // Assuming itemNumber is an array, loop through each item
     for (let i = 0; i < itemNumber.length; i++) {

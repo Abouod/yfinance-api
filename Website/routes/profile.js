@@ -24,9 +24,26 @@ router.get("/profile", requireSignin, async (req, res) => {
       userDetails = userDetailsQuery.rows[0];
     }
 
+    // Fetch the user's first name and last name from the database
+    const userQuery = await db.query(
+      "SELECT first_name, last_name, email FROM users WHERE id = $1",
+      [userId]
+    );
+
+    // Check if the user exists
+    if (userQuery.rows.length === 0) {
+      // Handle the case where the user does not exist
+      return res.status(404).send("User not found");
+    }
+
+    // Extract the user's first name and last name from the query result
+    const { first_name, last_name, email } = userQuery.rows[0];
+
     // Render the profile page template and pass the user details
     res.render("profile.ejs", {
-      user: req.session.user,
+      firstName: first_name,
+      lastName: last_name,
+      emailAddress: email,
       userDetails: userDetails, // Pass userDetails here
       errorMessage: "",
       successMessage: "",
@@ -48,8 +65,23 @@ router.get("/save-profile", (req, res) => {
 // Route to handle saving/updating user profile
 router.post("/save-profile", requireSignin, async (req, res) => {
   const userId = req.session.user.id;
-  const { department, superior, manager, phonenumber, jobtitle, division } =
-    req.body;
+  const {
+    department,
+    employee_id,
+    job_title,
+    superior_name,
+    superior_id,
+    superior_email,
+    division,
+    manager_name,
+    manager_id,
+    manager_email,
+    phone_number,
+    address,
+    bank_name,
+    bank_account,
+    passport,
+  } = req.body;
 
   try {
     // Check if user details already exist in the database
@@ -61,19 +93,64 @@ router.post("/save-profile", requireSignin, async (req, res) => {
     if (userDetailsQuery.rows.length === 0) {
       // Insert new user details
       await db.query(
-        "INSERT INTO details (user_id, department, superior, manager, phonenumber, jobtitle, division) VALUES ($1, $2, $3, $4, $5, $6, $7)",
-        [userId, department, superior, manager, phonenumber, jobtitle, division]
+        "INSERT INTO details (user_id, department, superior_name, manager_name, phone_number, job_title, division, employee_id, superior_id, superior_email, manager_id, manager_email, address, bank_name, bank_account, passport) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)",
+        [
+          userId,
+          department,
+          superior_name,
+          manager_name,
+          phone_number,
+          job_title,
+          division,
+          employee_id,
+          superior_id,
+          superior_email,
+          manager_id,
+          manager_email,
+          address,
+          bank_name,
+          bank_account,
+          passport,
+        ]
       );
     } else {
       // Update existing user details
       await db.query(
-        "UPDATE details SET department = $1, superior = $2, manager = $3, phonenumber = $4, jobtitle = $5, division = $6 WHERE user_id = $7",
-        [department, superior, manager, phonenumber, jobtitle, division, userId]
+        "UPDATE details SET department = $1, superior_name = $2, manager_name = $3, phone_number = $4, job_title = $5, division = $6, employee_id = $7, superior_id = $8, superior_email = $9, manager_id = $10, manager_email = $11, address = $12, bank_name = $13, bank_account = $14, passport = $15 WHERE user_id = $16",
+        [
+          department,
+          superior_name,
+          manager_name,
+          phone_number,
+          job_title,
+          division,
+          employee_id,
+          superior_id,
+          superior_email,
+          manager_id,
+          manager_email,
+          address,
+          bank_name,
+          bank_account,
+          passport,
+          userId,
+        ]
       );
     }
 
+    // Fetch the user's first name and last name from the database
+    const userQuery = await db.query(
+      "SELECT first_name, last_name, email FROM users WHERE id = $1",
+      [userId]
+    );
+
+    // Extract user details and pr_count from the query result
+    const { first_name, last_name, email } = userQuery.rows[0];
+
     res.render("profile.ejs", {
-      user: req.session.user,
+      firstName: first_name,
+      lastName: last_name,
+      emailAddress: email,
       userDetails: req.body, // Pass the updated user details
       successMessage: "Profile saved successfully!",
       errorMessage: "",

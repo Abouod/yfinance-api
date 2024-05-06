@@ -47,15 +47,16 @@
                         </div>
                     </div>
                     <div class="row p-4"> <!-- Padding 4 -->
-                        <div class="col-md-4">
-                            <label class="labels">First Name</label>
-                            <input type="text" class="form-control" value="<%= user.firstName %>" readonly>
+                        <div class="col-md-3">
+                            <label class="labels">Name</label>
+                            <input id="fullName" name="fullName" type="text" class="form-control"
+                                value="<%= firstName %> <%= lastName %>" readonly>
                         </div>
                         <div class="col-md-4">
-                            <label class="labels">Last Name</label>
-                            <input type="text" class="form-control" value="<%= user.lastName %>" readonly>
+                            <label class="labels">Email</label>
+                            <input id="email" type="text" class="form-control" value="<%= emailAddress %>" readonly>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-2">
                             <label class="labels">Department</label>
                             <select aria-label="Default select example" name="department" type="text"
                                 class="form-select" placeholder="Select Department">
@@ -67,64 +68,114 @@
                                         <option value="" selected>Select Department</option>
                                         <% } %>
                                             <option value="Technical">Technical</option>
-                                            <option value="Human Resources">Human Resources</option>
+                                            <option value="Human Resources">HR</option>
                                             <option value="Finance">Finance</option>
                                             <option value="Logistic">Logistic</option>
                                             <option value="Purchase">Purchase</option>
                             </select>
                         </div>
-
+                        <div class="col-md-3">
+                            <label class="labels">Employee ID</label>
+                            <input type="text" class="form-control" name="employee_id"
+                                value="<%= userDetails ? userDetails.employee_id : '' %>">
+                        </div>
                     </div>
                     <div class="row px-4"> <!-- Padding horizontal 4 -->
-                        <div class="col-md-4">
-                            <label class="labels">Phone Number</label>
-                            <input type="text" class="form-control" placeholder="Enter your number" name="phonenumber"
-                                value="<%= userDetails ? userDetails.phonenumber : '' %>">
-                        </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <label class="labels">Job Title</label>
-                            <input type="text" class="form-control" placeholder="Enter Job Title" name="jobtitle"
-                                value="<%= userDetails ? userDetails.jobtitle : '' %>">
+                            <input type="text" class="form-control" name="job_title"
+                                value="<%= userDetails ? userDetails.job_title : '' %>">
                         </div>
-                        <div class="col-md-4">
-                            <label class="labels">Division</label>
-                            <input type="text" class="form-control" placeholder="Enter your division" name="division"
-                                value="<%= userDetails ? userDetails.division : '' %>">
+                        <div class="col-md-3">
+                            <label class="labels">Superior Name</label>
+                            <input type="text" class="form-control" name="superior_name"
+                                value="<%= userDetails ? userDetails.superior_name : '' %>">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="labels">Superior ID</label>
+                            <input type="text" class="form-control" name="superior_id"
+                                value="<%= userDetails ? userDetails.superior_id : '' %>">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="labels">Superior Email</label>
+                            <input type="text" class="form-control" name="superior_email"
+                                value="<%= userDetails ? userDetails.superior_email : '' %>">
                         </div>
                     </div>
                     <div class="row p-4"> <!-- Padding 4 -->
-                        <div class="col-md-6">
-                            <label class="labels">Superior</label>
-                            <input type="text" class="form-control" placeholder="Enter Superior" name="superior"
-                                value="<%= userDetails ? userDetails.superior : '' %>">
+                        <div class="col-md-3">
+                            <label class="labels">Division</label>
+                            <input type="text" class="form-control" name="division"
+                                value="<%= userDetails ? userDetails.division : '' %>">
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-3">
                             <label class="labels">Manager</label>
-                            <input type="text" class="form-control" placeholder="Enter Manager" name="manager"
-                                value="<%= userDetails ? userDetails.manager : '' %>">
+                            <input type="text" class="form-control" name="manager_name"
+                                value="<%= userDetails ? userDetails.manager_name : '' %>">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="labels">Manager ID</label>
+                            <input type="text" class="form-control" name="manager_id"
+                                value="<%= userDetails ? userDetails.manager_id : '' %>">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="labels">Manager Email</label>
+                            <input type="text" class="form-control" name="manager_email"
+                                value="<%= userDetails ? userDetails.manager_email : '' %>">
                         </div>
                         <!-- Add more pairs of columns as needed -->
                     </div>
-                    <div class="p-4 text-center">
-                        <% if(errorMessage) { %>
-                            <div class="alert alert-danger alert-sm alert-dismissible fade show" role="alert">
-                                <%= errorMessage %>
-                                    <button type="button" class="btn-close" data-bs-dismiss="alert"
-                                        aria-label="Close"></button>
-                            </div>
-                            <% } else if (successMessage) { %>
-                                <div class="alert alert-success alert-sm alert-dismissible fade show" role="alert">
-                                    <%= successMessage %>
+                    <div class="row px-4">
+                        <div class="col-md-3">
+                            <label class="labels">Phone Number</label>
+                            <input type="text" class="form-control" name="phone_number"
+                                value="<%= userDetails ? userDetails.phone_number : '' %>">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="labels">Address Line</label>
+                            <input type="text" class="form-control" name="address"
+                                value="<%= userDetails ? userDetails.address : '' %>">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="labels">Bank Name</label>
+                            <input type="text" class="form-control" name="bank_name"
+                                value="<%= userDetails ? userDetails.bank_name : '' %>">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="labels">Bank Account</label>
+                            <input type="text" class="form-control" name="bank_account"
+                                value="<%= userDetails ? userDetails.bank_account : '' %>">
+                        </div>
+                    </div>
+                    <div class="row p-4">
+                        <div class="col-md-3">
+                            <label class="labels">Passport</label>
+                            <input type="text" class="form-control" name="passport"
+                                value="<%= userDetails ? userDetails.passport : '' %>">
+                        </div>
+                        <div class="col-md-3">
+                        </div>
+                        <div class="p-4 text-center">
+                            <% if(errorMessage) { %>
+                                <div class="alert alert-danger alert-sm alert-dismissible fade show" role="alert">
+                                    <%= errorMessage %>
                                         <button type="button" class="btn-close" data-bs-dismiss="alert"
                                             aria-label="Close"></button>
                                 </div>
-                                <% } %>
-                                    <button class="btn btn-primary profile-button" type="submit">Save Profile</button>
-                                    <button type="button" class="btn btn-outline-success" data-bs-toggle="modal"
-                                        data-bs-target="#staticBackdrop">
-                                        Change Password
-                                    </button>
-                    </div>
+                                <% } else if (successMessage) { %>
+                                    <div class="alert alert-success alert-sm alert-dismissible fade show" role="alert">
+                                        <%= successMessage %>
+                                            <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                                aria-label="Close"></button>
+                                    </div>
+                                    <% } %>
+                                        <button class="btn btn-primary profile-button" type="submit">Save
+                                            Profile</button>
+                                        <button type="button" class="btn btn-outline-success" data-bs-toggle="modal"
+                                            data-bs-target="#staticBackdrop">
+                                            Change Password
+                                        </button>
+                        </div>
 
                 </form>
                 <!-- Modal -->
@@ -138,7 +189,8 @@
                                 <button type="button" class="btn-close" data-bs-dismiss="modal"
                                     aria-label="Close"></button>
                             </div>
-                            <form id="changePasswordForm" action="/userProfile/update-password" method="POST">
+                            <form id="changePasswordForm" action="/userProfile/update-password" method="POST"
+                                enctype="multipart/form-data">
                                 <div class="modal-body">
                                     <div class="row">
                                         <div class="col-md-12 mb-3">
