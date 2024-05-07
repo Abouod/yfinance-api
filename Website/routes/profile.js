@@ -3,6 +3,7 @@ import { db } from "../config.js";
 import bcrypt from "bcrypt"; // Import bcrypt for password hashing
 import requireSignin from "./authMiddleware.js"; // Import the middleware function
 import multer from "multer"; // Import multer for file upload
+import fs from "fs";
 
 const router = express.Router();
 const saltRounds = 10; //10: is the cost factor or the number of rounds of hashing to apply to the password.
@@ -26,6 +27,16 @@ const upload = multer({
     }
   },
 });
+
+async function saveImageToFile(signatureData) {
+  const base64Data = signatureData.replace(/^data:image\/png;base64,/, "");
+  const fileName = Date.now() + ".png"; // Generate a unique filename
+  const filePath = "public/uploads/" + fileName; // Path to save the image
+
+  await fs.promises.writeFile(filePath, base64Data, "base64"); // Write the file to disk
+
+  return fileName; // Return the filename
+}
 
 // Route to serve the profile page
 router.get("/profile", requireSignin, async (req, res) => {
@@ -119,6 +130,9 @@ router.post(
       let signatureFileName;
       if (req.file) {
         signatureFileName = req.file.filename;
+      } else if (req.body.signatureData) {
+        // If no file was uploaded but signature data is present, save it as an image
+        signatureFileName = await saveImageToFile(req.body.signatureData);
       }
 
       if (userDetailsQuery.rows.length === 0) {

@@ -16,6 +16,7 @@
     "nodemailer": "^6.9.13",
     "path": "^0.12.7",
     "pg": "^8.11.3",
+    "signature_pad": "^5.0.0",
     "uuid": "^9.0.1"
   },
   "name": "rpa-website",
