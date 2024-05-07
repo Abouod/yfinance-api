@@ -2,9 +2,30 @@ import express from "express";
 import { db } from "../config.js";
 import bcrypt from "bcrypt"; // Import bcrypt for password hashing
 import requireSignin from "./authMiddleware.js"; // Import the middleware function
+import multer from "multer"; // Import multer for file upload
 
 const router = express.Router();
 const saltRounds = 10; //10: is the cost factor or the number of rounds of hashing to apply to the password.
+
+// Multer configuration for file upload
+const upload = multer({
+  storage: multer.diskStorage({
+    destination: function (req, file, cb) {
+      cb(null, "public/uploads/"); // Define the destination folder where uploaded files will be stored
+    },
+    filename: function (req, file, cb) {
+      cb(null, Date.now() + "-" + file.originalname); // Define the filename for the uploaded file
+    },
+  }),
+  fileFilter: function (req, file, cb) {
+    if (file.mimetype.startsWith("image/")) {
+      // Accept only image files
+      cb(null, true);
+    } else {
+      cb(new Error("Only image files are allowed"));
+    }
+  },
+});
 
 // Route to serve the profile page
 router.get("/profile", requireSignin, async (req, res) => {
@@ -63,108 +84,127 @@ router.get("/save-profile", (req, res) => {
   res.redirect("/userProfile/profile");
 });
 // Route to handle saving/updating user profile
-router.post("/save-profile", requireSignin, async (req, res) => {
-  const userId = req.session.user.id;
-  const {
-    department,
-    employee_id,
-    job_title,
-    superior_name,
-    superior_id,
-    superior_email,
-    division,
-    manager_name,
-    manager_id,
-    manager_email,
-    phone_number,
-    address,
-    bank_name,
-    bank_account,
-    passport,
-  } = req.body;
+router.post(
+  "/save-profile",
+  requireSignin,
+  upload.single("signature"),
+  async (req, res) => {
+    const userId = req.session.user.id;
+    const {
+      department,
+      employee_id,
+      job_title,
+      superior_name,
+      superior_id,
+      superior_email,
+      division,
+      manager_name,
+      manager_id,
+      manager_email,
+      phone_number,
+      address,
+      bank_name,
+      bank_account,
+      passport,
+    } = req.body;
 
-  try {
-    // Check if user details already exist in the database
-    const userDetailsQuery = await db.query(
-      "SELECT * FROM details WHERE user_id = $1",
-      [userId]
-    );
+    try {
+      // Check if user details already exist in the database
+      const userDetailsQuery = await db.query(
+        "SELECT * FROM details WHERE user_id = $1",
+        [userId]
+      );
 
-    if (userDetailsQuery.rows.length === 0) {
-      // Insert new user details
-      await db.query(
-        "INSERT INTO details (user_id, department, superior_name, manager_name, phone_number, job_title, division, employee_id, superior_id, superior_email, manager_id, manager_email, address, bank_name, bank_account, passport) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)",
-        [
-          userId,
-          department,
-          superior_name,
-          manager_name,
-          phone_number,
-          job_title,
-          division,
-          employee_id,
-          superior_id,
-          superior_email,
-          manager_id,
-          manager_email,
-          address,
-          bank_name,
-          bank_account,
-          passport,
-        ]
+      // Check if a file was uploaded
+      let signatureFileName;
+      if (req.file) {
+        signatureFileName = req.file.filename;
+      }
+
+      if (userDetailsQuery.rows.length === 0) {
+        // Insert new user details
+        await db.query(
+          "INSERT INTO details (user_id, department, superior_name, manager_name, phone_number, job_title, division, employee_id, superior_id, superior_email, manager_id, manager_email, address, bank_name, bank_account, passport, signature) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)",
+          [
+            userId,
+            department,
+            superior_name,
+            manager_name,
+            phone_number,
+            job_title,
+            division,
+            employee_id,
+            superior_id,
+            superior_email,
+            manager_id,
+            manager_email,
+            address,
+            bank_name,
+            bank_account,
+            passport,
+            signatureFileName, // Use the filename if uploaded
+          ]
+        );
+      } else {
+        // Update existing user details
+        await db.query(
+          "UPDATE details SET department = $1, superior_name = $2, manager_name = $3, phone_number = $4, job_title = $5, division = $6, employee_id = $7, superior_id = $8, superior_email = $9, manager_id = $10, manager_email = $11, address = $12, bank_name = $13, bank_account = $14, passport = $15, signature = $16 WHERE user_id = $17",
+          [
+            department,
+            superior_name,
+            manager_name,
+            phone_number,
+            job_title,
+            division,
+            employee_id,
+            superior_id,
+            superior_email,
+            manager_id,
+            manager_email,
+            address,
+            bank_name,
+            bank_account,
+            passport,
+            signatureFileName, // Use the filename if uploaded
+            userId,
+          ]
+        );
+      }
+
+      // Fetch the user's first name and last name from the database
+      const userQuery = await db.query(
+        "SELECT first_name, last_name, email FROM users WHERE id = $1",
+        [userId]
       );
-    } else {
-      // Update existing user details
-      await db.query(
-        "UPDATE details SET department = $1, superior_name = $2, manager_name = $3, phone_number = $4, job_title = $5, division = $6, employee_id = $7, superior_id = $8, superior_email = $9, manager_id = $10, manager_email = $11, address = $12, bank_name = $13, bank_account = $14, passport = $15 WHERE user_id = $16",
-        [
-          department,
-          superior_name,
-          manager_name,
-          phone_number,
-          job_title,
-          division,
-          employee_id,
-          superior_id,
-          superior_email,
-          manager_id,
-          manager_email,
-          address,
-          bank_name,
-          bank_account,
-          passport,
-          userId,
-        ]
+
+      // Extract user details and pr_count from the query result
+      const { first_name, last_name, email } = userQuery.rows[0];
+
+      // After saving/updating user profile, fetch the updated user details
+      const updatedUserDetails = await db.query(
+        "SELECT * FROM details WHERE user_id = $1",
+        [userId]
       );
+
+      res.render("profile.ejs", {
+        firstName: first_name,
+        lastName: last_name,
+        emailAddress: email,
+        userDetails: updatedUserDetails.rows[0], // Pass the updated user details
+        successMessage: "Profile saved successfully!",
+        errorMessage: "",
+      });
+    } catch (error) {
+      console.error("Error saving/updating profile:", error);
+      res.status(500).render("profile.ejs", {
+        user: req.session.user,
+        userDetails: req.body, // Pass the submitted user details back to the template
+        errorMessage: "An error occurred while saving/updating profile",
+        successMessage: "",
+      });
     }
-
-    // Fetch the user's first name and last name from the database
-    const userQuery = await db.query(
-      "SELECT first_name, last_name, email FROM users WHERE id = $1",
-      [userId]
-    );
-
-    // Extract user details and pr_count from the query result
-    const { first_name, last_name, email } = userQuery.rows[0];
-
-    res.render("profile.ejs", {
-      firstName: first_name,
-      lastName: last_name,
-      emailAddress: email,
-      userDetails: req.body, // Pass the updated user details
-      successMessage: "Profile saved successfully!",
-      errorMessage: "",
-    });
-  } catch (error) {
-    console.error("Error saving/updating profile:", error);
-    res.status(500).render("profile.ejs", {
-      user: req.session.user,
-      userDetails: req.body, // Pass the submitted user details back to the template
-      errorMessage: "An error occurred while saving/updating profile",
-      successMessage: "",
-    });
   }
-});
+);
 
 // Route to handle GET requests to /save-profile
 router.get("/update-password", (req, res) => {

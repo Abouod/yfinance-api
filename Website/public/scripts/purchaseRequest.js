@@ -45,7 +45,7 @@ function generateUniqueCollapseID() {
 document.getElementById("itemNumber").value = 1;
 
 $(document).ready(function () {
-  // Fade out the success message after 3 seconds
+  // Fade out the success message after 2 seconds
   setTimeout(function () {
     $(".alert-success").fadeOut("slow");
   }, 2000);

@@ -40,7 +40,7 @@
         <div class="row">
             <div class="shadow rounded">
                 <!-- Adding 3 units padding to all sides and 5 units padding to the top and bottom -->
-                <form action="/userProfile/save-profile" method="POST">
+                <form action="/userProfile/save-profile" method="POST" enctype="multipart/form-data">
                     <div class="row profile-header rounded">
                         <div class="d-flex justify-content-between align-items-center p-4">
                             <h4 style="color: white;" class="text-right">Profile Settings</h4>
@@ -154,7 +154,49 @@
                                 value="<%= userDetails ? userDetails.passport : '' %>">
                         </div>
                         <div class="col-md-3">
+                            <!-- Button trigger modal -->
+                            <br>
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                data-bs-target="#exampleModal">
+                                Upload Signature
+                            </button>
                         </div>
+
+                        <!-- Modal -->
+                        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                            aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h1 class="modal-title fs-5" id="exampleModalLabel">Signature</h1>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <label class="labels">Digital Signature:</label>
+                                        <input type="file" class="form-control" id="signature" name="signature">
+                                    </div>
+                                    <div class="modal-footer">
+                                        <% if (userDetails && userDetails.signature) { %>
+                                            <!-- Display the uploaded image -->
+                                            <img src="/uploads/<%= userDetails.signature %>" alt="Signature"
+                                                class="uploaded-image">
+                                            <% } else { %>
+                                                <!-- Display a message if no image is uploaded -->
+                                                <div class="alert alert-warning" role="alert">
+                                                    Please upload an image to view it.
+                                                </div>
+                                                <% } %>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-bs-dismiss="modal">Close</button>
+                                        <button type="submit" class="btn btn-primary">Save changes</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="p-4 text-center">
                             <% if(errorMessage) { %>
                                 <div class="alert alert-danger alert-sm alert-dismissible fade show" role="alert">
@@ -189,8 +231,7 @@
                                 <button type="button" class="btn-close" data-bs-dismiss="modal"
                                     aria-label="Close"></button>
                             </div>
-                            <form id="changePasswordForm" action="/userProfile/update-password" method="POST"
-                                enctype="multipart/form-data">
+                            <form id="changePasswordForm" action="/userProfile/update-password" method="POST">
                                 <div class="modal-body">
                                     <div class="row">
                                         <div class="col-md-12 mb-3">
@@ -266,6 +307,7 @@
         </div>
     </footer>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script>
         function togglePasswordVisibility(icon) {
             var passwordInput = icon.parentElement.nextElementSibling; // Select the input field next to the icon
@@ -286,6 +328,13 @@
                 iconElement.classList.add('fa-eye');
             }
         }
+
+        $(document).ready(function () {
+            // Fade out the success message after 2 seconds
+            setTimeout(function () {
+                $(".alert-success").fadeOut("slow");
+            }, 2000);
+        });
     </script>
 </body>
 

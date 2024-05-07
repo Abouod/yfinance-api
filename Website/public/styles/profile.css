@@ -192,6 +192,9 @@ input[readonly] {
   align-items: flex-end;
 }
 
-.hidden {
-  display: none;
+.uploaded-image {
+  width: 100%;
+  max-height: 400px; /* Adjust the maximum height as needed */
+  object-fit: contain;
+  height: auto;
 }
