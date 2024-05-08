@@ -36,11 +36,11 @@
         </div>
     </nav>
 
-    <div class="container-md shadow rounded bg-white">
+    <div class="container shadow rounded bg-white">
         <div class="row">
             <div class="shadow rounded">
                 <!-- Adding 3 units padding to all sides and 5 units padding to the top and bottom -->
-                <form action="/userProfile/save-profile" method="POST" enctype="multipart/form-data">
+                <form action="/userProfile/save-profile" method="POST">
                     <div class="row profile-header rounded">
                         <div class="d-flex justify-content-between align-items-center p-4">
                             <h4 style="color: white;" class="text-right">Profile Settings</h4>
@@ -197,54 +197,6 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- Modal -->
-                        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
-                            aria-hidden="true">
-                            <div class="modal-dialog modal-lg">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h1 class="modal-title fs-5" id="exampleModalLabel">Signature</h1>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                            aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <label class="col-form-label">Digital Signature:</label>
-                                                <input type="file" class="form-control" id="signature" name="signature">
-                                                <br><br>
-                                                <label class="col-form-label">Manual Signature:</label>
-                                                <div class="border border-secondary-subtle rounded">
-                                                    <canvas id="signatureCanvas" width="400" height="200"></canvas>
-                                                </div>
-                                                <button type="button" onclick="clearSignature()"
-                                                    class="btn btn-danger mt-2">Clear</button>
-                                                <input type="hidden" id="signatureData" name="signatureData">
-                                            </div>
-                                            <div class="col-md-6">
-                                                <br>
-                                                <% if (userDetails && userDetails.signature) { %>
-                                                    <!-- Display the uploaded image -->
-                                                    <img src="/uploads/<%= userDetails.signature %>" alt="Signature"
-                                                        class="uploaded-image">
-                                                    <% } else { %>
-                                                        <!-- Display a message if no image is uploaded -->
-                                                        <div class="alert alert-warning" role="alert">
-                                                            Please upload & save your signature to view it.
-                                                        </div>
-                                                        <% } %>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary"
-                                            data-bs-dismiss="modal">Close</button>
-                                        <button type="submit" onclick="saveSignature()" class="btn btn-primary">Save
-                                            changes</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                         <div class="p-4 text-center">
                             <% if(errorMessage) { %>
                                 <div class="alert alert-danger" role="alert">
@@ -265,7 +217,55 @@
                     </div>
                 </form>
             </div>
-            <!-- Modal -->
+            <!-- Signature Modal -->
+            <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">Signature</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <form action="/userProfile/signature" method="POST" enctype="multipart/form-data">
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <label class="col-form-label">Digital Signature:</label>
+                                        <input type="file" class="form-control" id="signature" name="signature">
+                                        <br><br>
+                                        <label class="col-form-label">Manual Signature:</label>
+                                        <div class="border border-secondary-subtle rounded">
+                                            <canvas id="signatureCanvas" width="400" height="200"></canvas>
+                                        </div>
+                                        <button type="button" onclick="clearSignature()"
+                                            class="btn btn-danger mt-2">Clear</button>
+                                        <input type="hidden" id="signatureData" name="signatureData">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <br>
+                                        <% if (userDetails && userDetails.signature) { %>
+                                            <!-- Display the uploaded image -->
+                                            <img src="/uploads/<%= userDetails.signature %>" alt="Signature"
+                                                class="uploaded-image">
+                                            <% } else { %>
+                                                <!-- Display a message if no image is uploaded -->
+                                                <div class="alert alert-warning" role="alert">
+                                                    Please upload & save your signature to view it.
+                                                </div>
+                                                <% } %>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="submit" onclick="saveSignature()" class="btn btn-primary">Save
+                                    changes</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <!-- Password Change Modal -->
             <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
                 aria-labelledby="staticBackdropLabel" aria-hidden="true">
                 <div class="modal-dialog modal-lg"> <!-- modal-lg class to make it wider -->

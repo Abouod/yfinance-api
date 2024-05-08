@@ -95,30 +95,131 @@ router.get("/save-profile", (req, res) => {
   res.redirect("/userProfile/profile");
 });
 // Route to handle saving/updating user profile
+router.post("/save-profile", requireSignin, async (req, res) => {
+  const userId = req.session.user.id;
+  const {
+    department,
+    employee_id,
+    job_title,
+    superior_name,
+    superior_id,
+    superior_email,
+    division,
+    manager_name,
+    manager_id,
+    manager_email,
+    phone_number,
+    address,
+    bank_name,
+    bank_account,
+    passport,
+  } = req.body;
+
+  try {
+    // Check if user details already exist in the database
+    const userDetailsQuery = await db.query(
+      "SELECT * FROM details WHERE user_id = $1",
+      [userId]
+    );
+
+    if (userDetailsQuery.rows.length === 0) {
+      // Insert new user details
+      await db.query(
+        "INSERT INTO details (user_id, department, superior_name, manager_name, phone_number, job_title, division, employee_id, superior_id, superior_email, manager_id, manager_email, address, bank_name, bank_account, passport) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)",
+        [
+          userId,
+          department,
+          superior_name,
+          manager_name,
+          phone_number,
+          job_title,
+          division,
+          employee_id,
+          superior_id,
+          superior_email,
+          manager_id,
+          manager_email,
+          address,
+          bank_name,
+          bank_account,
+          passport,
+        ]
+      );
+    } else {
+      // Update existing user details
+      await db.query(
+        "UPDATE details SET department = $1, superior_name = $2, manager_name = $3, phone_number = $4, job_title = $5, division = $6, employee_id = $7, superior_id = $8, superior_email = $9, manager_id = $10, manager_email = $11, address = $12, bank_name = $13, bank_account = $14, passport = $15 WHERE user_id = $16",
+        [
+          department,
+          superior_name,
+          manager_name,
+          phone_number,
+          job_title,
+          division,
+          employee_id,
+          superior_id,
+          superior_email,
+          manager_id,
+          manager_email,
+          address,
+          bank_name,
+          bank_account,
+          passport,
+          userId,
+        ]
+      );
+    }
+
+    // Fetch user data from the database
+    const userQuery = await db.query(
+      "SELECT first_name, last_name, email FROM users WHERE id = $1",
+      [userId]
+    );
+
+    // Extract user details from the query result
+    const { first_name, last_name, email } = userQuery.rows[0];
+
+    // After saving/updating user profile, fetch the updated user details
+    const updatedUserDetailsQuery = await db.query(
+      "SELECT * FROM details WHERE user_id = $1",
+      [userId]
+    );
+
+    const updatedUserDetails = updatedUserDetailsQuery.rows[0]; // Extract the updated user details
+
+    res.render("profile.ejs", {
+      firstName: first_name,
+      lastName: last_name,
+      emailAddress: email,
+      userDetails: updatedUserDetails, // Pass the updated user details
+      successMessage: "Profile saved successfully!",
+      errorMessage: "",
+    });
+  } catch (error) {
+    console.error("Error saving/updating profile:", error);
+    // Render the profile page template with an error message
+    res.status(500).render("profile.ejs", {
+      errorMessage: "An error occurred while saving/updating profile",
+      successMessage: "",
+    });
+  }
+});
+
 router.post(
-  "/save-profile",
+  "/signature",
   requireSignin,
   upload.single("signature"),
   async (req, res) => {
     const userId = req.session.user.id;
-    const {
-      department,
-      employee_id,
-      job_title,
-      superior_name,
-      superior_id,
-      superior_email,
-      division,
-      manager_name,
-      manager_id,
-      manager_email,
-      phone_number,
-      address,
-      bank_name,
-      bank_account,
-      passport,
-    } = req.body;
 
+    // Check if a file was uploaded
+    let signatureFileName;
+    if (req.file) {
+      signatureFileName = req.file.filename;
+    } else if (req.body.signatureData) {
+      // If no file was uploaded but signature data is present, save it as an image
+      signatureFileName = await saveImageToFile(req.body.signatureData);
+    }
     try {
       // Check if user details already exist in the database
       const userDetailsQuery = await db.query(
@@ -126,72 +227,27 @@ router.post(
         [userId]
       );
 
-      // Check if a file was uploaded
-      let signatureFileName;
-      if (req.file) {
-        signatureFileName = req.file.filename;
-      } else if (req.body.signatureData) {
-        // If no file was uploaded but signature data is present, save it as an image
-        signatureFileName = await saveImageToFile(req.body.signatureData);
-      }
-
       if (userDetailsQuery.rows.length === 0) {
         // Insert new user details
         await db.query(
-          "INSERT INTO details (user_id, department, superior_name, manager_name, phone_number, job_title, division, employee_id, superior_id, superior_email, manager_id, manager_email, address, bank_name, bank_account, passport, signature) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)",
-          [
-            userId,
-            department,
-            superior_name,
-            manager_name,
-            phone_number,
-            job_title,
-            division,
-            employee_id,
-            superior_id,
-            superior_email,
-            manager_id,
-            manager_email,
-            address,
-            bank_name,
-            bank_account,
-            passport,
-            signatureFileName, // Use the filename if uploaded
-          ]
+          "INSERT INTO details (user_id, signature) VALUES ($1, $2)",
+          [userId, signatureFileName]
         );
       } else {
         // Update existing user details
-        await db.query(
-          "UPDATE details SET department = $1, superior_name = $2, manager_name = $3, phone_number = $4, job_title = $5, division = $6, employee_id = $7, superior_id = $8, superior_email = $9, manager_id = $10, manager_email = $11, address = $12, bank_name = $13, bank_account = $14, passport = $15, signature = $16 WHERE user_id = $17",
-          [
-            department,
-            superior_name,
-            manager_name,
-            phone_number,
-            job_title,
-            division,
-            employee_id,
-            superior_id,
-            superior_email,
-            manager_id,
-            manager_email,
-            address,
-            bank_name,
-            bank_account,
-            passport,
-            signatureFileName, // Use the filename if uploaded
-            userId,
-          ]
-        );
+        await db.query("UPDATE details SET signature = $1 WHERE user_id = $2", [
+          signatureFileName,
+          userId,
+        ]);
       }
 
-      // Fetch the user's first name and last name from the database
+      // Fetch user data from the database
       const userQuery = await db.query(
         "SELECT first_name, last_name, email FROM users WHERE id = $1",
         [userId]
       );
 
-      // Extract user details and pr_count from the query result
+      // Extract user details from the query result
       const { first_name, last_name, email } = userQuery.rows[0];
 
       // After saving/updating user profile, fetch the updated user details
@@ -205,17 +261,14 @@ router.post(
         lastName: last_name,
         emailAddress: email,
         userDetails: updatedUserDetails.rows[0], // Pass the updated user details
-        successMessage: "Profile saved successfully!",
+        successMessage: "Signature saved successfully!",
         errorMessage: "",
       });
     } catch (error) {
-      console.error("Error saving/updating profile:", error);
+      console.error("Error saving/updating signature:", error);
+      // Render the profile page template with an error message
       res.status(500).render("profile.ejs", {
-        firstName: first_name,
-        lastName: last_name,
-        emailAddress: email,
-        userDetails: updatedUserDetails.rows[0], // Pass the updated user details
-        errorMessage: "An error occurred while saving/updating profile",
+        errorMessage: "An error occurred while saving/updating signature",
         successMessage: "",
       });
     }
@@ -293,15 +346,11 @@ router.post("/update-password", requireSignin, async (req, res) => {
       userDetails: userDetails, // Pass the fetched user details
     });
   } catch (error) {
-    console.error("Error updating password:", error);
-    // Pass the required variables even in case of an error
+    console.error("Error saving/updating profile:", error);
+    // Render the profile page template with an error message
     res.status(500).render("profile.ejs", {
-      firstName: first_name,
-      lastName: last_name,
-      emailAddress: email,
-      errorMessage: "An error occurred while updating password",
-      successMessage: "", // Ensure to provide successMessage variable
-      userDetails: {}, // Pass an empty object for now
+      errorMessage: "An error occurred while changing password",
+      successMessage: "",
     });
   }
 });
