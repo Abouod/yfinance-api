@@ -53,10 +53,13 @@ body {
   top: -105px; /* Move the navbar outside of the viewport when hidden */
 }
 
-.custom-btn,
-.droptown-toggle {
-  border: 1px solid white;
-  background-color: var(--fourth-color);
+.logout {
+  border-radius: 30px !important; /* Makes the button round */
+}
+
+.fa-user,
+.fa-house {
+  color: white !important; /* Set the color of the icon */
 }
 
 .toggle-password {

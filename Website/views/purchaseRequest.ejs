@@ -17,26 +17,34 @@
 </head>
 
 <body>
+    <!-- NavBar -->
     <nav class="custom-navbar">
         <div class="navbar-container">
             <div class="logo-container">
-                <img class="logo" src="/images/Sophic-Logo-rotating-globe-2.gif" alt="Sophic Logo">
+                <a href="/index">
+                    <img class="logo" src="/images/Sophic-Logo-rotating-globe-2.gif" alt="Sophic Logo">
+                </a>
                 <span class="bar">|</span>
-                <span class="navbar-text">Sophic RPA Document Automation</span> <!-- Add text here -->
+                <span class="navbar-text">Sophic RPA Document Automation</span>
             </div>
-            <!-- Example dropdown menu -->
-            <div class="btn-group">
-                <button type="button" class="btn custom-btn btn-primary dropdown-toggle" data-bs-toggle="dropdown"
-                    aria-haspopup="true" aria-expanded="false">
-                    <img src="/images/menu.png" alt="Bars Image">
-                </button>
-                <div class="dropdown-menu">
-                    <a class="dropdown-item" href="/index">Home Page</a>
-                    <a class="dropdown-item" href="/userProfile/profile">User Profile</a>
-                    <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="/auth/signout">Signout</a>
-                </div>
-            </div>
+            <ul class="nav d-flex align-items-center">
+                <li class="nav-item me-4">
+                    <a href="/index" class="icon-container">
+                        <i class="fa-solid fa-house fa-2xl"></i>
+                    </a>
+                </li>
+                <li class="nav-item me-4">
+                    <a href="/userProfile/profile" class="icon-container">
+                        <i class="fa-solid fa-user fa-2xl" style="color: #ffffff;"></i>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/auth/signout">
+                        <button type="button" class="btn btn-outline-light logout"><i
+                                class="fa-solid fa-right-from-bracket fa-lg"></i> Log out</button>
+                    </a>
+                </li>
+            </ul>
         </div>
     </nav>
 

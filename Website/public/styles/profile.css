@@ -33,12 +33,6 @@ body {
   display: block;
 }
 
-.custom-btn,
-.droptown-toggle {
-  border: 1px solid white;
-  background-color: var(--fourth-color);
-}
-
 .toggle-password {
   margin-top: -5px;
   margin-left: 5px;
@@ -63,6 +57,14 @@ body {
   color: rgba(255, 255, 255, 0.8);
 }
 
+.logout {
+  border-radius: 30px !important; /* Makes the button round */
+}
+
+.fa-house {
+  color: white !important; /* Set the color of the icon */
+}
+
 .navbar-text {
   margin-left: 40px;
   font-size: 1rem;
@@ -79,10 +81,6 @@ body {
   width: auto;
   margin-top: -0.5rem;
   margin-bottom: -0.5rem;
-}
-
-.dropdown-item:hover {
-  color: initial;
 }
 
 /* Container and form-control */
