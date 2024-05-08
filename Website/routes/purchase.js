@@ -101,12 +101,12 @@ router.post("/submit", requireSignin, async (req, res) => {
     )}-${getFormattedDate()}${prCount.toString().padStart(3, "0")}`;
 
     // Create folder in the user's documents folder
-    const folderName = `${firstName}_${lastName}_${getFormattedDate()}`;
-    const folderResult = createFolderInDocuments(folderName);
+    // const folderName = `${firstName}_${lastName}_${getFormattedDate()}`;
+    // const folderResult = createFolderInDocuments(folderName);
 
-    if (folderResult.error) {
-      throw new Error("Error creating folder: " + folderResult.error);
-    }
+    // if (folderResult.error) {
+    //   throw new Error("Error creating folder: " + folderResult.error);
+    // }
 
     // Assuming itemNumber is an array, loop through each item
     for (let i = 0; i < itemNumber.length; i++) {

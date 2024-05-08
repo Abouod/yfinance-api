@@ -211,8 +211,10 @@ router.post(
     } catch (error) {
       console.error("Error saving/updating profile:", error);
       res.status(500).render("profile.ejs", {
-        user: req.session.user,
-        userDetails: req.body, // Pass the submitted user details back to the template
+        firstName: first_name,
+        lastName: last_name,
+        emailAddress: email,
+        userDetails: updatedUserDetails.rows[0], // Pass the updated user details
         errorMessage: "An error occurred while saving/updating profile",
         successMessage: "",
       });
@@ -231,20 +233,26 @@ router.post("/update-password", requireSignin, async (req, res) => {
   const { currentPassword, newPassword, confirmNewPassword } = req.body;
 
   try {
-    const userQuery = await db.query("SELECT * FROM users WHERE id = $1", [
-      userId,
-    ]);
+    // Fetch the user's first name and last name from the database
+    const userQuery = await db.query(
+      "SELECT first_name, last_name, email, password FROM users WHERE id = $1",
+      [userId]
+    );
+
+    // Extract user details and pr_count from the query result
+    const { first_name, last_name, email, password } = userQuery.rows[0];
 
     if (userQuery.rows.length === 0) {
       return res.status(404).send("User not found");
     }
 
-    const user = userQuery.rows[0];
-    const passwordMatch = await bcrypt.compare(currentPassword, user.password);
+    const passwordMatch = await bcrypt.compare(currentPassword, password);
 
     if (!passwordMatch) {
       return res.status(400).render("profile.ejs", {
-        user: req.session.user,
+        firstName: first_name,
+        lastName: last_name,
+        emailAddress: email,
         errorMessage: "Current password is incorrect",
         userDetails: {}, // Pass an empty object for now
       });
@@ -252,7 +260,9 @@ router.post("/update-password", requireSignin, async (req, res) => {
 
     if (newPassword !== confirmNewPassword) {
       return res.status(400).render("profile.ejs", {
-        user: req.session.user,
+        firstName: first_name,
+        lastName: last_name,
+        emailAddress: email,
         errorMessage: "Passwords do not match",
         userDetails: {}, // Pass an empty object for now
       });
@@ -275,7 +285,9 @@ router.post("/update-password", requireSignin, async (req, res) => {
 
     // Pass success message when redirecting to profile page
     res.render("profile.ejs", {
-      user: req.session.user,
+      firstName: first_name,
+      lastName: last_name,
+      emailAddress: email,
       successMessage: "Password updated successfully!",
       errorMessage: "", // Ensure to provide errorMessage variable
       userDetails: userDetails, // Pass the fetched user details
@@ -284,7 +296,9 @@ router.post("/update-password", requireSignin, async (req, res) => {
     console.error("Error updating password:", error);
     // Pass the required variables even in case of an error
     res.status(500).render("profile.ejs", {
-      user: req.session.user,
+      firstName: first_name,
+      lastName: last_name,
+      emailAddress: email,
       errorMessage: "An error occurred while updating password",
       successMessage: "", // Ensure to provide successMessage variable
       userDetails: {}, // Pass an empty object for now
