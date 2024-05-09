@@ -70,6 +70,7 @@ window.onload = () => {
         internalU: document.getElementById("internalUse").value,
         purchaseD: document.getElementById("purchaseDepartment").value,
         procurementCat: document.getElementById("ProcurementCategory").value,
+        grandT: document.getElementById("grandTotal").value,
         itemN: itemNumbers,
         partN: partNumbers,
         brand: brands,
