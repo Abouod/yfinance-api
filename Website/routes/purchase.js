@@ -1,9 +1,6 @@
 import express from "express";
 import { db } from "../config.js";
 import requireSignin from "./authMiddleware.js"; // Import the middleware function
-import os from "os";
-import fs from "fs";
-import path from "path";
 
 const router = express.Router();
 
@@ -24,6 +21,7 @@ router.get("/submit", (req, res) => {
 
 // Route to handle form submission and save data to the database
 router.post("/submit", requireSignin, async (req, res) => {
+  const userId = req.session.user.id;
   try {
     await db.query("BEGIN"); // Start a transaction
     // Extract data from the request body
@@ -61,11 +59,11 @@ router.post("/submit", requireSignin, async (req, res) => {
     // Retrieve prCount and lastSubmissionDate from the database
     const prCountQuery = await db.query(
       "SELECT pr_count FROM purchase_request WHERE user_id = $1",
-      [req.session.user.id]
+      [userId]
     );
     const lastSubmissionDateQuery = await db.query(
       "SELECT last_submission_date FROM purchase_request WHERE user_id = $1",
-      [req.session.user.id]
+      [userId]
     );
 
     let prCount = prCountQuery.rows[0]?.pr_count || 1;
@@ -100,14 +98,6 @@ router.post("/submit", requireSignin, async (req, res) => {
       0
     )}-${getFormattedDate()}${prCount.toString().padStart(3, "0")}`;
 
-    // Create folder in the user's documents folder
-    // const folderName = `${firstName}_${lastName}_${getFormattedDate()}`;
-    // const folderResult = createFolderInDocuments(folderName);
-
-    // if (folderResult.error) {
-    //   throw new Error("Error creating folder: " + folderResult.error);
-    // }
-
     // Assuming itemNumber is an array, loop through each item
     for (let i = 0; i < itemNumber.length; i++) {
       const currentItemNumber = itemNumber[i];
@@ -123,7 +113,7 @@ router.post("/submit", requireSignin, async (req, res) => {
         `INSERT INTO purchase_request (user_id, request_by, request_date, customer_name, requisition_no, online_purchase, quotation_no, pr_type, project_category, type_for_purchase, customer_po, supplier_name, project_description, supplier_type, item, description, part_no, brand, date_required, quantity, currency, unit_price, total_price, internal_use, purchase_department, delivery_term, lead_time, tax, exwork, pr_count, last_submission_date, grand_total)
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32)`,
         [
-          req.session.user.id,
+          userId,
           fullName,
           requestDate,
           customerName,
