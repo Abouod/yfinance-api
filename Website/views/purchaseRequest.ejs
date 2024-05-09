@@ -59,32 +59,32 @@
                     </div>
                     <div class="row p-4">
                         <div class="col-md-4">
-                            <label class="labels">Requisition No.</label>
+                            <label class="form-label">Requisition No.</label>
                             <input id="requisitionNo" name="requisitionNo" type="text" value="<%= requisitionNo %>"
                                 class="form-control" readonly>
                         </div>
                         <div class="col-md-4">
-                            <label class="labels">Request by</label>
+                            <label class="form-label">Request by</label>
                             <input id="fullName" type="text" name="fullName" class="form-control"
-                                value="<%= firstName %> <%= lastName %>" readonly>
+                                value="<%= firstName %><%= lastName %>" readonly>
                         </div>
                         <div class="col-md-4">
-                            <label class="labels">Date</label>
+                            <label class="form-label">Date</label>
                             <input id="requestDate" type="date" name="requestDate" class="form-control"
                                 value="<%= new Date().toISOString().split('T')[0] %>" readonly>
                         </div>
                     </div>
                     <div class="row px-4">
                         <div class="col-md-3">
-                            <label class="labels">Customer Name</label>
+                            <label class="form-label">Customer Name</label>
                             <input id="customerName" name="customerName" type="text" class="form-control" required>
                         </div>
                         <div class="col-md-3">
-                            <label class="labels">Customer PO</label>
+                            <label class="form-label">Customer PO</label>
                             <input id="customerPo" name="customerPo" type="text" class="form-control" required>
                         </div>
                         <div class="col-md-3">
-                            <label class="labels">Type for Purchase</label>
+                            <label class="form-label">Type for Purchase</label>
                             <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
                                 <input type="radio" class="btn-check" value="FIXED ASSET" name="TFP" id="fixed-asset"
                                     autocomplete="off" required>
@@ -97,18 +97,18 @@
                             </div>
                         </div>
                         <div class="col-md-3">
-                            <label class="labels">Quotation No.</label>
+                            <label class="form-label">Quotation No.</label>
                             <input id="quotationNo" name="quotationNo" type="text" class="form-control" required>
                         </div>
                     </div>
                     <div class="row p-4">
                         <div class="col-md-3">
-                            <label class="labels">Purchase Department</label>
+                            <label class="form-label">Purchase Department</label>
                             <input id="purchaseDepartment" name="purchaseDepartment" type="text" class="form-control"
                                 required>
                         </div>
                         <div class="col-md-3">
-                            <label class="labels d-block">PR Type</label>
+                            <label class="form-label d-block">PR Type</label>
                             <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
                                 <input type="radio" class="btn-check" value="Machine Build" name="prType" id="machine"
                                     autocomplete="off" required>
@@ -120,11 +120,11 @@
                             </div>
                         </div>
                         <div class="col-md-3">
-                            <label class="labels">Supplier Name</label>
+                            <label class="form-label">Supplier Name</label>
                             <input id="supplierName" name="supplierName" type="text" class="form-control" required>
                         </div>
                         <div class="col-md-3">
-                            <label class="labels">Supplier Type</label>
+                            <label class="form-label">Supplier Type</label>
                             <div class="btn-group" role="st-group" aria-label="Basic radio toggle button st-group">
                                 <input type="radio" class="btn-check" value="OEM" name="ST" id="oem" autocomplete="off"
                                     required>
@@ -142,7 +142,7 @@
                     </div>
                     <div class="row px-4">
                         <div class="col-md-6">
-                            <label class="labels">Sophic Project Category</label>
+                            <label class="form-label">Sophic Project Category</label>
                             <select id="SPC" aria-label="Default select example" name="SPC" type="text"
                                 class="form-select" required>
                                 <option value="" disabled selected hidden>Select Sophic Project Category</option>
@@ -163,12 +163,12 @@
                             </select>
                         </div>
                         <div class="col-md-3">
-                            <label class="labels">Procurement Category</label>
+                            <label class="form-label">Procurement Category</label>
                             <input id="ProcurementCategory" name="ProcurementCategory" type="text" class="form-control"
                                 required>
                         </div>
                         <div class="col-md-3">
-                            <label class="labels">Project Description</label>
+                            <label class="form-label">Project Description</label>
                             <input id="projectDescription" name="projectDescription" type="text" class="form-control"
                                 required>
                         </div>
@@ -181,11 +181,11 @@
                             <div class=" card-body">
                                 <div class="row">
                                     <div class="col-md-3">
-                                        <label class="labels">Internal Use <small>(Opt.)</small></label>
+                                        <label class="form-label">Internal Use <small>(Opt.)</small></label>
                                         <input id="internalUse" name="internalUse" type="text" class="form-control">
                                     </div>
                                     <div class="col-md-3">
-                                        <label class="labels">Online Purchase <small>(Opt.)</small></label>
+                                        <label class="form-label">Online Purchase <small>(Opt.)</small></label>
                                         <input id="onlinePurchase" name="onlinePurchase" type="text"
                                             class="form-control">
                                     </div>
@@ -254,42 +254,42 @@
                                                 <div id="show-item">
                                                     <div class="row p-4">
                                                         <div class="col-md-1 mb-3">
-                                                            <label class="labels">Item</label>
+                                                            <label class="form-label">Item</label>
                                                             <input type="number" name="itemNumber[]"
                                                                 class="itemNumber form-control" id="itemNumber"
                                                                 readonly>
                                                         </div>
 
                                                         <div class="col-md-1 mb-3">
-                                                            <label class="labels">Part No.</label>
+                                                            <label class="form-label">Part No.</label>
                                                             <input type="text" name="partNumber[]"
                                                                 class="partNumber form-control" required>
                                                         </div>
 
                                                         <div class="col-md-2 mb-3">
-                                                            <label class="labels">Brand</label>
+                                                            <label class="form-label">Brand</label>
                                                             <input id="brand" type="text" name="brand[]"
                                                                 class="brand form-control" required>
                                                         </div>
                                                         <div class="col-md-3 mb-3">
-                                                            <label class="labels">Description</label>
+                                                            <label class="form-label">Description</label>
                                                             <textarea class="description form-control "
                                                                 id="exampleFormControlTextarea1" rows="2"
                                                                 name="description[]" required></textarea>
                                                         </div>
                                                         <div class="col-md-2 mb-3">
-                                                            <label class="labels">Date Required</label>
+                                                            <label class="form-label">Date Required</label>
                                                             <input type="date" name="dateRequired[]"
                                                                 class="dateRequired form-control" id="dateRequiredInput"
                                                                 required>
                                                         </div>
                                                         <div class="col-md-1 mb-3">
-                                                            <label class="labels">Qty</label>
+                                                            <label class="form-label">Qty</label>
                                                             <input id="quantity" type="number" name="quantity[]"
                                                                 class="quantity form-control" min="1" required>
                                                         </div>
                                                         <div class="col-md-2 mb-3">
-                                                            <label class="labels">Currency</label>
+                                                            <label class="form-label">Currency</label>
                                                             <input name="currency[]" type="text"
                                                                 class="currency form-control" list="currency"
                                                                 id="currencyInput">
@@ -313,7 +313,7 @@
                                                                 <div class="row">
                                                                     <!-- DT Optional -->
                                                                     <div class="col-md-3 mb-3">
-                                                                        <label class="labels">Delivery
+                                                                        <label class="form-label">Delivery
                                                                             Term
                                                                             <small>(Opt.)</small></label>
                                                                         <input name="deliveryTerm[]" type="text"
@@ -322,7 +322,7 @@
 
                                                                     <!-- LT Optional -->
                                                                     <div class="col-md-3 mb-3">
-                                                                        <label class="labels">Lead Time
+                                                                        <label class="form-label">Lead Time
                                                                             <small>(Opt.)</small></label>
                                                                         <input name="leadTime[]" type="text"
                                                                             class="leadTime form-control">
@@ -330,7 +330,7 @@
 
                                                                     <!-- Tax Optional -->
                                                                     <div class="col-md-3 mb-3">
-                                                                        <label class="labels">Tax (%)
+                                                                        <label class="form-label">Tax (%)
                                                                             <small>(Opt.)</small></label>
                                                                         <input id="tax" name="tax[]" type="number"
                                                                             min="0" class="tax form-control">
@@ -338,7 +338,7 @@
 
                                                                     <!-- Tax Optional -->
                                                                     <div class="col-md-3 mb-3">
-                                                                        <label class="labels">Exwork
+                                                                        <label class="form-label">Exwork
                                                                             Address/Remark
                                                                             <small>(Opt.)</small></label>
                                                                         <input name="exwork[]" type="text"
@@ -351,13 +351,13 @@
 
                                                         <div class="row">
                                                             <div class="col-md-2 mb-3">
-                                                                <label class="labels">Unit Price</label>
+                                                                <label class="form-label">Unit Price</label>
                                                                 <input id="unitPrice" type="number" name="unitPrice[]"
                                                                     class="unitPrice form-control" min="0" required>
                                                             </div>
 
                                                             <div class="col-md-2 mb-3">
-                                                                <label class="labels">Total
+                                                                <label class="form-label">Total
                                                                     Price</label>
                                                                 <input placeholder="Auto Calculated" id="totalPrice"
                                                                     name="totalPrice[]" type="number"
@@ -384,12 +384,13 @@
                                                 </div>
                                                 <div class="row px-4">
                                                     <div class="col-md-2">
-                                                        <label class="labels">Grand Total:</label>
+                                                        <label class="form-label">Grand Total:</label>
                                                         <input id="grandTotal" name="grandTotal"
                                                             placeholder="Auto Calculated" class="form-control"
                                                             type="number" readonly>
                                                     </div>
-                                                    <div class="col-md-2 mt-4">
+                                                    <div class="col-md-2 mt-2">
+                                                        <label class="form-label"></label>
                                                         <button type="submit" class="btn btn-primary w-100"
                                                             id="submit_modal_btn">Submit</button>
                                                     </div>
