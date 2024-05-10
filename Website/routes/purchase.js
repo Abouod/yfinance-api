@@ -6,38 +6,12 @@ const router = express.Router();
 
 //YYMMDD format for the date
 function getFormattedDate() {
-  // const today = new Date();
-  // const year = String(today.getFullYear()).slice(-2); // Get last two digits of the year
-  // const month = String(today.getMonth() + 1).padStart(2, "0");
-  // const day = String(today.getDate()).padStart(2, "0");
-  // return year + month + day;
-  return "240429";
+  const today = new Date();
+  const year = String(today.getFullYear()).slice(-2); // Get last two digits of the year
+  const month = String(today.getMonth() + 1).padStart(2, "0");
+  const day = String(today.getDate()).padStart(2, "0");
+  return year + month + day;
 }
-
-// On server startup, retrieve the last prCount for the user from the database and store it in the session
-app.use(async (req, res, next) => {
-  try {
-    if (req.session.user) {
-      const userQuery = await db.query(
-        "SELECT pr_count, last_submission_date FROM purchase_request WHERE user_id = $1 ORDER BY id DESC LIMIT 1",
-        [req.session.user.id]
-      );
-      if (userQuery.rows.length > 0) {
-        req.session.prCount = userQuery.rows[0].pr_count;
-        req.session.lastSubmissionDate = userQuery.rows[0].last_submission_date;
-      } else {
-        req.session.prCount = 1; // Set prCount to 1 if no previous records found
-        req.session.lastSubmissionDate = null; // Initialize lastSubmissionDate
-      }
-    }
-    console.log("Session prCount:", req.session.prCount);
-    console.log("Session lastSubmissionDate:", req.session.lastSubmissionDate);
-    next();
-  } catch (error) {
-    console.error("Error retrieving prCount from database:", error);
-    next(error);
-  }
-});
 
 //Route to handle GET requests to /submit
 router.get("/submit", (req, res) => {
@@ -80,15 +54,14 @@ router.post("/submit", requireSignin, async (req, res) => {
       exwork,
     } = req.body;
 
-    console.log("req.session.prCount before increment:", req.session.prCount);
+    // Retrieve prCount and lastSubmissionDate from the user's session
+    let { prCount, lastSubmissionDate } = req.session;
 
-    const formattedDate = getFormattedDate();
-
-    // Update lastSubmissionDate to the current date
-    req.session.lastSubmissionDate = formattedDate;
-
-    // Get the last submission date from the session
-    const lastSubmissionDate = req.session.lastSubmissionDate;
+    // If prCount and lastSubmissionDate are not present in the session, initialize them
+    if (!prCount || !lastSubmissionDate) {
+      prCount = 1;
+      lastSubmissionDate = getFormattedDate();
+    }
 
     // Split the fullName into firstName and lastName
     const [firstName, lastName] = fullName.split(" ");
@@ -97,22 +70,24 @@ router.post("/submit", requireSignin, async (req, res) => {
     // If it is, set it to null or any other appropriate default value
     const taxValue = tax !== undefined && tax !== "" ? tax : null; //! Can be adjusted to whatever makes sense in this case (Just to prevent pg insertion error)
 
-    // Initialize currentDate at the beginning of the function
+    // Check the initial value of prCount
+    console.log("Initial prCount:", prCount);
 
-    const currentDate = formattedDate;
-
-    if (lastSubmissionDate !== currentDate) {
-      // Reset prCount to 1 if it's a new day
-      req.session.prCount = 1;
+    // Check if it's a new day or no previous submissions, reset prCount if necessary
+    if (lastSubmissionDate !== getFormattedDate()) {
+      prCount = 1; // Initialize prCount to 1 only if it's a new day or no previous submissions
+      lastSubmissionDate = getFormattedDate(); // Update lastSubmissionDate to the current date
+    } else {
+      // Increment prCount for each submission
+      prCount += 1;
     }
 
-    // Increment prCount for each submission
-    req.session.prCount = req.session.prCount ? req.session.prCount + 1 : 1;
+    // Check the value of prCount after potential increment
+    console.log("prCount after potential increment:", prCount);
 
-    // Generate requisitionNo by concatenating PR prefix, user initials, formatted date, and PR count
     const requisitionNo = `PR${firstName.charAt(0)}${lastName.charAt(
       0
-    )}-${formattedDate}${req.session.prCount.toString().padStart(3, "0")}`;
+    )}-${getFormattedDate()}${prCount.toString().padStart(3, "0")}`;
 
     // Insert data into the purchase_request table
     await db.query(
@@ -148,13 +123,15 @@ router.post("/submit", requireSignin, async (req, res) => {
         leadTime,
         taxValue,
         exwork,
-        req.session.prCount, // Insert prCount into the database
+        prCount, // Insert prCount
         lastSubmissionDate, // Insert lastSubmissionDate into the database
       ]
     );
     await db.query("COMMIT"); // Commit the transaction
 
-    console.log("req.session.prCount after increment:", req.session.prCount);
+    // Update the session with the new values of prCount and lastSubmissionDate
+    req.session.prCount = prCount;
+    req.session.lastSubmissionDate = lastSubmissionDate;
 
     // Fetch the user's first name and last name again from the database
     const userQuery = await db.query(
@@ -190,20 +167,19 @@ router.get("/", requireSignin, async (req, res) => {
     // Get the user's ID from the session
     const userId = req.session.user.id;
 
-    // Initialize currentDate at the beginning of the function
-    const currentDate = getFormattedDate();
+    // Retrieve prCount and lastSubmissionDate from the session
+    let { prCount, lastSubmissionDate } = req.session;
 
-    // Update session variables
-    req.session.lastSubmissionDate = currentDate; // Update lastSubmissionDate to the current date
+    // If prCount and lastSubmissionDate are not present in the session, initialize them
+    if (!prCount || !lastSubmissionDate) {
+      prCount = 1;
+      lastSubmissionDate = getFormattedDate();
+    }
 
-    // Get the last submission date and prCount from the session
-    const lastSubmissionDate = req.session.lastSubmissionDate || currentDate;
-
-    const prCount =
-      lastSubmissionDate === currentDate ? req.session.prCount || 1 : 1;
-
-    // Format lastSubmissionDate
-    const formattedLastSubmissionDate = getFormattedDate();
+    // Check if it's a new day, reset prCount if necessary
+    if (lastSubmissionDate !== getFormattedDate()) {
+      prCount = 1;
+    }
 
     // Fetch the user's first name and last name from the database
     const userQuery = await db.query(
@@ -220,13 +196,13 @@ router.get("/", requireSignin, async (req, res) => {
     // Extract the user's first name and last name from the query result
     const { first_name, last_name } = userQuery.rows[0];
 
-    console.log("Session prCount:", req.session.prCount);
-    console.log("Session lastSubmissionDate:", req.session.lastSubmissionDate);
+    console.log("Session prCount:", prCount);
+    console.log("Session lastSubmissionDate:", lastSubmissionDate);
 
     // Generate requisitionNo by concatenating PR prefix, user initials, formatted date, and prCount
     const requisitionNo = `PR${first_name.charAt(0)}${last_name.charAt(
       0
-    )}-${formattedLastSubmissionDate}${prCount.toString().padStart(3, "0")}`;
+    )}-${getFormattedDate()}${prCount.toString().padStart(3, "0")}`;
 
     // Render the purchaseRequest.ejs template and pass the concatenated string
     res.render("purchaseRequest.ejs", {
