@@ -3,38 +3,86 @@
     <div :class="['container', { active: isActive }]">
       <div class="form-container sign-up">
         <form>
-          <h1>Create Account</h1>
-          <span>or use your email for registration</span>
-          <input type="text" placeholder="Name" />
-          <input type="email" placeholder="Email" />
-          <input type="password" placeholder="Password" />
-          <button type="submit">Sign Up</button>
+          <h1 class="mb-3">Create Account</h1>
+          <input
+            class="form-control my-1"
+            type="text"
+            placeholder="Name"
+            aria-label="default input example"
+          />
+          <input
+            type="email"
+            class="form-control my-1"
+            placeholder="email@example.com"
+          />
+          <input
+            type="password"
+            class="form-control my-1"
+            aria-describedby="passwordHelpInline"
+            placeholder="Password"
+          />
+          <button
+            class="btn btn-primary custom-btn custom-toggle-btn"
+            type="submit"
+          >
+            Sign Up
+          </button>
         </form>
       </div>
       <div class="form-container sign-in">
         <form>
-          <h1>Sign In</h1>
-          <i class="fa-regular fa-user"></i>
-          <span>or use your email and password</span>
-          <input type="email" placeholder="Email" />
-          <input type="password" placeholder="Password" />
-          <a href="#">Forget Your Password?</a>
-          <button type="submit">Sign In</button>
+          <h1 class="mb-3">Sign In</h1>
+          <input
+            type="email"
+            class="form-control my-1"
+            placeholder="email@example.com"
+          />
+          <input
+            type="password"
+            class="form-control my-1"
+            aria-describedby="passwordHelpInline"
+            placeholder="Password"
+          />
+          <a class="my-2" href="#">Forget Your Password?</a>
+          <button
+            class="my-2 btn btn-primary custom-btn custom-toggle-btn"
+            type="submit"
+          >
+            Sign In
+          </button>
         </form>
       </div>
       <div class="toggle-container">
         <div class="toggle">
           <div class="toggle-panel toggle-left">
-            <h1>Welcome Back!</h1>
+            <img
+              id="logo"
+              src="@/assets/images/sophic_white.png"
+              alt="Example Image"
+            />
             <p>Enter your personal details to use all of site features</p>
-            <button @click="toggleActive(false)" class="hidden">Sign In</button>
+            <button
+              @click="toggleActive(false)"
+              class="btn btn-outline-light btn-lg custom-toggle-btn"
+            >
+              Sign In
+            </button>
           </div>
           <div class="toggle-panel toggle-right">
-            <h1>Hello</h1>
+            <img
+              id="logo"
+              src="@/assets/images/sophic_white.png"
+              alt="Example Image"
+            />
             <p>
               Register with your personal details to use all of site features
             </p>
-            <button @click="toggleActive(true)" class="hidden">Sign Up</button>
+            <button
+              @click="toggleActive(true)"
+              class="btn btn-outline-light btn-lg custom-toggle-btn"
+            >
+              Sign Up
+            </button>
           </div>
         </div>
       </div>
@@ -52,10 +100,13 @@ const toggleActive = (active) => {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+$primary: #112d4e;
+@import "@/scss/main.scss";
+
 #body {
-  background-color: #c9dfff;
-  background: linear-gradient(to right, #e2e2e2, #c9dfff);
+  background-color: #fff;
+  background: linear-gradient(to right, #fff, #c9dfff);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -68,6 +119,12 @@ const toggleActive = (active) => {
   padding: 0;
   box-sizing: border-box;
   font-family: "Montserrat", sans-serif;
+}
+
+#logo {
+  max-width: 70%;
+  height: auto;
+  user-select: none;
 }
 
 .container {
@@ -99,23 +156,15 @@ const toggleActive = (active) => {
   margin: 15px 0 10px;
 }
 
-.container button {
-  background-color: var(--fourth-color);
-  color: #fff;
-  font-size: 12px;
+.custom-toggle-btn {
   padding: 10px 45px;
-  border: 1px solid transparent;
-  border-radius: 8px;
+  font-size: 12px;
   font-weight: 600;
-  letter-spacing: 0.5px;
   text-transform: uppercase;
-  margin-top: 10px;
+  letter-spacing: 0.5px;
+  border-radius: 8px;
   cursor: pointer;
-}
-
-.container button.hidden {
-  background-color: transparent;
-  border-color: #fff;
+  margin-top: 10px;
 }
 
 .container form {
@@ -129,11 +178,9 @@ const toggleActive = (active) => {
 }
 
 .container input {
-  background-color: #eee;
-  border: none;
   margin: 8px 0;
   padding: 10px 15px;
-  font-size: 13px;
+  font-size: 14px;
   border-radius: 8px;
   width: 100%;
   outline: none;
@@ -201,13 +248,9 @@ const toggleActive = (active) => {
 }
 
 .toggle {
-  background-color: var(--fourth-color);
+  background-color: var(--navyBlue);
   height: 100%;
-  background: linear-gradient(
-    to right,
-    var(--third-color),
-    var(--fourth-color)
-  );
+  background: linear-gradient(to right, var(--darkBlue), var(--navyBlue));
   color: #fff;
   position: relative;
   left: -100%;
