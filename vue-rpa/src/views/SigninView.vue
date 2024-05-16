@@ -2,20 +2,23 @@
   <div id="body">
     <div :class="['container', { active: isActive }]">
       <div class="form-container sign-up">
-        <form>
+        <form @submit.prevent="signUp">
           <h1 class="mb-3">Create Account</h1>
           <input
+            v-model="signUpName"
             class="form-control my-1"
             type="text"
             placeholder="Name"
             aria-label="default input example"
           />
           <input
+            v-model="signUpEmail"
             type="email"
             class="form-control my-1"
             placeholder="email@example.com"
           />
           <input
+            v-model="signUpPassword"
             type="password"
             class="form-control my-1"
             aria-describedby="passwordHelpInline"
@@ -30,14 +33,16 @@
         </form>
       </div>
       <div class="form-container sign-in">
-        <form>
+        <form @submit.prevent="signIn">
           <h1 class="mb-3">Sign In</h1>
           <input
+            v-model="signInEmail"
             type="email"
             class="form-control my-1"
             placeholder="email@example.com"
           />
           <input
+            v-model="signInPassword"
             type="password"
             class="form-control my-1"
             aria-describedby="passwordHelpInline"
@@ -92,11 +97,53 @@
 
 <script setup>
 import { ref } from "vue";
+import axios from "axios";
 
 const isActive = ref(false);
 
 const toggleActive = (active) => {
   isActive.value = active;
+};
+
+// Sign In Form
+const signInEmail = ref("");
+const signInPassword = ref("");
+
+const signIn = async () => {
+  try {
+    const response = await axios.post("http://localhost:5163/api/users/login", {
+      email: signInEmail.value,
+      password: signInPassword.value,
+    });
+    console.log("Sign in successful:", response.data);
+    // Handle successful sign-in
+  } catch (error) {
+    console.error("Error signing in:", error);
+    // Handle sign-in error
+  }
+
+  // Sign Up Form
+  const signUpName = ref("");
+  const signUpEmail = ref("");
+  const signUpPassword = ref("");
+
+  const signUp = async () => {
+    try {
+      const response = await axios.post(
+        "http://localhost:5163/api/users/register",
+        {
+          name: signUpName.value,
+          email: signUpEmail.value,
+          password: signUpPassword.value,
+        }
+      );
+      console.log("Sign up successful:", response.data);
+      // Handle successful sign-up
+    } catch (error) {
+      console.error("Error signing up:", error);
+      // Handle sign-up error
+    }
+  };
 };
 </script>
 
