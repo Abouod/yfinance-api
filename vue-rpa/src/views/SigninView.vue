@@ -10,12 +10,14 @@
             type="text"
             placeholder="Name"
             aria-label="default input example"
+            required
           />
           <input
             v-model="signUpEmail"
             type="email"
             class="form-control my-1"
             placeholder="email@example.com"
+            required
           />
           <input
             v-model="signUpPassword"
@@ -23,7 +25,11 @@
             class="form-control my-1"
             aria-describedby="passwordHelpInline"
             placeholder="Password"
+            required
           />
+          <div class="error-message" v-if="signUpErrorMessage">
+            {{ signUpErrorMessage }}
+          </div>
           <button
             class="btn btn-primary custom-btn custom-toggle-btn"
             type="submit"
@@ -40,6 +46,7 @@
             type="email"
             class="form-control my-1"
             placeholder="email@example.com"
+            required
           />
           <input
             v-model="signInPassword"
@@ -47,7 +54,11 @@
             class="form-control my-1"
             aria-describedby="passwordHelpInline"
             placeholder="Password"
+            required
           />
+          <div class="error-message" v-if="signInErrorMessage">
+            {{ signInErrorMessage }}
+          </div>
           <a class="my-2" href="#">Forget Your Password?</a>
           <button
             class="my-2 btn btn-primary custom-btn custom-toggle-btn"
@@ -100,6 +111,8 @@ import { ref } from "vue";
 import axios from "axios";
 
 const isActive = ref(false);
+const signInErrorMessage = ref("");
+const signUpErrorMessage = ref("");
 
 const toggleActive = (active) => {
   isActive.value = active;
@@ -116,39 +129,71 @@ const signIn = async () => {
       password: signInPassword.value,
     });
     console.log("Sign in successful:", response.data);
+    // Redirect to the specified URL
+    window.location.href = response.data.redirectUrl;
     // Handle successful sign-in
   } catch (error) {
     console.error("Error signing in:", error);
-    // Handle sign-in error
-  }
-
-  // Sign Up Form
-  const signUpName = ref("");
-  const signUpEmail = ref("");
-  const signUpPassword = ref("");
-
-  const signUp = async () => {
-    try {
-      const response = await axios.post(
-        "http://localhost:5163/api/users/register",
-        {
-          name: signUpName.value,
-          email: signUpEmail.value,
-          password: signUpPassword.value,
-        }
-      );
-      console.log("Sign up successful:", response.data);
-      // Handle successful sign-up
-    } catch (error) {
-      console.error("Error signing up:", error);
-      // Handle sign-up error
+    if (error.response && error.response.data) {
+      // If the response contains a custom error message, display it
+      signInErrorMessage.value = error.response.data; // No need for further parsing
+    } else {
+      signInErrorMessage.value =
+        "An error occurred while signing in. Please try again later.";
     }
-  };
+  }
+};
+
+// Sign Up Form
+const signUpName = ref("");
+const signUpEmail = ref("");
+const signUpPassword = ref("");
+
+const signUp = async () => {
+  try {
+    const response = await axios.post(
+      "http://localhost:5163/api/users/register",
+      {
+        name: signUpName.value,
+        email: signUpEmail.value,
+        password: signUpPassword.value,
+      }
+    );
+    // Extract user data and redirect URL from the response
+    const { user, redirectUrl } = response.data;
+
+    // Handle user data and redirection as needed
+    // For example, you can display a success message to the user
+    console.log("User registered successfully:", user);
+
+    // Then navigate to the specified URL
+    window.location.href = redirectUrl;
+  } catch (error) {
+    console.error("Error signing up:", error);
+    // Handle sign-up error
+    if (error.response && error.response.data) {
+      // If the response contains a custom error message, display it
+      signUpErrorMessage.value = error.response.data; // No need for further parsing
+    } else {
+      signUpErrorMessage.value =
+        "An error occurred while signing in. Please try again later.";
+    }
+  }
 };
 </script>
 
 <style lang="scss" scoped>
-$primary: #112d4e;
+@import "@/scss/variables.scss";
+@import "@/scss/functions.scss";
+$primary: $navyBlue;
+
+// merge with existing $theme-colors map
+$theme-colors: map-merge(
+  $theme-colors,
+  (
+    "primary": $primary,
+  )
+);
 @import "@/scss/main.scss";
 
 #body {
@@ -166,6 +211,12 @@ $primary: #112d4e;
   padding: 0;
   box-sizing: border-box;
   font-family: "Montserrat", sans-serif;
+}
+
+.error-message {
+  color: red;
+  margin-top: 5px;
+  font-size: 15px;
 }
 
 #logo {
