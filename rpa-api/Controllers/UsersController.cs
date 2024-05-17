@@ -2,6 +2,9 @@
 using Microsoft.EntityFrameworkCore;
 using rpa_api.Data;
 using System.Linq;
+using System.Threading.Tasks;
+using BCrypt.Net;
+
 namespace rpa_api.Controllers
 {
     [ApiController]
@@ -16,24 +19,19 @@ namespace rpa_api.Controllers
             _context = context;
         }
 
-/*        [HttpPost("register")]
-        public async Task<ActionResult<User>> Register(User user)
-        {
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetUser), new { id = user.Id }, user);
-        }*/
-
         [HttpPost("register")]
         public async Task<ActionResult<User>> Register(User user)
         {
             // Check if a user with the provided email already exists
             var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == user.Email);
-            if(existingUser != null)
+            if (existingUser != null)
             {
                 // Return a conflict response indicating that the email is already in use
                 return Conflict("Email already in use.");
             }
+
+            // Hash the password before saving the user
+            user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
 
             // If the email is not already in use, proceed with user registration
             _context.Users.Add(user);
@@ -55,14 +53,13 @@ namespace rpa_api.Controllers
         public async Task<ActionResult<User>> Login(User login)
         {
             var user = await _context.Users
-                .FirstOrDefaultAsync(u => u.Email == login.Email && u.Password == login.Password);
+                .FirstOrDefaultAsync(u => u.Email == login.Email);
 
-            if (user == null)
+            if (user == null || !BCrypt.Net.BCrypt.Verify(login.Password, user.Password))
             {
                 return NotFound("Wrong Email or Password."); // Return a custom error message
             }
 
-            /*return Ok(user);*/
             // If authentication successful, return a redirect URL
             return Ok(new { RedirectUrl = "/home" });
         }
