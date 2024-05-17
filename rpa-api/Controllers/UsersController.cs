@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using rpa_api.Data;
 using System.Linq;
 using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
 using BCrypt.Net;
 
 namespace rpa_api.Controllers
@@ -20,8 +21,17 @@ namespace rpa_api.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<ActionResult<User>> Register(User user)
+        public async Task<ActionResult<User>> Register([FromBody] User user)
         {
+            // Validate the model state
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState.Values.SelectMany(v => v.Errors)
+                                .Select(e => e.ErrorMessage)
+                                .ToList();
+                return BadRequest(new { Errors = errors });
+            }
+
             // Check if a user with the provided email already exists
             var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == user.Email);
             if (existingUser != null)
@@ -33,7 +43,7 @@ namespace rpa_api.Controllers
             // Hash the password before saving the user
             user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
 
-            // If the email is not already in use, proceed with user registration
+            // If the email is not already in use, proceed with user registration (Save user)
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
@@ -50,19 +60,21 @@ namespace rpa_api.Controllers
 
 
         [HttpPost("login")]
-        public async Task<ActionResult<User>> Login(User login)
+        public async Task<ActionResult<User>> Login([FromBody] LoginModel loginModel)
         {
-            var user = await _context.Users
-                .FirstOrDefaultAsync(u => u.Email == login.Email);
+            ModelState.Clear();
 
-            if (user == null || !BCrypt.Net.BCrypt.Verify(login.Password, user.Password))
+            var user = await _context.Users
+                .FirstOrDefaultAsync(u => u.Email == loginModel.Email);
+
+            if (user == null || !BCrypt.Net.BCrypt.Verify(loginModel.Password, user.Password))
             {
-                return NotFound("Wrong Email or Password."); // Return a custom error message
+                return NotFound("Wrong Email or Password.");
             }
 
-            // If authentication successful, return a redirect URL
             return Ok(new { RedirectUrl = "/home" });
         }
+
 
 
         [HttpGet("{id}")]
@@ -78,5 +90,15 @@ namespace rpa_api.Controllers
             return user;
         }
 
+    }
+    // Define a separate model to accept login credentials
+    public class LoginModel
+    {
+        [Required(ErrorMessage = "Email is required.")]
+        [EmailAddress(ErrorMessage = "Invalid email format.")]
+        public string Email { get; set; }
+
+        [Required(ErrorMessage = "Password is required.")]
+        public string Password { get; set; }
     }
 }
