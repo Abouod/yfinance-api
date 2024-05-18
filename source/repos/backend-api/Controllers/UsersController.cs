@@ -41,6 +41,13 @@ namespace backend_api.Controllers
                 return Conflict("Email already in use.");
             }
 
+            // Check password complexity
+            var passwordValidationResult = ValidatePassword(user.Password);
+            if (!passwordValidationResult.IsValid)
+            {
+                return BadRequest(new { Errors = passwordValidationResult.Errors });
+            }
+
             // Hash the password before saving the user
             user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
 
@@ -59,21 +66,52 @@ namespace backend_api.Controllers
             return CreatedAtAction(nameof(GetUser), new { id = user.Id }, response);
         }
 
-
-        [HttpPost("login")]
-        public async Task<ActionResult<User>> Login([FromBody] User login)
+        // Define a custom class to hold validation result
+        public class PasswordValidationResult
         {
-            ModelState.Clear();
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == login.Email);
+            public bool IsValid { get; set; }
+            public List<string> Errors { get; set; }
 
-            if (user == null || !BCrypt.Net.BCrypt.Verify(login.Password, user.Password))
+            public PasswordValidationResult()
             {
-                return NotFound("Wrong Email or Password."); // Return a custom error message
+                Errors = new List<string>();
+            }
+        }
+
+        // Method to validate password complexity
+        // Update the UsersController to use the custom class
+        private PasswordValidationResult ValidatePassword(string password)
+        {
+            var validationResult = new PasswordValidationResult { IsValid = true };
+
+            if (string.IsNullOrEmpty(password) || password.Length < 8)
+            {
+                validationResult.IsValid = false;
+                validationResult.Errors.Add("Password must be at least 8 characters long.");
             }
 
-            // If authentication successful, return a redirect URL
+            // Add additional complexity checks here if needed
+
+            return validationResult;
+        }
+
+
+        [HttpPost("login")]
+        public async Task<ActionResult<User>> Login([FromBody] LoginModel loginModel)
+        {
+            ModelState.Clear();
+
+            var user = await _context.Users
+                .FirstOrDefaultAsync(u => u.Email == loginModel.Email);
+
+            if (user == null || !BCrypt.Net.BCrypt.Verify(loginModel.Password, user.Password))
+            {
+                return NotFound("Wrong Email or Password.");
+            }
+
             return Ok(new { RedirectUrl = "/home" });
         }
+
 
 
 
@@ -92,14 +130,14 @@ namespace backend_api.Controllers
 
     }
     // Define a separate model to accept login credentials
-    /*    public class LoginModel
-        {
-            [Required(ErrorMessage = "Email is required.")]
-            [EmailAddress(ErrorMessage = "Invalid email format.")]
-            public string Email { get; set; }
+    public class LoginModel
+    {
+        [Required(ErrorMessage = "Email is required.")]
+        [EmailAddress(ErrorMessage = "Invalid email format.")]
+        public string Email { get; set; }
 
-            [Required(ErrorMessage = "Password is required.")]
-            public string Password { get; set; }
-        }*/
+        [Required(ErrorMessage = "Password is required.")]
+        public string Password { get; set; }
+    }
 }
 
