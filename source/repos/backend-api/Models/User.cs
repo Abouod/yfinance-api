@@ -15,15 +15,13 @@ namespace backend_api.Models
 
         [Required(ErrorMessage = "Email is required.")]
         [Column("email")] // Map to the 'email' column in the database
+        [StringLength(100)]
         [EmailAddress(ErrorMessage = "Invalid email format.")]
         public string Email { get; set; }
 
-        [Required(ErrorMessage = "Password is required.")]
         [Column("password")]
         [StringLength(100)]
         [PasswordComplexity]
-        /*   [RegularExpression(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\da-zA-Z]).{8,}$",
-               ErrorMessage = "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.")]*/
         public string Password { get; set; }
     }
 }
