@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
 using BCrypt.Net;
+using backend_api.Services;
 
 namespace backend_api.Controllers
 {
@@ -15,10 +16,26 @@ namespace backend_api.Controllers
     {
         // Controller methods will go here
         private readonly AppDbContext _context;
+        private readonly JwtService _jwtService; 
 
-        public UsersController(AppDbContext context)
+        public UsersController(AppDbContext context, JwtService jwtService)//Constructor Injecting an Instance of AppDbContext to Interact with DB
         {
             _context = context;
+            _jwtService = jwtService; // Add this line
+        }
+
+        [HttpPost("authenticate")]
+        public async Task<IActionResult> Authenticate([FromBody] LoginModel loginModel)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == loginModel.Email);
+
+            if (user == null || user.Password != loginModel.Password)
+            {
+                return Unauthorized();
+            }
+
+            var token = _jwtService.GenerateToken(user); // Generate JWT token
+            return Ok(new { Token = token });
         }
 
         [HttpPost("register")]
@@ -130,6 +147,8 @@ namespace backend_api.Controllers
 
     }
     // Define a separate model to accept login credentials
+    // Represents the model for accepting login credentials,
+    // containing properties for Email and Password.
     public class LoginModel
     {
         [Required(ErrorMessage = "Email is required.")]
