@@ -58,13 +58,6 @@ namespace backend_api.Controllers
                 return Conflict("Email already in use.");
             }
 
-            // Check password complexity
-            var passwordValidationResult = ValidatePassword(user.Password);
-            if (!passwordValidationResult.IsValid)
-            {
-                return BadRequest(new { Errors = passwordValidationResult.Errors });
-            }
-
             // Hash the password before saving the user
             user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
 
@@ -81,35 +74,6 @@ namespace backend_api.Controllers
 
             // Return the custom response object
             return CreatedAtAction(nameof(GetUser), new { id = user.Id }, response);
-        }
-
-        // Define a custom class to hold validation result
-        public class PasswordValidationResult
-        {
-            public bool IsValid { get; set; }
-            public List<string> Errors { get; set; }
-
-            public PasswordValidationResult()
-            {
-                Errors = new List<string>();
-            }
-        }
-
-        // Method to validate password complexity
-        // Update the UsersController to use the custom class
-        private PasswordValidationResult ValidatePassword(string password)
-        {
-            var validationResult = new PasswordValidationResult { IsValid = true };
-
-            if (string.IsNullOrEmpty(password) || password.Length < 8)
-            {
-                validationResult.IsValid = false;
-                validationResult.Errors.Add("Password must be at least 8 characters long.");
-            }
-
-            // Add additional complexity checks here if needed
-
-            return validationResult;
         }
 
 
