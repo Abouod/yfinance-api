@@ -28,7 +28,9 @@ namespace backend_api.Services
                 Subject = new ClaimsIdentity(new Claim[]
                 {
                     new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                    new Claim(ClaimTypes.Email, user.Email)
+                    new Claim(ClaimTypes.Email, user.Email),
+                    new Claim(ClaimTypes.Name, user.Name) // Include user name in the claims
+
                     // Add more claims if needed
                 }),
                 Expires = DateTime.UtcNow.AddDays(7),

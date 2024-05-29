@@ -5,6 +5,13 @@ using Npgsql.EntityFrameworkCore.PostgreSQL;
 using Microsoft.Extensions.Configuration;
 using backend_api.Services;
 using backend_api.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer; // Import JwtBearer authentication
+using Microsoft.IdentityModel.Tokens; // Import for token validation
+using System.Text; // Import for Encoding
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,7 +19,6 @@ var configuration = builder.Configuration;
 
 
 // Add services to the container.
-
 builder.Services.AddControllers();
 
 // Add DbContext configuration
@@ -27,7 +33,8 @@ builder.Services.AddCors(options =>
         {
             builder.WithOrigins("http://localhost:5173", "https://localhost:5173")
                    .AllowAnyMethod()
-                   .AllowAnyHeader();
+                   .AllowAnyHeader()
+                   .AllowCredentials();
         });
 });
 
@@ -42,6 +49,20 @@ builder.Services.AddScoped<JwtService>();
 var jwtSettings = new JwtSettings();
 configuration.GetSection("JwtSettings").Bind(jwtSettings);
 builder.Services.AddSingleton(jwtSettings);
+
+// Configure JWT authentication
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = false,
+            ValidateAudience = false,
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtSettings.Secret))
+        };
+    });
+
 
 
 var app = builder.Build();

@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
 using BCrypt.Net;
 using backend_api.Services;
+using Microsoft.AspNetCore.Authorization;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 namespace backend_api.Controllers
 {
@@ -27,15 +30,16 @@ namespace backend_api.Controllers
         [HttpPost("authenticate")]
         public async Task<IActionResult> Authenticate([FromBody] LoginModel loginModel)
         {
+           /* ModelState.Clear();*/
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == loginModel.Email);
 
-            if (user == null || user.Password != loginModel.Password)
+            if (user == null || !BCrypt.Net.BCrypt.Verify(loginModel.Password, user.Password))
             {
-                return Unauthorized();
+                return NotFound("Wrong Email or Password.");
             }
 
-            var token = _jwtService.GenerateToken(user); // Generate JWT token
-            return Ok(new { Token = token });
+            var token = _jwtService.GenerateToken(user);
+            return Ok(new { Token = token, RedirectUrl = "/home" });
         }
 
         [HttpPost("register")]
@@ -77,25 +81,6 @@ namespace backend_api.Controllers
         }
 
 
-        [HttpPost("login")]
-        public async Task<ActionResult<User>> Login([FromBody] LoginModel loginModel)
-        {
-            ModelState.Clear();
-
-            var user = await _context.Users
-                .FirstOrDefaultAsync(u => u.Email == loginModel.Email);
-
-            if (user == null || !BCrypt.Net.BCrypt.Verify(loginModel.Password, user.Password))
-            {
-                return NotFound("Wrong Email or Password.");
-            }
-
-            return Ok(new { RedirectUrl = "/home" });
-        }
-
-
-
-
         [HttpGet("{id}")]
         public async Task<ActionResult<User>> GetUser(int id)
         {
@@ -107,6 +92,25 @@ namespace backend_api.Controllers
             }
 
             return user;
+        }
+
+        [HttpGet("profile")]
+        [Authorize] // Ensure the user is authenticated
+        public IActionResult GetProfile()
+        {
+            var identity = HttpContext.User.Identity as ClaimsIdentity;
+            if (identity != null)
+            {
+                var userClaims = identity.Claims;
+
+                return Ok(new
+                {
+                    Id = userClaims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value,
+                    Name = userClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value,
+                    Email = userClaims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value,
+                });
+            }
+            return Unauthorized();
         }
 
     }
