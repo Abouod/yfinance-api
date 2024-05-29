@@ -73,7 +73,7 @@ namespace backend_api.Controllers
             var response = new
             {
                 User = user,
-                RedirectUrl = "/home" // Specify the redirect URL here
+                Message = "Registered successfully. Please sign in."
             };
 
             // Return the custom response object
