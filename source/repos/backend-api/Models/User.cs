@@ -23,5 +23,11 @@ namespace backend_api.Models
         [StringLength(100)]
         [PasswordComplexity]
         public string Password { get; set; }
+
+        [Column("refresh_token")] // Add column mapping
+        public string? RefreshToken { get; set; }
+
+        [Column("refresh_token_expiry_time")] // Add column mapping for expiry time
+        public DateTime? RefreshTokenExpiryTime { get; set; }
     }
 }

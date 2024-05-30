@@ -10,6 +10,7 @@ using backend_api.Services;
 using Microsoft.AspNetCore.Authorization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Xml.Linq;
 
 namespace backend_api.Controllers
 {
@@ -35,11 +36,63 @@ namespace backend_api.Controllers
 
             if (user == null || !BCrypt.Net.BCrypt.Verify(loginModel.Password, user.Password))
             {
-                return NotFound("Wrong Email or Password.");
+                return Unauthorized("Wrong Email or Password.");
             }
 
-            var token = _jwtService.GenerateToken(user);
-            return Ok(new { Token = token, RedirectUrl = "/home" });
+            var accessToken = _jwtService.GenerateToken(user);
+            var refreshToken = _jwtService.GenerateRefreshToken();
+
+            // Save refresh token in DB (for example purposes)
+            user.RefreshToken = refreshToken;
+            user.RefreshTokenExpiryTime = DateTime.UtcNow.AddMinutes(_jwtService.GetRefreshTokenExpirationMinutes());
+            await _context.SaveChangesAsync();
+
+            // Set refresh token as HttpOnly cookie
+            Response.Cookies.Append("refreshToken", refreshToken, new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = false, //whether the cookie should only be transmitted over secure HTTPS 
+                SameSite = SameSiteMode.Strict,
+                Expires = DateTime.UtcNow.AddDays(30)
+            });
+
+            /*var token = _jwtService.GenerateToken(user);*/
+            return Ok(new { Token = accessToken, RedirectUrl = "/home" });
+        }
+
+        [HttpPost("refresh-token")]
+        public async Task<IActionResult> RefreshToken()
+        {
+            if (!Request.Cookies.TryGetValue("refreshToken", out var refreshToken))
+            {
+                return Unauthorized();
+            }
+
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.RefreshToken == refreshToken);
+
+            if (user == null || user.RefreshTokenExpiryTime <= DateTime.UtcNow)
+            {
+                return Unauthorized();
+            }
+
+            var newAccessToken = _jwtService.GenerateToken(user);
+            var newRefreshToken = _jwtService.GenerateRefreshToken();
+
+            // Update refresh token in DB
+            user.RefreshToken = newRefreshToken;
+            user.RefreshTokenExpiryTime = DateTime.UtcNow.AddMinutes(_jwtService.GetRefreshTokenExpirationMinutes());
+            await _context.SaveChangesAsync();
+
+            // Set new refresh token as HttpOnly cookie
+            Response.Cookies.Append("refreshToken", newRefreshToken, new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Strict,
+                Expires = DateTime.UtcNow.AddDays(30)
+            });
+
+            return Ok(new { Token = newAccessToken });
         }
 
         [HttpPost("register")]
@@ -102,14 +155,23 @@ namespace backend_api.Controllers
             if (identity != null)
             {
                 var userClaims = identity.Claims;
+                var userId = userClaims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+                var userName = userClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
+                var userEmail = userClaims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
+
+                if (userId == null || userName == null || userEmail == null)
+                {
+                    return Unauthorized();
+                }
 
                 return Ok(new
                 {
-                    Id = userClaims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value,
-                    Name = userClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value,
-                    Email = userClaims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value,
+                    Id = userId,
+                    Name = userName,
+                    Email = userEmail,
                 });
             }
+            Console.WriteLine("Identity is null, returning Unauthorized");
             return Unauthorized();
         }
 
