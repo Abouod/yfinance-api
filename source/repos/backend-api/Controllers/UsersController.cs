@@ -31,7 +31,7 @@ namespace backend_api.Controllers
         [HttpPost("authenticate")]
         public async Task<IActionResult> Authenticate([FromBody] LoginModel loginModel)
         {
-           /* ModelState.Clear();*/
+            /*ModelState.Clear();*/
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == loginModel.Email);
 
             if (user == null || !BCrypt.Net.BCrypt.Verify(loginModel.Password, user.Password))
@@ -175,18 +175,69 @@ namespace backend_api.Controllers
             return Unauthorized();
         }
 
-    }
-    // Define a separate model to accept login credentials
-    // Represents the model for accepting login credentials,
-    // containing properties for Email and Password.
-    public class LoginModel
-    {
-        [Required(ErrorMessage = "Email is required.")]
-        [EmailAddress(ErrorMessage = "Invalid email format.")]
-        public string Email { get; set; }
+        [HttpPut("update-password")]
+        public async Task<IActionResult> UpdatePassword([FromBody] PasswordUpdateModel passwordUpdateModel)
+        {
 
-        [Required(ErrorMessage = "Password is required.")]
-        public string Password { get; set; }
+            // Validate the model state
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState.Values.SelectMany(v => v.Errors)
+                                .Select(e => e.ErrorMessage)
+                                .ToList();
+                return BadRequest(new { Errors = errors });
+            }
+
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (userId == null)
+            {
+                return NotFound("User not found.");
+            }
+
+            var user = await _context.Users.FindAsync(int.Parse(userId));
+
+            if (user == null || !BCrypt.Net.BCrypt.Verify(passwordUpdateModel.CurrentPassword, user.Password))
+            {
+                return Unauthorized("Invalid current password.");
+            }
+
+            // Hash the new password
+            user.Password = BCrypt.Net.BCrypt.HashPassword(passwordUpdateModel.NewPassword);
+
+            await _context.SaveChangesAsync();
+
+            return Ok("Password updated successfully.");
+        }
+
+
     }
+
+        // Define a separate model to accept login credentials
+        // Represents the model for accepting login credentials,
+        // containing properties for Email and Password.
+        public class LoginModel
+         {
+                [Required(ErrorMessage = "Email is required.")]
+                [EmailAddress(ErrorMessage = "Invalid email format.")]
+                public string Email { get; set; }
+
+                [Required(ErrorMessage = "Password is required.")]
+                public string Password { get; set; }
+         }
+
+        public class PasswordUpdateModel
+        {
+            [Required(ErrorMessage = "Current password is required.")]
+            public string CurrentPassword { get; set; }
+
+            [Required(ErrorMessage = "New password is required.")]
+            [PasswordComplexity]
+            public string NewPassword { get; set; }
+
+            [Required(ErrorMessage = "Confirm new password is required.")]
+            [Compare("NewPassword", ErrorMessage = "Confirm new password doesn't match new password.")]
+            public string ConfirmNewPassword { get; set; }
+        }
+
 }
 

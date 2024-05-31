@@ -19,6 +19,7 @@ namespace backend_api.Models
         [EmailAddress(ErrorMessage = "Invalid email format.")]
         public string Email { get; set; }
 
+        [Required(ErrorMessage = "Password is required.")]
         [Column("password")]
         [StringLength(100)]
         [PasswordComplexity]
