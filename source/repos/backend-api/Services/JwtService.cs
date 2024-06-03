@@ -13,12 +13,16 @@ namespace backend_api.Services
     public class JwtService
     {
         private readonly string _secret;
+        private readonly string _issuer;
+        private readonly string _audience;
         private readonly int _accessTokenExpirationMinutes;
         private readonly int _refreshTokenExpirationMinutes;
 
         public JwtService(JwtSettings jwtSettings)//class constructor to accept an instance of JwtSettings
         {
             _secret = jwtSettings.Secret;
+            _issuer = jwtSettings.Issuer;
+            _audience = jwtSettings.Audience;
             _accessTokenExpirationMinutes = jwtSettings.AccessTokenExpirationInMinutes;
             _refreshTokenExpirationMinutes = jwtSettings.RefreshTokenExpirationInMinutes;
         }
@@ -39,6 +43,8 @@ namespace backend_api.Services
                     // Add more claims if needed
                 }),
                 Expires = DateTime.UtcNow.AddMinutes(_accessTokenExpirationMinutes),
+                Issuer = _issuer,
+                Audience = _audience,
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);

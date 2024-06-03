@@ -9,8 +9,11 @@ using BCrypt.Net;
 using backend_api.Services;
 using Microsoft.AspNetCore.Authorization;
 using System.IdentityModel.Tokens.Jwt;
+using System;
 using System.Security.Claims;
 using System.Xml.Linq;
+using Microsoft.AspNetCore.Http;
+
 
 namespace backend_api.Controllers
 {
@@ -31,39 +34,47 @@ namespace backend_api.Controllers
         [HttpPost("authenticate")]
         public async Task<IActionResult> Authenticate([FromBody] LoginModel loginModel)
         {
-            /*ModelState.Clear();*/
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == loginModel.Email);
+            try {
+                /*ModelState.Clear();*/
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == loginModel.Email);
 
-            if (user == null || !BCrypt.Net.BCrypt.Verify(loginModel.Password, user.Password))
-            {
-                return Unauthorized("Wrong Email or Password.");
+                if (user == null || !BCrypt.Net.BCrypt.Verify(loginModel.Password, user.Password))
+                {
+                    Console.WriteLine("Authentication failed: Invalid email or password.");
+                    return Unauthorized("Wrong Email or Password.");
+                }
+
+                var accessToken = _jwtService.GenerateToken(user);
+                var refreshToken = _jwtService.GenerateRefreshToken();
+
+                // Save refresh token in DB 
+                user.RefreshToken = refreshToken;
+                user.RefreshTokenExpiryTime = DateTime.UtcNow.AddMinutes(_jwtService.GetRefreshTokenExpirationMinutes());
+                await _context.SaveChangesAsync();
+
+                // Set JWT and refresh token as HttpOnly cookies
+                SetCookie("jwtToken", accessToken, _jwtService.GetAccessTokenExpirationMinutes());
+                SetCookie("refreshToken", refreshToken, _jwtService.GetRefreshTokenExpirationMinutes());
+
+               /* Console.WriteLine($"User {user.Email} authenticated successfully.");*/
+                return Ok();
             }
-
-            var accessToken = _jwtService.GenerateToken(user);
-            var refreshToken = _jwtService.GenerateRefreshToken();
-
-            // Save refresh token in DB (for example purposes)
-            user.RefreshToken = refreshToken;
-            user.RefreshTokenExpiryTime = DateTime.UtcNow.AddMinutes(_jwtService.GetRefreshTokenExpirationMinutes());
-            await _context.SaveChangesAsync();
-
-            // Set refresh token as HttpOnly cookie
-            Response.Cookies.Append("refreshToken", refreshToken, new CookieOptions
+            catch (Exception ex)
             {
-                HttpOnly = true,
-                Secure = false, //whether the cookie should only be transmitted over secure HTTPS 
-                SameSite = SameSiteMode.Strict,
-                Expires = DateTime.UtcNow.AddDays(30)
-            });
-
-            /*var token = _jwtService.GenerateToken(user);*/
-            return Ok(new { Token = accessToken, RedirectUrl = "/home" });
+                Console.WriteLine($"Error during authentication: {ex.Message}");
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal server error.");
+            }
         }
 
         [HttpPost("refresh-token")]
         public async Task<IActionResult> RefreshToken()
         {
             if (!Request.Cookies.TryGetValue("refreshToken", out var refreshToken))
+            {
+                return Unauthorized();
+            }
+
+            if (string.IsNullOrEmpty(refreshToken))
             {
                 return Unauthorized();
             }
@@ -84,15 +95,10 @@ namespace backend_api.Controllers
             await _context.SaveChangesAsync();
 
             // Set new refresh token as HttpOnly cookie
-            Response.Cookies.Append("refreshToken", newRefreshToken, new CookieOptions
-            {
-                HttpOnly = true,
-                Secure = true,
-                SameSite = SameSiteMode.Strict,
-                Expires = DateTime.UtcNow.AddDays(30)
-            });
+            SetCookie("jwtToken", newAccessToken, _jwtService.GetAccessTokenExpirationMinutes());
+            SetCookie("refreshToken", newRefreshToken, _jwtService.GetRefreshTokenExpirationMinutes());
 
-            return Ok(new { Token = newAccessToken });
+            return Ok();
         }
 
         [HttpPost("register")]
@@ -161,7 +167,7 @@ namespace backend_api.Controllers
 
                 if (userId == null || userName == null || userEmail == null)
                 {
-                    return Unauthorized();
+                    return Unauthorized("Unauthorized. Please Sign in again");
                 }
 
                 return Ok(new
@@ -171,8 +177,7 @@ namespace backend_api.Controllers
                     Email = userEmail,
                 });
             }
-            Console.WriteLine("Identity is null, returning Unauthorized");
-            return Unauthorized();
+            return Unauthorized("Unauthorized. Identity is Undefined.");
         }
 
         [HttpPut("update-password")]
@@ -207,6 +212,46 @@ namespace backend_api.Controllers
             await _context.SaveChangesAsync();
 
             return Ok("Password updated successfully.");
+        }
+
+        [HttpPost("logout")]
+        public async Task<IActionResult> Logout()
+        {
+            var identity = HttpContext.User.Identity as ClaimsIdentity;
+            if (identity != null)
+            {
+                var userId = identity.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (userId != null)
+                {
+                    var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == int.Parse(userId));
+                    if (user != null)
+                    {
+                        user.RefreshToken = null;
+                        user.RefreshTokenExpiryTime = null;
+                        await _context.SaveChangesAsync();
+
+                        // Clear cookies
+                        Response.Cookies.Delete("jwtToken");
+                        Response.Cookies.Delete("refreshToken");
+
+                        return Ok("Logged out successfully.");
+                    }
+                }
+            }
+            return Unauthorized("User not found.");
+        }
+
+
+        private void SetCookie(string key, string value, int expirationMinutes)
+        {
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = false, // Set to true in production
+                SameSite = SameSiteMode.Strict,
+                Expires = DateTime.UtcNow.AddMinutes(expirationMinutes)
+            };
+            Response.Cookies.Append(key, value, cookieOptions);
         }
 
 

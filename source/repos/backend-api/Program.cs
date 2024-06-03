@@ -5,8 +5,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL;
 using Microsoft.Extensions.Configuration;
 using backend_api.Services;
 using backend_api.Models;
-using Microsoft.AspNetCore.Authentication.JwtBearer; // Import JwtBearer authentication
-using Microsoft.IdentityModel.Tokens; // Import for token validation
+using Microsoft.AspNetCore.Authentication.JwtBearer; 
+using Microsoft.IdentityModel.Tokens;
 using System.Text; // Import for Encoding
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
@@ -56,10 +56,25 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     {
         options.TokenValidationParameters = new TokenValidationParameters
         {
-            ValidateIssuer = false,
-            ValidateAudience = false,
+            ValidateIssuer = true,
+            ValidateAudience = true,
             ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtSettings.Secret))
+            ValidIssuer = jwtSettings.Issuer,
+            ValidAudience = jwtSettings.Audience,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtSettings.Secret)),
+            ClockSkew = TimeSpan.Zero
+        };
+
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                if (context.Request.Cookies.ContainsKey("jwtToken"))
+                {
+                    context.Token = context.Request.Cookies["jwtToken"];
+                }
+                return Task.CompletedTask;
+            }
         };
     });
 
@@ -78,8 +93,10 @@ if (app.Environment.IsDevelopment())
 }
 // Configure the HTTP request pipeline.
 app.UseHttpsRedirection();
+
 // Use JWT authentication middleware
 app.UseAuthentication();
 app.UseAuthorization();
+
 app.MapControllers();
 app.Run();
