@@ -13,6 +13,11 @@ using System;
 using System.Security.Claims;
 using System.Xml.Linq;
 using Microsoft.AspNetCore.Http;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+using System.Diagnostics;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.VisualBasic;
+using backend_api.DTOs;
 
 
 namespace backend_api.Controllers
@@ -69,27 +74,32 @@ namespace backend_api.Controllers
         [HttpPost("refresh-token")]
         public async Task<IActionResult> RefreshToken()
         {
-            if (!Request.Cookies.TryGetValue("refreshToken", out var refreshToken))
+            if (!Request.Cookies.TryGetValue("refreshToken", out var refreshToken))//Retrive the refresh token from the cookies.
             {
                 return Unauthorized();
             }
 
-            if (string.IsNullOrEmpty(refreshToken))
+            if (string.IsNullOrEmpty(refreshToken)) //Validate refreshToken existence
             {
                 return Unauthorized();
             }
 
             var user = await _context.Users.FirstOrDefaultAsync(u => u.RefreshToken == refreshToken);
 
-            if (user == null || user.RefreshTokenExpiryTime <= DateTime.UtcNow)
+            if (user == null || user.RefreshTokenExpiryTime <= DateTime.UtcNow)//Validate refreshToken in DB
             {
                 return Unauthorized();
             }
 
+            //If valid a newAccessToken and a new refreshToken are generated.
             var newAccessToken = _jwtService.GenerateToken(user);
             var newRefreshToken = _jwtService.GenerateRefreshToken();
 
-            // Update refresh token in DB
+          /*  Storing the Refresh Token and Expiry in the Database:
+            It allows the server to verify the validity and expiration
+            of the refresh token during the token refresh process.*/
+
+            // Update newRefreshToken and its expiryTime in DB
             user.RefreshToken = newRefreshToken;
             user.RefreshTokenExpiryTime = DateTime.UtcNow.AddMinutes(_jwtService.GetRefreshTokenExpirationMinutes());
             await _context.SaveChangesAsync();
@@ -139,11 +149,14 @@ namespace backend_api.Controllers
             return CreatedAtAction(nameof(GetUser), new { id = user.Id }, response);
         }
 
-
+        /*  By including related Details in your queries, you ensure that the detailed information
+          about the user is available in a single call to the database.*/
         [HttpGet("{id}")]
         public async Task<ActionResult<User>> GetUser(int id)
         {
-            var user = await _context.Users.FindAsync(id);
+            var user = await _context.Users
+                .Include(u => u.Details)
+                .FirstOrDefaultAsync(u => u.Id == id);
 
             if (user == null)
             {
@@ -152,6 +165,40 @@ namespace backend_api.Controllers
 
             return user;
         }
+
+        /*        [HttpGet("profile")]
+                [Authorize]
+                public async Task<IActionResult> GetProfile()
+                {
+                    var identity = HttpContext.User.Identity as ClaimsIdentity;
+                    if (identity == null)
+                    {
+                        return Unauthorized("Unauthorized. Identity is Undefined.");
+                    }
+
+                    var userId = identity.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                    if (userId == null)
+                    {
+                        return Unauthorized("Unauthorized. Identity is Undefined.");
+                    }
+
+                    var user = await _context.Users
+                        .Include(u => u.Details)
+                        .FirstOrDefaultAsync(u => u.Id == int.Parse(userId));
+
+                    if (user == null)
+                    {
+                        return NotFound("User not found.");
+                    }
+
+                    return Ok(new
+                    {
+                        Id = user.Id,
+                        Name = user.Name,
+                        Email = user.Email,
+                        Details = user.Details
+                    });
+                }*/
 
         [HttpGet("profile")]
         [Authorize] // Ensure the user is authenticated
@@ -178,6 +225,98 @@ namespace backend_api.Controllers
                 });
             }
             return Unauthorized("Unauthorized. Identity is Undefined.");
+        }
+
+        [HttpGet("details")]
+        [Authorize] // Ensure the user is authenticated
+        public async Task<IActionResult> GetUserDetails()
+        {
+            var identity = HttpContext.User.Identity as ClaimsIdentity;
+            if (identity != null)
+            {
+                var userId = identity.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (userId == null)
+                {
+                    return Unauthorized("Unauthorized. Please Sign in again");
+                }
+
+                var user = await _context.Users
+                    .Include(u => u.Details)
+                    .FirstOrDefaultAsync(u => u.Id == int.Parse(userId));
+
+                if (user == null)
+                {
+                    return NotFound("User not found.");
+                }
+
+                // Create a DTO for user details
+                var userDetailsDto = new UserDetailsDto
+                {
+                    AddressLine = user.Details?.AddressLine,
+                    PhoneNumber = user.Details?.PhoneNumber,
+                    Passport = user.Details?.Passport,
+                    BankName = user.Details?.BankName,
+                    BankAccount = user.Details?.BankAccount,
+                    EmployeeId = user.Details?.EmployeeId,
+                    JobTitle = user.Details?.JobTitle,
+                    Department = user.Details?.Department,
+                    Division = user.Details?.Division,
+                    ManagerName = user.Details?.ManagerName,
+                    ManagerId = user.Details?.ManagerId,
+                    ManagerEmail = user.Details?.ManagerEmail,
+                    SuperiorName = user.Details?.SuperiorName,
+                    SuperiorId = user.Details?.SuperiorId,
+                    SuperiorEmail = user.Details?.SuperiorEmail
+                };
+
+                return Ok(userDetailsDto);
+            }
+            return Unauthorized("Unauthorized. Identity is Undefined.");
+        }
+
+
+
+        [HttpPut("update-details")]
+        [Authorize]
+        public async Task<IActionResult> UpdateDetails([FromBody] Details updatedDetails)
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (userId == null)
+            {
+                return NotFound("User not found.");
+            }
+
+            var user = await _context.Users.Include(u => u.Details).FirstOrDefaultAsync(u => u.Id == int.Parse(userId));
+            if (user == null)
+            {
+                return NotFound("User not found.");
+            }
+
+            if (user.Details == null)
+            {
+                // Create a new Details object if it doesn't exist
+                user.Details = new Details();
+            }
+
+            user.Details.AddressLine = updatedDetails.AddressLine;
+            user.Details.PhoneNumber = updatedDetails.PhoneNumber;
+            user.Details.Passport = updatedDetails.Passport;
+            user.Details.BankName = updatedDetails.BankName;
+            user.Details.BankAccount = updatedDetails.BankAccount;
+            user.Details.EmployeeId = updatedDetails.EmployeeId;
+            user.Details.JobTitle = updatedDetails.JobTitle;
+            user.Details.Department = updatedDetails.Department;
+            user.Details.Division = updatedDetails.Division;
+            user.Details.ManagerName = updatedDetails.ManagerName;
+            user.Details.ManagerId = updatedDetails.ManagerId;
+            user.Details.ManagerEmail = updatedDetails.ManagerEmail;
+            user.Details.SuperiorName = updatedDetails.SuperiorName;
+            user.Details.SuperiorId = updatedDetails.SuperiorId;
+            user.Details.SuperiorEmail = updatedDetails.SuperiorEmail;
+
+            await _context.SaveChangesAsync();
+
+            return Ok("Details updated successfully.");
         }
 
         [HttpPut("update-password")]
@@ -257,9 +396,7 @@ namespace backend_api.Controllers
 
     }
 
-        // Define a separate model to accept login credentials
-        // Represents the model for accepting login credentials,
-        // containing properties for Email and Password.
+        // A separate model to accept login credentials
         public class LoginModel
          {
                 [Required(ErrorMessage = "Email is required.")]

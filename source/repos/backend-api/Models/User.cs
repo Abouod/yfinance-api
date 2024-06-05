@@ -30,5 +30,6 @@ namespace backend_api.Models
 
         [Column("refresh_token_expiry_time")] // Add column mapping for expiry time
         public DateTime? RefreshTokenExpiryTime { get; set; }
+        public Details? Details { get; set; }
     }
 }

@@ -12,5 +12,16 @@ namespace backend_api.Data
         }
 
         public DbSet<User> Users { get; set; }
+        public DbSet<Details> Details { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<User>()
+                .HasOne(u => u.Details)
+                .WithOne(d => d.User)
+                .HasForeignKey<Details>(d => d.UserId);
+
+            base.OnModelCreating(modelBuilder);
+        }
     }
 }
