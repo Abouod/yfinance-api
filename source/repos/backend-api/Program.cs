@@ -93,6 +93,14 @@ if (app.Environment.IsDevelopment())
 }
 // Configure the HTTP request pipeline.
 app.UseHttpsRedirection();
+// Serve static files from the 'uploads' directory
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(
+        Path.Combine(Directory.GetCurrentDirectory(), "uploads")),
+    RequestPath = "/uploads"
+});
+
 
 // Use JWT authentication middleware
 app.UseAuthentication();

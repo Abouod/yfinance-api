@@ -18,6 +18,8 @@ using System.Diagnostics;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.VisualBasic;
 using backend_api.DTOs;
+using System.IO;
+using Microsoft.AspNetCore.Http;
 
 
 namespace backend_api.Controllers
@@ -166,40 +168,6 @@ namespace backend_api.Controllers
             return user;
         }
 
-        /*        [HttpGet("profile")]
-                [Authorize]
-                public async Task<IActionResult> GetProfile()
-                {
-                    var identity = HttpContext.User.Identity as ClaimsIdentity;
-                    if (identity == null)
-                    {
-                        return Unauthorized("Unauthorized. Identity is Undefined.");
-                    }
-
-                    var userId = identity.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                    if (userId == null)
-                    {
-                        return Unauthorized("Unauthorized. Identity is Undefined.");
-                    }
-
-                    var user = await _context.Users
-                        .Include(u => u.Details)
-                        .FirstOrDefaultAsync(u => u.Id == int.Parse(userId));
-
-                    if (user == null)
-                    {
-                        return NotFound("User not found.");
-                    }
-
-                    return Ok(new
-                    {
-                        Id = user.Id,
-                        Name = user.Name,
-                        Email = user.Email,
-                        Details = user.Details
-                    });
-                }*/
-
         [HttpGet("profile")]
         [Authorize] // Ensure the user is authenticated
         public IActionResult GetProfile()
@@ -266,7 +234,10 @@ namespace backend_api.Controllers
                     ManagerEmail = user.Details?.ManagerEmail,
                     SuperiorName = user.Details?.SuperiorName,
                     SuperiorId = user.Details?.SuperiorId,
-                    SuperiorEmail = user.Details?.SuperiorEmail
+                    SuperiorEmail = user.Details?.SuperiorEmail,
+                    Signature = !string.IsNullOrEmpty(user.Details?.Signature)
+                        ? $"{Request.Scheme}://{Request.Host}/uploads/{user.Details.Signature}"
+                        : null
                 };
 
                 return Ok(userDetailsDto);
@@ -380,6 +351,73 @@ namespace backend_api.Controllers
             return Unauthorized("User not found.");
         }
 
+        [HttpDelete("{id}")]
+        [Authorize]
+        public async Task<IActionResult> DeleteUser(int id)
+        {
+            var user = await _context.Users.FindAsync(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            _context.Users.Remove(user);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+        [HttpPost("upload")]
+        [Authorize]
+        public async Task<IActionResult> Upload(IFormFile file)
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (userId == null)
+            {
+                return Unauthorized("Unauthorized. Please Sign in again");
+            }
+
+            var user = await _context.Users.Include(u => u.Details).FirstOrDefaultAsync(u => u.Id == int.Parse(userId));
+            if (user == null || user.Details == null)
+            {
+                return NotFound("User details not found.");
+            }
+
+            if (file == null || file.Length == 0)
+            {
+                return BadRequest("No file uploaded.");
+            }
+
+            var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "uploads");
+            if (!Directory.Exists(uploadPath))
+            {
+                Directory.CreateDirectory(uploadPath);
+            }
+
+            var uniqueFileName = $"{user.Id}_{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
+            var filePath = Path.Combine(uploadPath, uniqueFileName);
+
+            // Delete the old signature file if it exists
+            if (!string.IsNullOrEmpty(user.Details.Signature))
+            {
+                var oldFilePath = Path.Combine(uploadPath, user.Details.Signature);
+                if (System.IO.File.Exists(oldFilePath))
+                {
+                    System.IO.File.Delete(oldFilePath);
+                }
+            }
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
+
+            user.Details.Signature = uniqueFileName;
+            await _context.SaveChangesAsync();
+
+            return Ok(new { filePath });
+        }
+
 
         private void SetCookie(string key, string value, int expirationMinutes)
         {
@@ -391,6 +429,12 @@ namespace backend_api.Controllers
                 Expires = DateTime.UtcNow.AddMinutes(expirationMinutes)
             };
             Response.Cookies.Append(key, value, cookieOptions);
+        }
+
+        private string? GetCurrentUserId()
+        {
+            var identity = HttpContext.User.Identity as ClaimsIdentity;
+            return identity?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         }
 
 

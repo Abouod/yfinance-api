@@ -17,6 +17,8 @@
         public string SuperiorName { get; set; }
         public string SuperiorId { get; set; }
         public string SuperiorEmail { get; set; }
+        public string Signature { get; set; }  
+
     }
 
 }

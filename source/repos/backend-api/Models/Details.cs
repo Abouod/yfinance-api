@@ -76,5 +76,9 @@ namespace backend_api.Models
         [StringLength(100)]
         [EmailAddress]
         public string? SuperiorEmail { get; set; }
+
+        [Column("signature")]
+        [StringLength(255)]
+        public string? Signature { get; set; }  // New column for signature file name
     }
 }
