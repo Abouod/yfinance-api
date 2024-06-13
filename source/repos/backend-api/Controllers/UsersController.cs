@@ -1,18 +1,17 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc; //for creating controllers
+using Microsoft.EntityFrameworkCore; //for database interactions
 using backend_api.Data;
 using backend_api.Models;
 using System.Linq;
 using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
-using BCrypt.Net;
+using BCrypt.Net; //password hashing
 using backend_api.Services;
 using Microsoft.AspNetCore.Authorization;
 using System.IdentityModel.Tokens.Jwt;
 using System;
 using System.Security.Claims;
 using System.Xml.Linq;
-using Microsoft.AspNetCore.Http;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using System.Diagnostics;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -20,41 +19,45 @@ using Microsoft.VisualBasic;
 using backend_api.DTOs;
 using System.IO;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging; // logging
+
 
 
 namespace backend_api.Controllers
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class UsersController : ControllerBase
+    [ApiController] //ApiController attribute Specifies that this class is an api controller
+    [Route("api/[controller]")] // Sets the base route for the controller to api/users.
+    public class UsersController : ControllerBase //Begins the definition of the UsersController class, inheriting from ControllerBase.
     {
         // Controller methods will go here
         private readonly AppDbContext _context;
-        private readonly JwtService _jwtService; 
+        private readonly JwtService _jwtService;
+        private readonly ILogger<UsersController> _logger;
 
-        public UsersController(AppDbContext context, JwtService jwtService)//Constructor Injecting an Instance of AppDbContext to Interact with DB
+        public UsersController(AppDbContext context, JwtService jwtService, ILogger<UsersController> logger)//Constructor: Injects the AppDbContext and JwtService via dependency injection. This allows the controller to interact with the database and manage JWT tokens.
         {
+            //Defines private fields for database context (_context) and JWT service (_jwtService).
             _context = context;
-            _jwtService = jwtService; // Add this line
+            _jwtService = jwtService;
+            _logger = logger; // Inject logger
         }
 
-        [HttpPost("authenticate")]
-        public async Task<IActionResult> Authenticate([FromBody] LoginModel loginModel)
+        [HttpPost("authenticate")] //Defines an http endpoint
+        public async Task<IActionResult> Authenticate([FromBody] LoginModel loginModel) //Authenticates a user with the provided login credentials
         {
             try {
-                /*ModelState.Clear();*/
-                var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == loginModel.Email);
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == loginModel.Email); //Retrieves User: Searches for a user in the database by email.
 
-                if (user == null || !BCrypt.Net.BCrypt.Verify(loginModel.Password, user.Password))
+                if (user == null || !BCrypt.Net.BCrypt.Verify(loginModel.Password, user.Password)) //Verifies Password: Uses BCrypt to verify the password.
                 {
-                    Console.WriteLine("Authentication failed: Invalid email or password.");
+                    _logger.LogWarning("Authentication failed: Invalid email or password.");
                     return Unauthorized("Wrong Email or Password.");
                 }
-
+                //Generates Tokens: Creates access and refresh tokens using JwtService.
                 var accessToken = _jwtService.GenerateToken(user);
                 var refreshToken = _jwtService.GenerateRefreshToken();
 
-                // Save refresh token in DB 
+                // Save refresh token and expiary time in DB 
                 user.RefreshToken = refreshToken;
                 user.RefreshTokenExpiryTime = DateTime.UtcNow.AddMinutes(_jwtService.GetRefreshTokenExpirationMinutes());
                 await _context.SaveChangesAsync();
@@ -63,26 +66,29 @@ namespace backend_api.Controllers
                 SetCookie("jwtToken", accessToken, _jwtService.GetAccessTokenExpirationMinutes());
                 SetCookie("refreshToken", refreshToken, _jwtService.GetRefreshTokenExpirationMinutes());
 
-               /* Console.WriteLine($"User {user.Email} authenticated successfully.");*/
+                _logger.LogInformation($"User {user.Email} authenticated successfully.");
                 return Ok();
             }
-            catch (Exception ex)
+            catch (Exception ex)//Exception Handling: Catches and handles exceptions, returning a 500 status code if needed.
             {
-                Console.WriteLine($"Error during authentication: {ex.Message}");
+                _logger.LogError($"Error during authentication: {ex.Message}");
                 return StatusCode(StatusCodes.Status500InternalServerError, "Internal server error.");
             }
         }
 
         [HttpPost("refresh-token")]
-        public async Task<IActionResult> RefreshToken()
+        public async Task<IActionResult> RefreshToken()// Handles token refresh logic.
         {
-            if (!Request.Cookies.TryGetValue("refreshToken", out var refreshToken))//Retrive the refresh token from the cookies.
+            if (!Request.Cookies.TryGetValue("refreshToken", out var refreshToken))//Retrieves Refresh Token: Checks for the refresh token in cookies.
+
             {
+                _logger.LogWarning("Refresh token is missing in cookies.");
                 return Unauthorized();
             }
 
             if (string.IsNullOrEmpty(refreshToken)) //Validate refreshToken existence
             {
+                _logger.LogWarning("Refresh token is empty.");
                 return Unauthorized();
             }
 
@@ -90,6 +96,7 @@ namespace backend_api.Controllers
 
             if (user == null || user.RefreshTokenExpiryTime <= DateTime.UtcNow)//Validate refreshToken in DB
             {
+                _logger.LogWarning("Invalid or expired refresh token.");
                 return Unauthorized();
             }
 
@@ -110,6 +117,7 @@ namespace backend_api.Controllers
             SetCookie("jwtToken", newAccessToken, _jwtService.GetAccessTokenExpirationMinutes());
             SetCookie("refreshToken", newRefreshToken, _jwtService.GetRefreshTokenExpirationMinutes());
 
+            _logger.LogInformation("Refresh token for user {Email} refreshed successfully.", user.Email);
             return Ok();
         }
 
@@ -122,6 +130,7 @@ namespace backend_api.Controllers
                 var errors = ModelState.Values.SelectMany(v => v.Errors)
                                 .Select(e => e.ErrorMessage)
                                 .ToList();
+                _logger.LogWarning("User registration failed due to invalid model state: {Errors}", errors);
                 return BadRequest(new { Errors = errors });
             }
 
@@ -129,6 +138,7 @@ namespace backend_api.Controllers
             var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == user.Email);
             if (existingUser != null)
             {
+                _logger.LogWarning("User registration failed: Email {Email} is already in use.", user.Email);
                 // Return a conflict response indicating that the email is already in use
                 return Conflict("Email already in use.");
             }
@@ -148,6 +158,7 @@ namespace backend_api.Controllers
             };
 
             // Return the custom response object
+            _logger.LogInformation("User {Email} registered successfully.", user.Email);
             return CreatedAtAction(nameof(GetUser), new { id = user.Id }, response);
         }
 
@@ -162,6 +173,7 @@ namespace backend_api.Controllers
 
             if (user == null)
             {
+                _logger.LogWarning("User with ID {Id} not found.", id);
                 return NotFound();
             }
 
@@ -182,6 +194,7 @@ namespace backend_api.Controllers
 
                 if (userId == null || userName == null || userEmail == null)
                 {
+                    _logger.LogWarning("Unauthorized access attempt with missing claims.");
                     return Unauthorized("Unauthorized. Please Sign in again");
                 }
 
@@ -192,6 +205,7 @@ namespace backend_api.Controllers
                     Email = userEmail,
                 });
             }
+            _logger.LogWarning("Unauthorized access attempt with undefined identity.");
             return Unauthorized("Unauthorized. Identity is Undefined.");
         }
 
@@ -205,6 +219,7 @@ namespace backend_api.Controllers
                 var userId = identity.FindFirst(ClaimTypes.NameIdentifier)?.Value;
                 if (userId == null)
                 {
+                    _logger.LogWarning("Unauthorized access attempt with missing user ID.");
                     return Unauthorized("Unauthorized. Please Sign in again");
                 }
 
@@ -214,6 +229,7 @@ namespace backend_api.Controllers
 
                 if (user == null)
                 {
+                    _logger.LogWarning("User details not found for user ID {UserId}.", userId);
                     return NotFound("User not found.");
                 }
 
@@ -242,9 +258,9 @@ namespace backend_api.Controllers
 
                 return Ok(userDetailsDto);
             }
+            _logger.LogWarning("Unauthorized access attempt with undefined identity.");
             return Unauthorized("Unauthorized. Identity is Undefined.");
         }
-
 
 
         [HttpPut("update-details")]
@@ -254,12 +270,14 @@ namespace backend_api.Controllers
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (userId == null)
             {
+                _logger.LogWarning("User not found during details update.");
                 return NotFound("User not found.");
             }
 
             var user = await _context.Users.Include(u => u.Details).FirstOrDefaultAsync(u => u.Id == int.Parse(userId));
             if (user == null)
             {
+                _logger.LogWarning("User not found during details update for user ID {UserId}.", userId);
                 return NotFound("User not found.");
             }
 
@@ -287,10 +305,12 @@ namespace backend_api.Controllers
 
             await _context.SaveChangesAsync();
 
+            _logger.LogInformation("User details for user ID {UserId} updated successfully.", userId);
             return Ok("Details updated successfully.");
         }
 
         [HttpPut("update-password")]
+        [Authorize]
         public async Task<IActionResult> UpdatePassword([FromBody] PasswordUpdateModel passwordUpdateModel)
         {
 
@@ -300,12 +320,14 @@ namespace backend_api.Controllers
                 var errors = ModelState.Values.SelectMany(v => v.Errors)
                                 .Select(e => e.ErrorMessage)
                                 .ToList();
+                _logger.LogWarning("Password update failed due to invalid model state: {Errors}", errors);
                 return BadRequest(new { Errors = errors });
             }
 
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userId = GetCurrentUserId();
             if (userId == null)
             {
+                _logger.LogWarning("User not found during password update.");
                 return NotFound("User not found.");
             }
 
@@ -313,6 +335,7 @@ namespace backend_api.Controllers
 
             if (user == null || !BCrypt.Net.BCrypt.Verify(passwordUpdateModel.CurrentPassword, user.Password))
             {
+                _logger.LogWarning("Password update failed: Invalid current password for user ID {UserId}.", userId);
                 return Unauthorized("Invalid current password.");
             }
 
@@ -321,6 +344,7 @@ namespace backend_api.Controllers
 
             await _context.SaveChangesAsync();
 
+            _logger.LogInformation("Password for user ID {UserId} updated successfully.", userId);
             return Ok("Password updated successfully.");
         }
 
@@ -344,10 +368,12 @@ namespace backend_api.Controllers
                         Response.Cookies.Delete("jwtToken");
                         Response.Cookies.Delete("refreshToken");
 
+                        _logger.LogInformation("User ID {UserId} logged out successfully.", userId);
                         return Ok("Logged out successfully.");
                     }
                 }
             }
+            _logger.LogWarning("Unauthorized logout attempt.");
             return Unauthorized("User not found.");
         }
 
@@ -358,12 +384,14 @@ namespace backend_api.Controllers
             var user = await _context.Users.FindAsync(id);
             if (user == null)
             {
+                _logger.LogWarning("User with ID {Id} not found for deletion.", id);
                 return NotFound();
             }
 
             _context.Users.Remove(user);
             await _context.SaveChangesAsync();
 
+            _logger.LogInformation("User with ID {Id} deleted successfully.", id);
             return NoContent();
         }
 
@@ -374,17 +402,20 @@ namespace backend_api.Controllers
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (userId == null)
             {
-                return Unauthorized("Unauthorized. Please Sign in again");
+                _logger.LogWarning("Unauthorized upload attempt with missing user ID.");
+                return Unauthorized("Unauthorized. Please sign in again.");
             }
 
             var user = await _context.Users.Include(u => u.Details).FirstOrDefaultAsync(u => u.Id == int.Parse(userId));
-            if (user == null || user.Details == null)
+            if (user == null)
             {
-                return NotFound("User details not found.");
+                _logger.LogWarning("User not found for upload attempt by user ID {UserId}.", userId);
+                return NotFound("User not found.");
             }
 
             if (file == null || file.Length == 0)
             {
+                _logger.LogWarning("Upload attempt with no file by user ID {UserId}.", userId);
                 return BadRequest("No file uploaded.");
             }
 
@@ -397,26 +428,43 @@ namespace backend_api.Controllers
             var uniqueFileName = $"{user.Id}_{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
             var filePath = Path.Combine(uploadPath, uniqueFileName);
 
-            // Delete the old signature file if it exists
-            if (!string.IsNullOrEmpty(user.Details.Signature))
+            try
             {
-                var oldFilePath = Path.Combine(uploadPath, user.Details.Signature);
-                if (System.IO.File.Exists(oldFilePath))
+                // Ensure user details object exists
+                if (user.Details == null)
                 {
-                    System.IO.File.Delete(oldFilePath);
+                    user.Details = new Details { UserId = user.Id };
+                    _context.Details.Add(user.Details); // Add new details entry
                 }
-            }
 
-            using (var stream = new FileStream(filePath, FileMode.Create))
+                // Delete the old signature file if it exists
+                if (!string.IsNullOrEmpty(user.Details.Signature))
+                {
+                    var oldFilePath = Path.Combine(uploadPath, user.Details.Signature);
+                    if (System.IO.File.Exists(oldFilePath))
+                    {
+                        System.IO.File.Delete(oldFilePath);
+                    }
+                }
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await file.CopyToAsync(stream);
+                }
+
+                user.Details.Signature = uniqueFileName;
+                await _context.SaveChangesAsync();
+
+                _logger.LogInformation("File uploaded successfully for user ID {UserId}. File path: {FilePath}", userId, filePath);
+                return Ok(new { filePath });
+            }
+            catch (Exception ex)
             {
-                await file.CopyToAsync(stream);
+                _logger.LogError(ex, "Error occurred while uploading file for user ID {UserId}.", userId);
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while uploading the file. Please try again later.");
             }
-
-            user.Details.Signature = uniqueFileName;
-            await _context.SaveChangesAsync();
-
-            return Ok(new { filePath });
         }
+
 
 
         private void SetCookie(string key, string value, int expirationMinutes)

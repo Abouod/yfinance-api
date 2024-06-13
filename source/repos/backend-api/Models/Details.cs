@@ -79,6 +79,6 @@ namespace backend_api.Models
 
         [Column("signature")]
         [StringLength(255)]
-        public string? Signature { get; set; }  // New column for signature file name
+        public string? Signature { get; set; }  
     }
 }

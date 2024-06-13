@@ -1,5 +1,6 @@
 ﻿using backend_api.Models;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.Extensions.Logging;
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -17,14 +18,18 @@ namespace backend_api.Services
         private readonly string _audience;
         private readonly int _accessTokenExpirationMinutes;
         private readonly int _refreshTokenExpirationMinutes;
+        private readonly ILogger<JwtService> _logger;
 
-        public JwtService(JwtSettings jwtSettings)//class constructor to accept an instance of JwtSettings
+        public JwtService(JwtSettings jwtSettings, ILogger<JwtService> logger)//class constructor to accept an instance of JwtSettings
         {
             _secret = jwtSettings.Secret;
             _issuer = jwtSettings.Issuer;
             _audience = jwtSettings.Audience;
             _accessTokenExpirationMinutes = jwtSettings.AccessTokenExpirationInMinutes;
             _refreshTokenExpirationMinutes = jwtSettings.RefreshTokenExpirationInMinutes;
+            _logger = logger;
+
+            _logger.LogInformation("JwtService initialized.");
         }
 
         public string GenerateToken(User user) //GenerateToken Method: This method takes a User object as input and generates a JWT for that user.
@@ -48,6 +53,7 @@ namespace backend_api.Services
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);
+            _logger.LogInformation("Token generated for user {UserId}", user.Id);
             return tokenHandler.WriteToken(token);
         }
 
@@ -57,6 +63,7 @@ namespace backend_api.Services
             using (var rng = RandomNumberGenerator.Create())
             {
                 rng.GetBytes(randomNumber);
+                _logger.LogInformation("Refresh token generated.");
                 return Convert.ToBase64String(randomNumber);
             }
         }
