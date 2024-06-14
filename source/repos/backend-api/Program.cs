@@ -51,6 +51,10 @@ builder.Services.AddSwaggerGen();
 // Register JwtService with JwtSettings dependency
 builder.Services.AddScoped<JwtService>();
 
+// Register EmailService 
+builder.Services.AddScoped<EmailService>();
+
+
 // Configure JWT settings
 var jwtSettings = new JwtSettings();
 configuration.GetSection("JwtSettings").Bind(jwtSettings);

@@ -20,6 +20,8 @@ using backend_api.DTOs;
 using System.IO;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging; // logging
+using System.Security.Cryptography;
+
 
 
 
@@ -32,13 +34,15 @@ namespace backend_api.Controllers
         // Controller methods will go here
         private readonly AppDbContext _context;
         private readonly JwtService _jwtService;
+        private readonly EmailService _emailService;
         private readonly ILogger<UsersController> _logger;
 
-        public UsersController(AppDbContext context, JwtService jwtService, ILogger<UsersController> logger)//Constructor: Injects the AppDbContext and JwtService via dependency injection. This allows the controller to interact with the database and manage JWT tokens.
+        public UsersController(AppDbContext context, JwtService jwtService, EmailService emailService, ILogger<UsersController> logger)//Constructor: Injects the AppDbContext and JwtService via dependency injection. This allows the controller to interact with the database and manage JWT tokens.
         {
             //Defines private fields for database context (_context) and JWT service (_jwtService).
             _context = context;
             _jwtService = jwtService;
+            _emailService = emailService;
             _logger = logger; // Inject logger
         }
 
@@ -53,6 +57,21 @@ namespace backend_api.Controllers
                     _logger.LogWarning("Authentication failed: Invalid email or password.");
                     return Unauthorized("Wrong Email or Password.");
                 }
+
+                if (!user.IsEmailVerified)
+                {
+                    // Resend verification email
+                    user.EmailVerificationToken = GenerateEmailVerificationToken();
+                    await _context.SaveChangesAsync();
+
+                    var verificationLink = Url.Action(nameof(VerifyEmail), "Users", new { token = user.EmailVerificationToken, name = user.Name, email = user.Email }, Request.Scheme);
+                    var emailBody = $"Please verify your email by clicking on the link: <a href='{verificationLink}'>Verify Email</a>";
+                    _emailService.SendEmail(user.Email, "Verify your email", emailBody);
+
+                    _logger.LogWarning("Authentication failed. Email isn't verified. Verification email resent.");
+                    return Unauthorized(new { Message = "Email not verified.", Name = user.Name, Email = user.Email });
+                }
+
                 //Generates Tokens: Creates access and refresh tokens using JwtService.
                 var accessToken = _jwtService.GenerateToken(user);
                 var refreshToken = _jwtService.GenerateRefreshToken();
@@ -146,20 +165,57 @@ namespace backend_api.Controllers
             // Hash the password before saving the user
             user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
 
+            user.EmailVerificationToken = GenerateEmailVerificationToken();
+            user.IsEmailVerified = false;
+
             // If the email is not already in use, proceed with user registration (Save user)
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
+
+            var verificationLink = Url.Action(nameof(VerifyEmail), "Users", new { token = user.EmailVerificationToken, name = user.Name, email = user.Email }, Request.Scheme);
+            var emailBody = $"Please verify your email by clicking on the link: <a href='{verificationLink}'>Verify Email</a>";
+            _emailService.SendEmail(user.Email, "Verify your email", emailBody);
 
             // Construct a custom response object containing user data and redirect URL
             var response = new
             {
                 User = user,
-                Message = "Registered successfully. Please sign in."
+                Message = "Registered successfully. Please sign in.",
+                Name = user.Name,
+                Email = user.Email 
             };
 
             // Return the custom response object
             _logger.LogInformation("User {Email} registered successfully.", user.Email);
             return CreatedAtAction(nameof(GetUser), new { id = user.Id }, response);
+        }
+
+
+        [HttpGet("verify-email")]
+        public async Task<IActionResult> VerifyEmail(string token)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.EmailVerificationToken == token);
+            if (user == null)
+            {
+                return Redirect("http://localhost:5173/verify-status?status=error&message=Invalid%20token");
+            }
+
+            user.IsEmailVerified = true;
+            user.EmailVerificationToken = null;
+            await _context.SaveChangesAsync();
+
+            return Redirect("http://localhost:5173/verify-status?status=success&message=Email%20verified%20successfully");
+
+        }
+
+        private string GenerateEmailVerificationToken()
+        {
+            using (var rng = RandomNumberGenerator.Create())
+            {
+                var bytes = new byte[32];
+                rng.GetBytes(bytes);
+                return Convert.ToBase64String(bytes);
+            }
         }
 
         /*  By including related Details in your queries, you ensure that the detailed information
