@@ -13,15 +13,41 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging; // Import logging
+using DotNetEnv;
+
 
 
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
 
+// Load the .env file
+DotNetEnv.Env.Load();
+
+// Retrieve environment variables
+var jwtSecret = Environment.GetEnvironmentVariable("JWT_SECRET");
+var dbConnection = Environment.GetEnvironmentVariable("DB_CONNECTION");
+var emailFrom = Environment.GetEnvironmentVariable("EMAIL_FROM");
+var smtpServer = Environment.GetEnvironmentVariable("SMTP_SERVER");
+var smtpPort = Environment.GetEnvironmentVariable("SMTP_PORT");
+var smtpUser = Environment.GetEnvironmentVariable("SMTP_USER");
+var smtpPass = Environment.GetEnvironmentVariable("SMTP_PASS");
+
 // Configure logging
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
+
+// Add environment variables to configuration
+builder.Configuration.AddInMemoryCollection(new[]
+{
+    new KeyValuePair<string, string>("JwtSettings:Secret", jwtSecret),
+    new KeyValuePair<string, string>("ConnectionStrings:DefaultConnection", dbConnection),
+    new KeyValuePair<string, string>("EmailSettings:FromEmail", emailFrom),
+    new KeyValuePair<string, string>("EmailSettings:SmtpServer", smtpServer),
+    new KeyValuePair<string, string>("EmailSettings:SmtpPort", smtpPort),
+    new KeyValuePair<string, string>("EmailSettings:SmtpUser", smtpUser),
+    new KeyValuePair<string, string>("EmailSettings:SmtpPass", smtpPass)
+});
 
 
 // Add services to the container.

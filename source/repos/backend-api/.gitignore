@@ -35,3 +35,6 @@ msbuild.wrn
 
 # Ignore Uploads folder during development.
 Uploads/
+
+# Ignore .env file
+.env
