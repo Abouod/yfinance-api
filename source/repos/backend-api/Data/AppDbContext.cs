@@ -16,6 +16,9 @@ namespace backend_api.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            /*HasOne(u => u.Details).WithOne(d => d.User).HasForeignKey<Details>(d => d.UserId);
+            * configures the one-to-one relationship between User and Details, 
+            * with Details.UserId as the foreign key.*/
             modelBuilder.Entity<User>()
                 .HasOne(u => u.Details)
                 .WithOne(d => d.User)

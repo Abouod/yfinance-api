@@ -21,6 +21,8 @@ using System.IO;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging; // logging
 using System.Security.Cryptography;
+using Microsoft.AspNetCore.Identity.Data;
+using System.Net;
 
 
 
@@ -45,6 +47,101 @@ namespace backend_api.Controllers
             _emailService = emailService;
             _logger = logger; // Inject logger
         }
+
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest request)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
+
+            if (user == null)
+            {
+                return NotFound("User with this email does not exist.");
+            }
+
+            // Generate password reset token
+            user.PasswordResetToken = GeneratePasswordResetToken();
+            user.PasswordResetTokenExpiryTime = DateTime.UtcNow.AddHours(1); // Token valid for 1 hour
+            await _context.SaveChangesAsync();
+
+            /* var resetLink = Url.Action(nameof(ResetPassword), "Users", new { token = user.PasswordResetToken, email = user.Email }, Request.Scheme);*/
+            /* var resetLink = $"http://localhost:5173/reset-password?token={user.PasswordResetToken}&email={user.Email}";*/
+            var resetLink = $"http://localhost:5173/reset-password?token={WebUtility.UrlEncode(user.PasswordResetToken)}&email={WebUtility.UrlEncode(user.Email)}";
+            var emailBody = $"Please reset your password by clicking on the link: <a href='{resetLink}'>Reset Password</a>";
+            _emailService.SendEmail(user.Email, "Reset Password", emailBody);
+
+            return Ok("Password reset link has been sent to your email.");
+        }
+
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest model)
+        {
+            try
+            {
+                if (model == null)
+                {
+                    _logger.LogWarning("ResetPassword request is null.");
+                    return BadRequest("Invalid request.");
+                }
+
+                if (string.IsNullOrEmpty(model.Email) || string.IsNullOrEmpty(model.Token) || string.IsNullOrEmpty(model.NewPassword) || string.IsNullOrEmpty(model.ConfirmNewPassword))
+                {
+                    _logger.LogWarning("ResetPassword request missing fields: {Request}", model);
+                    return BadRequest("All fields are required.");
+                }
+
+                _logger.LogInformation("ResetPassword requested for email: {Email}, token: {Token}", model.Email, model.Token);
+
+                // Find user by email and token
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == model.Email && u.PasswordResetToken == model.Token);
+                _logger.LogInformation("User: ", user);
+                if (user == null)
+                {
+                    _logger.LogWarning("User not found for email: {Email} and token: {Token}", model.Email, model.Token);
+                    return BadRequest("Invalid password reset token or email.");
+                }
+
+                if (!user.PasswordResetTokenExpiryTime.HasValue || user.PasswordResetTokenExpiryTime <= DateTime.UtcNow)
+                {
+                    _logger.LogWarning("Expired token for user: {UserId}", user.Id);
+                    return BadRequest("Invalid or expired password reset token.");
+                }
+
+                if (model.NewPassword != model.ConfirmNewPassword)
+                {
+                    _logger.LogWarning("Password mismatch for user: {UserId}", user.Id);
+                    return BadRequest("New password and confirm password do not match.");
+                }
+
+                // Hash the new password before saving
+                user.Password = BCrypt.Net.BCrypt.HashPassword(model.NewPassword);
+                user.PasswordResetToken = null;  // Clear the token
+                user.PasswordResetTokenExpiryTime = null;  // Clear the token expiry time
+                await _context.SaveChangesAsync();
+
+                _logger.LogInformation("Password reset successfully for user: {UserId}", user.Id);
+                return Ok("Password has been reset successfully.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error resetting password");
+                return StatusCode(500, "An error occurred while resetting the password.");
+            }
+        }
+
+        private string GeneratePasswordResetToken()
+        {
+            using (var rng = RandomNumberGenerator.Create())
+            {
+                var bytes = new byte[32];
+                rng.GetBytes(bytes);
+                var token = Convert.ToBase64String(bytes)
+                    .Replace('+', '-')
+                    .Replace('/', '_')
+                    .Replace("=", ""); // Remove any trailing '=' padding
+                return token;
+            }
+        }
+
 
         [HttpPost("authenticate")] //Defines an http endpoint
         public async Task<IActionResult> Authenticate([FromBody] LoginModel loginModel) //Authenticates a user with the provided login credentials
@@ -544,16 +641,34 @@ namespace backend_api.Controllers
 
     }
 
-        // A separate model to accept login credentials
-        public class LoginModel
-         {
-                [Required(ErrorMessage = "Email is required.")]
-                [EmailAddress(ErrorMessage = "Invalid email format.")]
-                public string Email { get; set; }
+    // DTO classes for requests
+    public class ForgotPasswordRequest
+    {
+        public string Email { get; set; }
+    }
 
-                [Required(ErrorMessage = "Password is required.")]
-                public string Password { get; set; }
-         }
+    public class ResetPasswordRequest
+    {
+        public string Email { get; set; }
+        public string Token { get; set; }
+        [Required(ErrorMessage = "New password is required.")]
+        [PasswordComplexity]
+        public string NewPassword { get; set; }
+        [Required(ErrorMessage = "Confirm new password is required.")]
+        [Compare("NewPassword", ErrorMessage = "Confirm new password doesn't match new password.")]
+        public string ConfirmNewPassword { get; set; }
+    }
+
+    // A separate model to accept login credentials
+    public class LoginModel
+        {
+            [Required(ErrorMessage = "Email is required.")]
+            [EmailAddress(ErrorMessage = "Invalid email format.")]
+            public string Email { get; set; }
+
+            [Required(ErrorMessage = "Password is required.")]
+            public string Password { get; set; }
+        }
 
         public class PasswordUpdateModel
         {
