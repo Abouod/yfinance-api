@@ -36,12 +36,13 @@ namespace backend_api.Models
 
         [Column("is_email_verified")]
         public bool IsEmailVerified { get; set; }
-        public Details? Details { get; set; }
 
         [Column("password_reset_token")]
         public string? PasswordResetToken { get; set; }
 
         [Column("password_reset_token_expiry_time")]
         public DateTime? PasswordResetTokenExpiryTime { get; set; }
+
+        public Details? Details { get; set; }
     }
 }

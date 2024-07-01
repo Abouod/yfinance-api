@@ -63,31 +63,93 @@ namespace backend_api.Controllers
             user.PasswordResetTokenExpiryTime = DateTime.UtcNow.AddHours(1); // Token valid for 1 hour
             await _context.SaveChangesAsync();
 
-            /* var resetLink = Url.Action(nameof(ResetPassword), "Users", new { token = user.PasswordResetToken, email = user.Email }, Request.Scheme);*/
-            /* var resetLink = $"http://localhost:5173/reset-password?token={user.PasswordResetToken}&email={user.Email}";*/
             var resetLink = $"http://localhost:5173/reset-password?token={WebUtility.UrlEncode(user.PasswordResetToken)}&email={WebUtility.UrlEncode(user.Email)}";
-            var emailBody = $"Please reset your password by clicking on the link: <a href='{resetLink}'>Reset Password</a>";
+            var emailBody = $@"
+        <html>
+        <head>
+            <style>
+                body {{
+                    font-family: Inter, Arial, sans-serif;
+                    margin: 0;
+                    padding: 0;
+                    background-color: #f6f6f6;
+                }}
+                .container {{
+                    width: 90%;
+                    margin: 0 auto;
+                    padding: 20px;
+                    background-color: #ffffff;
+                    border-radius: 10px;
+                    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                }}
+                .header {{
+                    text-align: left;
+                    padding-left: 20px;
+                }}
+                .content {{
+                    padding: 5px 20px;
+                    font-size: 16px;
+                    line-height: 1.5;
+                }}
+                .button {{
+                    display: block;
+                    width: 200px;
+                    margin: 20px auto;
+                    padding: 10px;
+                    text-align: center;
+                    background-color: #0073e6;
+                    color: #ffffff;
+                    text-decoration: none;
+                    border-radius: 5px;
+                }}
+                .footer {{
+                    text-align: center;
+                    padding: 10px 0;
+                    color: #888888;
+                }}
+            </style>
+        </head>
+        <body>
+            <div class='container'>
+                <div class='header'>
+                    <h1>Reset Your Password</h1>
+                </div>
+                <div class='content'>
+                    <p>Hello,</p>
+                    <p>We received a request to reset your password. Click the button below to reset it. <small> (Link will expire in 1 hour.)</small></p>
+                    <a style='color: white;' class='button' href='{resetLink}'>Reset Password</a>
+                    <p>If you didn't request a password reset, please ignore this email.</p>
+                </div>
+                <div class='footer'>
+                    <p>&copy; 2024 Sophic Automation Sdn Bhd. All rights reserved.</p>
+                </div>
+            </div>
+        </body>
+        </html>";
+
             _emailService.SendEmail(user.Email, "Reset Password", emailBody);
 
             return Ok("Password reset link has been sent to your email.");
         }
+
 
         [HttpPost("reset-password")]
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest model)
         {
             try
             {
+                /*  
                 if (model == null)
                 {
                     _logger.LogWarning("ResetPassword request is null.");
                     return BadRequest("Invalid request.");
                 }
 
-                if (string.IsNullOrEmpty(model.Email) || string.IsNullOrEmpty(model.Token) || string.IsNullOrEmpty(model.NewPassword) || string.IsNullOrEmpty(model.ConfirmNewPassword))
+              if (string.IsNullOrEmpty(model.Email) || string.IsNullOrEmpty(model.Token) || string.IsNullOrEmpty(model.NewPassword) || string.IsNullOrEmpty(model.ConfirmNewPassword))
                 {
                     _logger.LogWarning("ResetPassword request missing fields: {Request}", model);
                     return BadRequest("All fields are required.");
-                }
+                }*/
 
                 _logger.LogInformation("ResetPassword requested for email: {Email}, token: {Token}", model.Email, model.Token);
 
@@ -97,20 +159,20 @@ namespace backend_api.Controllers
                 if (user == null)
                 {
                     _logger.LogWarning("User not found for email: {Email} and token: {Token}", model.Email, model.Token);
-                    return BadRequest("Invalid password reset token or email.");
+                    return BadRequest("Invalid password reset Link. Please restart the process.");
                 }
 
                 if (!user.PasswordResetTokenExpiryTime.HasValue || user.PasswordResetTokenExpiryTime <= DateTime.UtcNow)
                 {
                     _logger.LogWarning("Expired token for user: {UserId}", user.Id);
-                    return BadRequest("Invalid or expired password reset token.");
+                    return BadRequest("Expired password reset token. Please restart the process.");
                 }
 
-                if (model.NewPassword != model.ConfirmNewPassword)
+/*                if (model.NewPassword != model.ConfirmNewPassword)
                 {
                     _logger.LogWarning("Password mismatch for user: {UserId}", user.Id);
                     return BadRequest("New password and confirm password do not match.");
-                }
+                }*/
 
                 // Hash the new password before saving
                 user.Password = BCrypt.Net.BCrypt.HashPassword(model.NewPassword);
@@ -644,6 +706,8 @@ namespace backend_api.Controllers
     // DTO classes for requests
     public class ForgotPasswordRequest
     {
+        [Required(ErrorMessage = "Email is required.")]
+        [EmailAddress(ErrorMessage = "Invalid email format.")]
         public string Email { get; set; }
     }
 
