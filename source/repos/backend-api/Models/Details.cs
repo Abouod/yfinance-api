@@ -8,12 +8,14 @@ namespace backend_api.Models
         [Key]
         public int Id { get; set; }
 
-        [Required]
-        [ForeignKey("User")]
-        public int UserId { get; set; }//navigation property to the User model. This sets up a relationship between
-                                       //the Details entity and the User entity,
-                                       //allowing access to the User associated with a particular Details entity.
-        public User? User { get; set; }
+        [Required] //A value must be provided for this property when creating or updating a Details instance. 
+        [ForeignKey("User")] // Indicating that the UserId property is a foreign key that references the primary key of the User entity. 
+                             //It establishes a relationship between the Details entity and the User entity.
+        public int UserId { get; set; } //This is the foreign key property. It holds the ID of the associated User.
+
+        public User? User { get; set; } // This is a navigation property. It allows you to navigate from a Details entity to the related User entity.
+                                        // The ? indicates that this property is nullable, meaning that it is optional in code, but since UserId is required,
+                                        // this should never be null when the entity is in a valid state.
 
         [Column("address_line")]
         [StringLength(255)]

@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace backend_api.Models
@@ -7,6 +9,17 @@ namespace backend_api.Models
     {
         [Key]
         public int Id { get; set; }
+
+        public Details? Details { get; set; } // This is a navigation property. It allows you to navigate from a User entity to
+                                              // the related Details entity The ? indicates that this property is nullable,
+                                              // meaning that a User may or may not have associated Details.
+
+                                            //Entity Framework (EF) relies on navigation properties to automatically include related entities
+                                            //when querying the database. If these properties are removed:
+                                            /*Tables will need to be explicitly joined in every query to retrive related data.
+                                            The.Include() method will no longer be useful, which means queries like the following will need to be rewritten:
+                                            var user = await _context.Users.Include(u => u.Details).FirstOrDefaultAsync(u => u.Id == id*/
+
 
         [Required(ErrorMessage = "Name is required.")]
         [Column("full_name")] // Map to the 'full_name' column in the database
@@ -42,7 +55,5 @@ namespace backend_api.Models
 
         [Column("password_reset_token_expiry_time")]
         public DateTime? PasswordResetTokenExpiryTime { get; set; }
-
-        public Details? Details { get; set; }
     }
 }

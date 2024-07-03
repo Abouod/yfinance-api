@@ -138,19 +138,6 @@ namespace backend_api.Controllers
         {
             try
             {
-                /*  
-                if (model == null)
-                {
-                    _logger.LogWarning("ResetPassword request is null.");
-                    return BadRequest("Invalid request.");
-                }
-
-              if (string.IsNullOrEmpty(model.Email) || string.IsNullOrEmpty(model.Token) || string.IsNullOrEmpty(model.NewPassword) || string.IsNullOrEmpty(model.ConfirmNewPassword))
-                {
-                    _logger.LogWarning("ResetPassword request missing fields: {Request}", model);
-                    return BadRequest("All fields are required.");
-                }*/
-
                 _logger.LogInformation("ResetPassword requested for email: {Email}, token: {Token}", model.Email, model.Token);
 
                 // Find user by email and token
@@ -167,12 +154,6 @@ namespace backend_api.Controllers
                     _logger.LogWarning("Expired token for user: {UserId}", user.Id);
                     return BadRequest("Expired password reset token. Please restart the process.");
                 }
-
-/*                if (model.NewPassword != model.ConfirmNewPassword)
-                {
-                    _logger.LogWarning("Password mismatch for user: {UserId}", user.Id);
-                    return BadRequest("New password and confirm password do not match.");
-                }*/
 
                 // Hash the new password before saving
                 user.Password = BCrypt.Net.BCrypt.HashPassword(model.NewPassword);
