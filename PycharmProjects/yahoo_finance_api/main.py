@@ -1,9 +1,8 @@
 import yfinance as yf
 
-import pandas as pd
-
 #Creating an object for yfinance
-company_code = yf.Ticker("2010.SR") #Enter specific company ticker in the quotes
+# 2010.SR
+company_code = yf.Ticker("2010.sr") #Enter specific company ticker in the quotes
 
 # Fetching financial data
 financials_df = company_code.financials  # Yearly financials
@@ -18,19 +17,6 @@ print(quarterly_financials_df)
 
 # Calculating TTM Revenue
 # Ensure to sum the latest four quarters only
-# if 'Total Revenue' in quarterly_financials_df.index:
-#     # Get the Total Revenue row
-#     total_revenue_row = quarterly_financials_df.loc['Total Revenue']
-#
-#     # Print each Total Revenue value
-#     print("\nIndividual Total Revenue values:")
-#     for revenue in total_revenue_row:
-#         print(revenue)
-#
-#     # Sum the last four quarters
-#     ttm_revenue = total_revenue_row.sum()
-#     print("\nTTM Revenue:", ttm_revenue)
-
 if 'Total Revenue' in quarterly_financials_df.index:
     # Get the Total Revenue row
     total_revenue_row = quarterly_financials_df.loc['Total Revenue']
@@ -62,6 +48,7 @@ financial_data = quarterly_financials_df.loc[rows_of_interest]
 
 print("\nRows of interest:")
 print(financial_data)
+financial_data.to_excel('Company_data.xlsx')
 
 
 # Print the financial data
