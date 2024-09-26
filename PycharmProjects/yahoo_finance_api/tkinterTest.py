@@ -65,8 +65,9 @@ def convert():
             print("\nFetching company info...")
             info = company_code.info  # Fetch company info
             print(info)  # Fetch and display company info
-            info_df = pd.DataFrame([info])  # Convert to DataFrame
+            info_df = pd.DataFrame(list(info.items()), columns=["Field", "Value"])  # Convert dict to vertical DataFrame
             info_df.to_excel(writer, sheet_name="Company Info", index=False)  # Save to "Company Info" sheet
+
 
         if balance_sheet_var.get():
             if selected_frequency == "Yearly":
