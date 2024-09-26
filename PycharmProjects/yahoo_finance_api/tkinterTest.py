@@ -1,9 +1,8 @@
 import customtkinter
-from tkinter import BooleanVar
+from tkinter import BooleanVar, filedialog
 import yfinance as yf
 import pandas as pd
 import datetime
-
 
 customtkinter.set_appearance_mode("Dark")
 customtkinter.set_default_color_theme("dark-blue")
@@ -27,11 +26,23 @@ def convert():
     selected_frequency = freq_var.get()
     print(f"Selected frequency: {selected_frequency}")
 
+    # Open file dialog for saving the Excel file
+    file_path = filedialog.asksaveasfilename(defaultextension=".xlsx",
+                                             filetypes=[("Excel files", "*.xlsx"),
+                                                        ("All files", "*.*")],
+                                             initialfile=f"{company_code_input}_data_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.xlsx"
+                                             )
+
+    if not file_path:  # If user cancels, return
+        print("Save operation canceled.")
+        return
+
+    with pd.ExcelWriter(file_path, engine="xlsxwriter") as writer:
     # Create an ExcelWriter object to write multiple sheets to a single Excel file
     # Use company_code_input for the filename
-    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-    filename = f"{company_code_input}_data_{timestamp}.xlsx"  # Create filename using f-string
-    with pd.ExcelWriter(filename, engine="xlsxwriter") as writer:
+        # timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+        # filename = f"{company_code_input}_data_{timestamp}.xlsx"  # Create filename using f-string
+        # with pd.ExcelWriter(filename, engine="xlsxwriter") as writer:
 
         # Check which checkboxes are selected and fetch corresponding data
         if info_var.get():
@@ -70,7 +81,6 @@ def convert():
                 cash_flow_df = company_code.quarterly_cashflow
             cash_flow_df.to_excel(writer, sheet_name="Cash Flow")
             print(cash_flow_df)
-
 
 frame = customtkinter.CTkFrame(master=root)
 frame.pack(pady=20, padx=60, fill="both", expand=True)
