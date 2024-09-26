@@ -1,6 +1,9 @@
 import customtkinter
+from tkinter import BooleanVar
 import yfinance as yf
 import pandas as pd
+import datetime
+
 
 customtkinter.set_appearance_mode("Dark")
 customtkinter.set_default_color_theme("dark-blue")
@@ -26,7 +29,8 @@ def convert():
 
     # Create an ExcelWriter object to write multiple sheets to a single Excel file
     # Use company_code_input for the filename
-    filename = f"{company_code_input}_data.xlsx"  # Create filename using f-string
+    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+    filename = f"{company_code_input}_data_{timestamp}.xlsx"  # Create filename using f-string
     with pd.ExcelWriter(filename, engine="xlsxwriter") as writer:
 
         # Check which checkboxes are selected and fetch corresponding data
@@ -94,10 +98,10 @@ checkbox_frame = customtkinter.CTkFrame(master=frame)
 checkbox_frame.pack(pady=12, padx=10)
 
 # Create checkboxes for user to select the type of data to view
-info_var = customtkinter.StringVar()
-balance_sheet_var = customtkinter.StringVar()
-income_statement_var = customtkinter.StringVar()
-cash_flow_var = customtkinter.StringVar()
+info_var = customtkinter.BooleanVar()
+balance_sheet_var = customtkinter.BooleanVar()
+income_statement_var = customtkinter.BooleanVar()
+cash_flow_var = customtkinter.BooleanVar()
 
 # Arrange checkboxes horizontally using grid
 checkbox_info = customtkinter.CTkCheckBox(master=checkbox_frame, text="Info", variable=info_var, onvalue=True,
