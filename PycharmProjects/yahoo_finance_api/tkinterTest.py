@@ -10,7 +10,7 @@ customtkinter.set_default_color_theme("dark-blue")
 root = customtkinter.CTk()
 root.geometry("700x400")
 root.title("My application")
-root.resizable(width=False, height=True)
+root.resizable(width=True, height=True)
 
 
 # Define the function to run when the Start button is clicked
@@ -25,6 +25,28 @@ def convert():
     # Get the selected frequency (Yearly or Quarterly)
     selected_frequency = freq_var.get()
     print(f"Selected frequency: {selected_frequency}")
+    # print(f"Calendar: {company_code.calendar}")
+    # print(f"History: {company_code.history(period="1mo")}") #Consider
+    # print(f"Actions: {company_code.actions}")
+    # print(f"Splits: {company_code.splits}")
+    # print(f"Capital gains: {company_code.capital_gains}")
+    # print(f"sec_filings: {company_code.sec_filings}")
+    # print(f"analyst_price_targets: {company_code.analyst_price_targets}")
+    # print(f"earnings_estimate: {company_code.earnings_estimate}")
+    # print(f"revenue_estimate: {company_code.revenue_estimate}")
+    # print(f"earnings_history: {company_code.earnings_history}")
+    # print(f"eps_trend: {company_code.eps_trend}")
+    # print(f"eps_revisions: {company_code.eps_revisions}")
+    # print(f"growth_estimates: {company_code.growth_estimates}")
+    # print(f"options (shows options expiration): {company_code.options}")
+    # print(f"news (show news): {company_code.news}")
+    # print(f"recommendations: {company_code.recommendations}")
+    # print(f"upgrades_downgrades: {company_code.upgrades_downgrades}")
+
+
+
+
+
 
     # Open file dialog for saving the Excel file
     file_path = filedialog.asksaveasfilename(defaultextension=".xlsx",
@@ -38,12 +60,6 @@ def convert():
         return
 
     with pd.ExcelWriter(file_path, engine="xlsxwriter") as writer:
-    # Create an ExcelWriter object to write multiple sheets to a single Excel file
-    # Use company_code_input for the filename
-        # timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-        # filename = f"{company_code_input}_data_{timestamp}.xlsx"  # Create filename using f-string
-        # with pd.ExcelWriter(filename, engine="xlsxwriter") as writer:
-
         # Check which checkboxes are selected and fetch corresponding data
         if info_var.get():
             print("\nFetching company info...")
@@ -82,6 +98,17 @@ def convert():
             cash_flow_df.to_excel(writer, sheet_name="Cash Flow")
             print(cash_flow_df)
 
+        if dividends_var.get():
+            print("\nFetching dividends")
+            dividends_df = company_code.dividends
+
+            # Remove timezone information from the index if it contains datetime with tz info
+            if pd.api.types.is_datetime64_any_dtype(dividends_df.index):
+                dividends_df.index = dividends_df.index.tz_localize(None)
+
+            dividends_df.to_excel(writer, sheet_name="Dividends")
+            print(dividends_df)
+
 frame = customtkinter.CTkFrame(master=root)
 frame.pack(pady=20, padx=60, fill="both", expand=True)
 
@@ -112,6 +139,8 @@ info_var = customtkinter.BooleanVar()
 balance_sheet_var = customtkinter.BooleanVar()
 income_statement_var = customtkinter.BooleanVar()
 cash_flow_var = customtkinter.BooleanVar()
+dividends_var = customtkinter.BooleanVar()
+
 
 # Arrange checkboxes horizontally using grid
 checkbox_info = customtkinter.CTkCheckBox(master=checkbox_frame, text="Info", variable=info_var, onvalue=True,
@@ -128,7 +157,11 @@ checkbox_cash_flow.grid(row=0, column=2, padx=10, pady=6)
 
 checkbox_income_statement = customtkinter.CTkCheckBox(master=checkbox_frame, text="Income Statement",
                                                       variable=income_statement_var, onvalue=True, offvalue=False)
-checkbox_income_statement.grid(row=0, column=3, padx=10, pady=6)
+checkbox_income_statement.grid(row=1, column=1, padx=10, pady=6)
+
+checkbox_dividends = customtkinter.CTkCheckBox(master=checkbox_frame, text="dividends",
+                                                      variable=dividends_var, onvalue=True, offvalue=False)
+checkbox_dividends.grid(row=1, column=0, padx=10, pady=6)
 
 button = customtkinter.CTkButton(master=frame, text="Start", command=convert)
 button.pack(pady=12, padx=10)
